@@ -1,52 +1,30 @@
 library(magrittr)
 
-df <- readr::read_rds("data/recommendations1.rds")
-df <- readr::read_rds("data/recommendations2.rds")
-df <- readr::read_rds("data/my_recommendations.rds")
-df <- readr::read_rds("data/rand_recommendations1.rds")
-df <- readr::read_rds("data/rand_recommendations3.rds")
-df <- readr::read_rds("data/rand_recommendations5.rds")
-df <- readr::read_rds("data/rand_recommendations7.rds")
+view <- function(df, txt) {
+  d <- df %>%
+    readr::read_rds() %>%
+    dplyr::arrange(-n) %>%
+    dplyr::select(y = n) %>%
+    tibble::rowid_to_column("t")
+  ggplot2::qplot(d$t, d$y, xlab = "Ranking Filme", ylab = "No. Recomendações", main = txt)
+}
 
-df %>%
-  dplyr::filter(n > 0) %>%
-  ggplot2::ggplot(ggplot2::aes(x = n)) +
-  ggplot2::geom_density()
+view("data/recommendations1.rds", "Vanilla Usando Descrição do Filme")
+view("data/recommendations2.rds", "Vanilla")
+view("data/my_recommendations.rds", "Vanilla + Filme Artificial")
+view("data/rand_recommendations1.rds", "Bernoulli com P = Vanilla")
+view("data/rand_recommendations2.rds", "Bernoulli com P = Vanilla*10")
+view("data/rand_recommendations3.rds", "Bernoulli com P = Vanilla*100")
+view("data/rand_recommendations5.rds", "Bernoulli Longo e Estreito")
+view("data/recommendations3.rds", "Vanilla mantendo n >= 5")
+view("data/recommendations4.rds", "Vanilla mantendo n >= 2")
+view("data/recommendations5.rds", "Vanilla mantendo n >= 8")
+view("data/rand_recommendations7.rds", "Bernoulli com Perfil do Vanilla")
 
-df %>%
-  dplyr::filter(n > 0) %>%
-  ggplot2::ggplot(ggplot2::aes(x = n)) +
-  ggplot2::geom_density() +
-  ggplot2::ylim(c(0, 0.1))
+view("data/recommendations_books.rds", "Dataset de livros")
 
-df %>%
-  dplyr::filter(n > 0) %>%
-  ggplot2::ggplot(ggplot2::aes(x = n)) +
-  ggplot2::geom_density() +
-  ggplot2::ylim(c(0, 0.01))
-
-df %>%
-  dplyr::filter(n > 0) %>%
-  ggplot2::ggplot(ggplot2::aes(x = n)) +
-  ggplot2::geom_density() +
-  ggplot2::ylim(c(0, 0.001))
-
-d <- df %>%
-  dplyr::arrange(-n) %>%
-  dplyr::select(y = n) %>%
-  tibble::rowid_to_column("t")
-ggplot2::qplot(d$t, d$y)
-# fit <- nls(y ~ SSasymp(t, yf, y0, log_alpha), data = d)
-# ggplot2::qplot(t, y, data = broom::augment(fit)) + ggplot2::geom_line(ggplot2::aes(y = .fitted))
-
-
-ori <- readr::read_rds("data/recommendations2.rds")
-spa <- readr::read_rds("data/rand_recommendations1.rds")
-den <- readr::read_rds("data/rand_recommendations2.rds")
-
-d <- ori %>%
-  dplyr::arrange(-n) %>%
-  dplyr::select(y = n) %>%
-  tibble::rowid_to_column("t")
-ggplot2::qplot(d$t, d$y)
-
+view("data/bad_recommendations.rds", "Escolhendo recomendações ao acaso")
+l
+view("data/recommendations6.rds", "Vanilla Usando Distância de Cosseno")
+view("data/recommendations7.rds", "Vanilla Usando Distância Euclidiana")
+view("data/recommendations8.rds", "Vanilla Usando Distância de Manhattan")

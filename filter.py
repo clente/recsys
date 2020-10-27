@@ -9,7 +9,7 @@ from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics.pairwise import linear_kernel
 from ast import literal_eval
 from sklearn.feature_extraction.text import CountVectorizer
-from sklearn.metrics.pairwise import cosine_similarity
+from sklearn.metrics.pairwise import cosine_similarity, cosine_distances, euclidean_distances, manhattan_distances
 
 # Load data
 credits = pd.read_csv('data-raw/credits.csv')
@@ -129,5 +129,98 @@ indices = pd.Series(metadata.index, index=metadata['title'])
 np.savetxt("data/cosine_sim2.csv", cosine_sim2, fmt="%1.8f", delimiter=',')
 indices.to_csv("data/indices2.csv")
 
-# Another example recommendation
-print(get_recommendations('The Empire Strikes Back', cosine_sim2))
+# Create count matrix from soup (cutoff)
+count = CountVectorizer(stop_words='english', min_df = 5)
+count_matrix = count.fit_transform(metadata['soup'])
+
+# Save feature names
+dic = count.fit(metadata['soup']).get_feature_names()
+with open('data/features.txt', 'w') as f:
+    for item in dic:
+        f.write("%s\n" % item)
+
+# Compute cosine similarity from counts (cutoff)
+cosine_sim3 = cosine_similarity(count_matrix, count_matrix)
+
+# Reset index construct reverse mapping (cutoff)
+metadata = metadata.reset_index()
+indices = pd.Series(metadata.index, index=metadata['title'])
+
+# Save model for further use (cutoff)
+np.savetxt("data/cosine_sim3.csv", cosine_sim3, fmt="%1.8f", delimiter=',')
+indices.to_csv("data/indices3.csv")
+
+# Create count matrix from soup (cutoff)
+count = CountVectorizer(stop_words='english', min_df = 2)
+count_matrix = count.fit_transform(metadata['soup'])
+
+# Compute cosine similarity from counts (cutoff)
+cosine_sim4 = cosine_similarity(count_matrix, count_matrix)
+
+# Reset index construct reverse mapping (cutoff)
+metadata = metadata.reset_index()
+indices = pd.Series(metadata.index, index=metadata['title'])
+
+# Save model for further use (cutoff)
+np.savetxt("data/cosine_sim4.csv", cosine_sim4, fmt="%1.8f", delimiter=',')
+indices.to_csv("data/indices4.csv")
+
+# Create count matrix from soup (cutoff)
+count = CountVectorizer(stop_words='english', min_df = 8)
+count_matrix = count.fit_transform(metadata['soup'])
+
+# Compute cosine similarity from counts (cutoff)
+cosine_sim5 = cosine_similarity(count_matrix, count_matrix)
+
+# Reset index construct reverse mapping (cutoff)
+metadata = metadata.reset_index()
+indices = pd.Series(metadata.index, index=metadata['title'])
+
+# Save model for further use (cutoff)
+np.savetxt("data/cosine_sim5.csv", cosine_sim5, fmt="%1.8f", delimiter=',')
+indices.to_csv("data/indices5.csv")
+
+# Create count matrix from soup
+count = CountVectorizer(stop_words='english')
+count_matrix = count.fit_transform(metadata['soup'])
+
+# Compute cosine distance from counts
+cosine_sim6 = cosine_distances(count_matrix, count_matrix)
+
+# Reset index construct reverse mapping
+metadata = metadata.reset_index()
+indices = pd.Series(metadata.index, index=metadata['title'])
+
+# Save model for further use
+np.savetxt("data/cosine_dis.csv", cosine_sim6, fmt="%1.8f", delimiter=',')
+indices.to_csv("data/indices6.csv")
+
+# Create count matrix from soup
+count = CountVectorizer(stop_words='english')
+count_matrix = count.fit_transform(metadata['soup'])
+
+# Compute euclidean distance from counts
+cosine_sim7 = euclidean_distances(count_matrix, count_matrix)
+
+# Reset index construct reverse mapping
+metadata = metadata.reset_index()
+indices = pd.Series(metadata.index, index=metadata['title'])
+
+# Save model for further use
+np.savetxt("data/euclidean_dis.csv", cosine_sim7, fmt="%1.8f", delimiter=',')
+indices.to_csv("data/indices7.csv")
+
+# Create count matrix from soup
+count = CountVectorizer(stop_words='english')
+count_matrix = count.fit_transform(metadata['soup'])
+
+# Compute manhattan distance from counts
+cosine_sim8 = manhattan_distances(count_matrix, count_matrix)
+
+# Reset index construct reverse mapping
+metadata = metadata.reset_index()
+indices = pd.Series(metadata.index, index=metadata['title'])
+
+# Save model for further use
+np.savetxt("data/manhattan_dis.csv", cosine_sim8, fmt="%1.8f", delimiter=',')
+indices.to_csv("data/indices8.csv")

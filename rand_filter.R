@@ -8,29 +8,42 @@ p <- 263469/(30689*55681)
 
 rand <- Matrix::rsparsematrix(30689, 55681, p, rand.x = r)
 rand_cosine_sim <- proxyC::simil(rand, rand, method = "cosine")
+rand_cosine_sim <- Matrix::as.matrix(rand_cosine_sim)
+rand_cosine_sim <- data.table::as.data.table(rand_cosine_sim)
 
-readr::write_rds(rand_cosine_sim, "data/rand_cosine_sim1.rds")
+data.table::fwrite(rand_cosine_sim, "data/rand_cosine_sim1.csv", col.names = FALSE)
 
 
-p <- 263469/(30689*55681)
 rand <- Matrix::rsparsematrix(30689, 55681, p*10, rand.x = r)
 rand_cosine_sim <- proxyC::simil(rand, rand, method = "cosine")
+rand_cosine_sim <- Matrix::as.matrix(rand_cosine_sim)
+rand_cosine_sim <- data.table::as.data.table(rand_cosine_sim)
 
-readr::write_rds(rand_cosine_sim, "data/rand_cosine_sim2.rds")
+data.table::fwrite(rand_cosine_sim, "data/rand_cosine_sim2.csv", col.names = FALSE)
 
 
-p <- 263469/(30689*55681)
 rand <- Matrix::rsparsematrix(30689, 55681, p*100, rand.x = r)
 rand_cosine_sim <- proxyC::simil(rand, rand, method = "cosine")
+rand_cosine_sim <- Matrix::as.matrix(rand_cosine_sim)
+rand_cosine_sim <- data.table::as.data.table(rand_cosine_sim)
 
-readr::write_rds(rand_cosine_sim, "data/rand_cosine_sim3.rds")
+data.table::fwrite(rand_cosine_sim, "data/rand_cosine_sim3.csv", col.names = FALSE)
 
 
-p <- 263469/(30689*55681)
 rand <- Matrix::rsparsematrix(30689, 15000, p, rand.x = r)
 rand_cosine_sim <- proxyC::simil(rand, rand, method = "cosine")
+rand_cosine_sim <- Matrix::as.matrix(rand_cosine_sim)
+rand_cosine_sim <- data.table::as.data.table(rand_cosine_sim)
 
-readr::write_rds(rand_cosine_sim, "data/rand_cosine_sim5.rds")
+data.table::fwrite(rand_cosine_sim, "data/rand_cosine_sim5.csv", col.names = FALSE)
+
+
+rand <- Matrix::rsparsematrix(30689, 20000, p, rand.x = r)
+rand_cosine_sim <- proxyC::simil(rand, rand, method = "cosine")
+rand_cosine_sim <- Matrix::as.matrix(rand_cosine_sim)
+rand_cosine_sim <- data.table::as.data.table(rand_cosine_sim)
+
+data.table::fwrite(rand_cosine_sim, "data/rand_cosine_sim6.csv", col.names = FALSE)
 
 
 prob <- readr::read_rds("data/prob.rds")
@@ -46,5 +59,7 @@ make_row <- function(ignored = 1) {
 rand <- future_map(1:30689, make_row, .progress = TRUE)
 rand <- purrr::reduce(rand, Matrix::rbind2)
 rand_cosine_sim <- proxyC::simil(rand, rand, method = "cosine")
+rand_cosine_sim <- Matrix::as.matrix(rand_cosine_sim)
+rand_cosine_sim <- data.table::as.data.table(rand_cosine_sim)
 
-readr::write_rds(rand_cosine_sim, "data/rand_cosine_sim7.rds")
+data.table::fwrite(rand_cosine_sim, "data/rand_cosine_sim7.csv", col.names = FALSE)

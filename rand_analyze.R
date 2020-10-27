@@ -8,9 +8,7 @@ get_all_recs <- function(indices, cosine_sim, path) {
   
   # Read cosine indices and similarity matrix
   cosine_sim <- cosine_sim %>%
-    readr::read_rds() %>%
-    Matrix::as.matrix() %>% 
-    data.table::as.data.table() %>%
+    data.table::fread() %>%
     data.table::transpose()
   
   # Initialize count of recommendations
@@ -40,8 +38,9 @@ get_all_recs <- function(indices, cosine_sim, path) {
 }
 
 # Get recommendations for both similarity matrices
-get_all_recs(NULL, "data/rand_cosine_sim1.rds", "data/rand_recommendations1.rds")
-get_all_recs(NULL, "data/rand_cosine_sim2.rds", "data/rand_recommendations2.rds")
-get_all_recs(NULL, "data/rand_cosine_sim3.rds", "data/rand_recommendations3.rds")
-get_all_recs(NULL, "data/rand_cosine_sim5.rds", "data/rand_recommendations5.rds")
-get_all_recs(NULL, "data/rand_cosine_sim7.rds", "data/rand_recommendations7.rds")
+get_all_recs(NULL, "data/rand_cosine_sim1.csv", "data/rand_recommendations1.rds")
+get_all_recs(NULL, "data/rand_cosine_sim2.csv", "data/rand_recommendations2.rds")
+get_all_recs(NULL, "data/rand_cosine_sim3.csv", "data/rand_recommendations3.rds")
+get_all_recs(NULL, "data/rand_cosine_sim5.csv", "data/rand_recommendations5.rds")
+get_all_recs(NULL, "data/rand_cosine_sim6.csv", "data/rand_recommendations6.rds")
+get_all_recs(NULL, "data/rand_cosine_sim7.csv", "data/rand_recommendations7.rds")
