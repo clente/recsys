@@ -39,5 +39,5 @@ vignettes/*.pdf
 .Renviron
 
 # Large data
-data/
-data-raw/
+*.csv
+*.npz
