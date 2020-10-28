@@ -90,4 +90,5 @@ get_rand_recs <- function(similarity, file) {
     readr::write_rds(file)
 }
 
+# New recommendation: select movies at random (for control)
 get_rand_recs("data/02_sim_vanilla.csv", "data/16_rec_random.rds")
