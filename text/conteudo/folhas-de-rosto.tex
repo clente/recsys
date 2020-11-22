@@ -12,26 +12,26 @@
 
 % Se "\title" está em inglês, você pode definir o título em português aqui;
 % caso contrário, remova
-\tituloport{Título do trabalho}
+\tituloport{Viés inescapável}
 
 % Se "\title" está em português, você pode definir o título em inglês aqui;
 % caso contrário, remova
-\tituloeng{Title of the document}
+\tituloeng{Inescapable bias}
 
 % Se o trabalho não tiver subtítulo, basta remover isto.
-\subtitulo{um subtítulo}
+\subtitulo{O papel de sistemas de recomendação na radicalização das mídias sociais}
 
 % Se isto não for definido, "\subtitulo" é utilizado no lugar
-\subtituloeng{a subtitle}
+\subtituloeng{The role of recommender systems in social media radicalization}
 
 % Para TCCs, este comando define o supervisor
-\orientador[fem]{Profª. Drª. Fulana de Tal}
+\orientador[masc]{Prof. Dr. Roberto Hirata Jr.}
 
 % Se isto não for definido, "\orientador" é utilizado no lugar
-\orientadoreng{Prof. Dr. Fulana de Tal}
+\orientadoreng{Prof. Dr. Roberto Hirata Jr.}
 
 % Se não houver, remova
-\coorientador[masc]{Prof. Dr. Ciclano}
+% \coorientador[masc]{Prof. Dr. Ciclano}
 
 % Se isto não for definido, "\coorientador" é utilizado no lugar
 % (isto é útil quando se trata de "Profª. Drª.", por exemplo)
@@ -43,11 +43,11 @@
 \programaeng{Computer Science}
 
 % Se não houver, remova
-\apoio{Durante o desenvolvimento deste trabalho o autor recebeu auxílio
-financeiro da XXXX}
+% \apoio{Durante o desenvolvimento deste trabalho o autor recebeu auxílio
+% financeiro da XXXX}
 
 % Se isto não for definido, "\apoio" é utilizado no lugar
-\apoioeng{During this work, the author was supported by XXX}
+% \apoioeng{During this work, the author was supported by XXX}
 
 \localdefesa{São Paulo}
 
@@ -58,11 +58,11 @@ financeiro da XXXX}
 
 % Necessário para criar a referência do documento que aparece
 % na página do resumo
-\ano{2017}
+\ano{2021}
 
 \banca{
   \begin{itemize}
-    \item Profª. Drª. Nome Completo (orientadora) -- IME-USP [sem ponto final]
+    \item Prof. Dr. Roberto Hirata Jr. (orientadora) -- IME-USP [sem ponto final]
     \item Prof. Dr. Nome Completo -- IME-USP [sem ponto final]
     \item Prof. Dr. Nome Completo -- IMPA [sem ponto final]
   \end{itemize}
@@ -71,16 +71,16 @@ financeiro da XXXX}
 % Se isto não for definido, "\banca" é utilizado no lugar
 \bancaeng{
   \begin{itemize}
-    \item Prof. Dr. Nome Completo (advisor) -- IME-USP [sem ponto final]
+    \item Prof. Dr. Roberto Hirata Jr. (advisor) -- IME-USP [sem ponto final]
     \item Prof. Dr. Nome Completo -- IME-USP [sem ponto final]
     \item Prof. Dr. Nome Completo -- IMPA [sem ponto final]
   \end{itemize}
 }
 
 % Palavras-chave separadas por ponto e finalizadas também com ponto.
-\palavraschave{Palavra-chave1. Palavra-chave2. Palavra-chave3.}
+\palavraschave{sistemas de recomendação. viés algorítmico. aprendizagem de máquina.}
 
-\keywords{Keyword1. Keyword2. Keyword3.}
+\keywords{recommender system. algorithmic bias. machine learning.}
 
 % Define os textos padrão ("mestrado" X "doutorado", "tese" X
 % "dissertação" etc.) da capa e da referência que vai na página
@@ -88,18 +88,17 @@ financeiro da XXXX}
 % no masculino ou feminino (Mestre/Mestra, Doutor/Doutora,
 % candidato/candidata). O segundo parâmetro é opcional e
 % determina que se trata de exame de qualificação.
-\mestrado[fem]
-%\mestrado[fem][quali]
+% \mestrado[fem]
+\mestrado[masc][quali]
 %\doutorado[masc]
 %\doutorado[masc][quali]
 %\tcc[masc]
 
 % Se quiser estabelecer regras diferentes, converse com seu
 % orientador
-\direitos{Autorizo a reprodução e divulgação total ou parcial
-deste trabalho, por qualquer meio convencional ou
-eletrônico, para fins de estudo e pesquisa, desde que
-citada a fonte.}
+\direitos{I hereby authorize the reproduction and distribution
+in full or in part of this work, in any conventional or electronic
+medium, for study or research, as long as properly cited.}
 
 % Isto deve ser preparado em conjunto com o bibliotecário
 %\fichacatalografica{
@@ -117,8 +116,8 @@ citada a fonte.}
 \hypersetup{pageanchor=false}
 
 % A capa; o parâmetro pode ser "port" ou "eng" para definir a língua
-\capaime[port]
-%\capaime[eng]
+%\capaime[port]
+\capaime[eng]
 
 % Se você não quiser usar a capa padrão, você pode criar uma outra
 % capa manualmente ou em um programa diferente. No segundo caso, é só
@@ -133,17 +132,16 @@ citada a fonte.}
 % Observe que TCCs não têm página de rosto; nesse caso, desabilite
 % todas as opções.
 %\pagrostoime[port]{definitiva}
-\pagrostoime[port]{provisoria}
+%\pagrostoime[port]{provisoria}
 %\pagrostoime[eng]{definitiva}
-%\pagrostoime[eng]{provisoria}
+\pagrostoime[eng]{provisoria}
 
 %%%%%%%%%%%%%%%%%%%% DEDICATÓRIA, RESUMO, AGRADECIMENTOS %%%%%%%%%%%%%%%%%%%%%%%
 
 % A definição deste ambiente está no pacote imeusp-capa.sty; se você não
 % carregar esse pacote, precisa cuidar desta página manualmente.
 \begin{dedicatoria}
-Esta seção é opcional e fica numa página separada; ela pode ser usada para
-uma dedicatória ou epígrafe.
+To my four parents and one and a half siblings.
 \end{dedicatoria}
 
 % Após a capa e as páginas de rosto, começamos a numerar as páginas; com isso,
@@ -159,13 +157,13 @@ uma dedicatória ou epígrafe.
 % esta página. A epígrafe, obviamente, é opcional; é possível colocar
 % epígrafes em todos os capítulos. O comando "\chapter*" faz esta seção
 % não ser incluída no sumário.
-\chapter*{Agradecimentos}
-\epigrafe{Do. Or do not. There is no try.}{Mestre Yoda}
-
-Texto texto texto texto texto texto texto texto texto texto texto texto texto
-texto texto texto texto texto texto texto texto texto texto texto texto texto
-texto texto texto texto texto texto texto texto texto texto texto texto texto
-texto texto texto texto. Texto opcional.
+% \chapter*{Agradecimentos}
+% \epigrafe{Do. Or do not. There is no try.}{Mestre Yoda}
+% 
+% Texto texto texto texto texto texto texto texto texto texto texto texto texto
+% texto texto texto texto texto texto texto texto texto texto texto texto texto
+% texto texto texto texto texto texto texto texto texto texto texto texto texto
+% texto texto texto texto. Texto opcional.
 
 %\input{conteudo-exemplo/resumo-abstract}
 \input{conteudo/resumo-abstract}
@@ -202,30 +200,30 @@ texto texto texto texto. Texto opcional.
 %%%%% Listas criadas manualmente
 
 %\chapter*{Lista de Abreviaturas}
-\disablenewpage{\chapter*{Lista de Abreviaturas}}
-
-\begin{tabular}{rl}
-         CFT         & Transformada contínua de Fourier (\emph{Continuous Fourier Transform})\\
-         DFT         & Transformada discreta de Fourier (\emph{Discrete Fourier Transform})\\
-        EIIP         & Potencial de interação elétron-íon (\emph{Electron-Ion Interaction Potentials})\\
-        STFT         & Transformada de Fourier de tempo reduzido (\emph{Short-Time Fourier Transform})\\
-	ABNT         & Associação Brasileira de Normas Técnicas\\
-	URL          & Localizador Uniforme de Recursos (\emph{Uniform Resource Locator})\\
-	IME          & Instituto de Matemática e Estatística\\
-	USP          & Universidade de São Paulo
-\end{tabular}
+%\disablenewpage{\chapter*{Lista de Abreviaturas}}
+%
+%\begin{tabular}{rl}
+%         CFT         & Transformada contínua de Fourier (\emph{Continuous Fourier Transform})\\
+%         DFT         & Transformada discreta de Fourier (\emph{Discrete Fourier Transform})\\
+%        EIIP         & Potencial de interação elétron-íon (\emph{Electron-Ion Interaction Potentials})\\
+%        STFT         & Transformada de Fourier de tempo reduzido (\emph{Short-Time Fourier Transform})\\
+%	ABNT         & Associação Brasileira de Normas Técnicas\\
+%	URL          & Localizador Uniforme de Recursos (\emph{Uniform Resource Locator})\\
+%	IME          & Instituto de Matemática e Estatística\\
+%	USP          & Universidade de São Paulo
+%\end{tabular}
 
 %\chapter*{Lista de Símbolos}
-\disablenewpage{\chapter*{Lista de Símbolos}}
-
-\begin{tabular}{rl}
-        $\omega$    & Frequência angular\\
-        $\psi$      & Função de análise \emph{wavelet}\\
-        $\Psi$      & Transformada de Fourier de $\psi$\\
-\end{tabular}
+%\disablenewpage{\chapter*{Lista de Símbolos}}
+%
+%\begin{tabular}{rl}
+%        $\omega$    & Frequência angular\\
+%        $\psi$      & Função de análise \emph{wavelet}\\
+%        $\Psi$      & Transformada de Fourier de $\psi$\\
+%\end{tabular}
 
 % Quebra de página manual
-\clearpage
+%\clearpage
 
 %%%%% Listas criadas automaticamente
 
@@ -252,17 +250,17 @@ texto texto texto texto. Texto opcional.
 % pois o índice é opcional). É comum colocar esses itens no final do documento,
 % junto com o comando \printindex, mas em alguns casos isso torna necessário
 % executar texindy (ou makeindex) mais de uma vez, então colocar aqui é melhor.
-\index{Inglês|see{Língua estrangeira}}
-\index{Figuras|see{Floats}}
-\index{Tabelas|see{Floats}}
-\index{Código-fonte|see{Floats}}
-\index{Subcaptions|see{Subfiguras}}
-\index{Sublegendas|see{Subfiguras}}
-\index{Equações|see{Modo Matemático}}
-\index{Fórmulas|see{Modo Matemático}}
-\index{Rodapé, notas|see{Notas de rodapé}}
-\index{Captions|see{Legendas}}
-\index{Versão original|see{Tese/Dissertação, versões}}
-\index{Versão corrigida|see{Tese/Dissertação, versões}}
-\index{Palavras estrangeiras|see{Língua estrangeira}}
-\index{Floats!Algoritmo|see{Floats, Ordem}}
+%\index{Inglês|see{Língua estrangeira}}
+%\index{Figuras|see{Floats}}
+%\index{Tabelas|see{Floats}}
+%\index{Código-fonte|see{Floats}}
+%\index{Subcaptions|see{Subfiguras}}
+%\index{Sublegendas|see{Subfiguras}}
+%\index{Equações|see{Modo Matemático}}
+%\index{Fórmulas|see{Modo Matemático}}
+%\index{Rodapé, notas|see{Notas de rodapé}}
+%\index{Captions|see{Legendas}}
+%\index{Versão original|see{Tese/Dissertação, versões}}
+%\index{Versão corrigida|see{Tese/Dissertação, versões}}
+%\index{Palavras estrangeiras|see{Língua estrangeira}}
+%\index{Floats!Algoritmo|see{Floats, Ordem}}
