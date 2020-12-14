@@ -20,7 +20,7 @@ the societal role of social media into question.
 
 One particular controversy that has taken over public discourse around social
 networks is the role that their algorithms might have in radicalizing users,
-specially youger ones. The aforementioned experiments conducted by Facebook to
+specially younger ones. The aforementioned experiments conducted by Facebook to
 influence people's emotions and the proliferation of more than questionable
 videos aimed at children on YouTube are instances that seem to corroborate the
 notion that there is something fundamentally wrong with these companies'
@@ -42,7 +42,7 @@ political polarization and that social networks even have a tendency to favor
 more left-wing viewpoints.
 
 The debate around the role of recommender systems in social media radicalization
-is still, unfortunately, too recent and based in annecdotes. Since its impacts
+is still, unfortunately, too recent and based in anecdotes. Since its impacts
 are all but universal, more quality research is vital to inform both the public
 and opinion makers about if and how much recommendation algorithms influence
 social media users.
@@ -70,11 +70,11 @@ features:
 \end{itemize}
 
 While social-networking-like applications already existed in Usenet, Geocities,
-lauched in 1994, is usually regarded as the first major social network.
+launched in 1994, is usually regarded as the first major social network.
 Friendster and Myspace followed in 2003, with Orkut and Facebook slightly
 lagging behind in 2004. Each hit their peak at different moments and different
 countries, but Facebook overtook all of them in 2009 when it became the most
-popular social netowrking service in the world, still maintaining the title over
+popular social networking service in the world, still maintaining the title over
 11 years latter at the moment of writing.
 
 Even though all aforementioned social networks are multimedia, that is, users
@@ -93,21 +93,78 @@ personal posts seam to have an edge over other kinds of content.
 
 Twitter, unlike most other social networks, allows for asymmetrical connections,
 meaning users can follow profiles without being followed back. This enables the
-emmergence of Twitter communities (e.g. Fintwit, Black Twitter) that can be
+emergence of Twitter communities (e.g. Fintwit, Black Twitter) that can be
 largely self referential and/or organized around certain subjects. Facebook
 users, on the other hand, can belong to groups, user-moderated profiles that
 might revolve around any particular topics of interest; there are groups that
 organize pet owners and groups that organize neonazis.
 
 Parallel to all other features and idiosyncrasies, there lay the recommendation
-algorithms. While a few social netowrking services (e.g. WhatsApp) do not
+algorithms. While a few social networking services (e.g. WhatsApp) do not
 recommend any content or profiles to the user, most do and, according to recent
 studies, these recommendations have become the main drivers of interactions.
 
 \section{Recommender Systems}
 \label{sec:recommender_systems}
 
-Lorem.
+Recommender systems (sometimes called recommendation systems or recomender
+algorithms) first appeared in 1992 under the name ``collaborative filtering'',
+even though that term nowadays reffers to a subclass of recommender systems. The
+aim of such an algorithm is providing users with personalized product or service
+recommendations, an essential task when considering the ever increasing number
+of possible videos to watch, music to listen, products to buy.
+
+The input of a recommender system is usually information about the preferences
+(ratings, likes/dislikes, watch time, etc.) of consumers for a set of items.
+Prefence information can be gathered from explicit behaviors (e.g. rating a
+product in a scale ranging from 0 to 5 stars) or from implicit behaviors (e.g.
+how much time the user lingers on a product's page). These data can be combined
+with information about the user (age, political leaning, etc.) in order to
+create the best possible representation of the user's preferences.
+
+The output of these systems can come in the form of a prediction or a list of
+recommended items. In the first case, the goal of the algorithm is approximating
+the rating a user would attribute to a yet unrated item, while the second type
+of output involves gathering the items that most likely would interest the user.
+Simple recommender systems that suggest items similar to the one being queried
+do not necessarily involve rating predictions, but it is common to have the list
+of rcommended items based on the ratings the algorithms estimated the user would
+give to those items.
+
+Most recommender systems follow into one of four categories according to the
+filtering algoritm they use, that it, the strategy for generating predictions or
+selecting the top-N items: content-based filtering, demographic filtering,
+collaborative filtering, and hybrid filtering.
+
+Content-based filtering leverages characteristics of the content in order to
+generate the recommendations. One such algorithm might use the genres of watched
+movies in order to recommend new ones, while another might analyse the sound
+signature of a song to recommend similar ones, but, either way, all
+content-based systems establish a similarity between items as a basis for
+recommendations. Analogously, demographic filtering uses demographic data to
+establish a similarity between users and recommend items positively rated by
+similar people.
+
+Collaborative filtering algorithms also recommend items that similar users
+liked, but, in this case, the similarity between users is based on past ratings
+and not demographic information. Hybrid filtering usually mix collaborative
+methods with either content-based or demographic filtering.
+
+As with other knowledge-based systems, recommendation algorithms have quickly
+incorporated neural networks and other machine learning techniques over the past
+few years. Even though the implementation of YouTube's recommendation algorithm
+is a trade secret, it is known to gather enormous amounts of data about the
+user's interation with the website and to require Google's own TPUs in order to
+be trained. It also involves two distinct steps: candidate generation (when the
+billions of videos available on the platform are quickly narrowed down to a few
+hundreds that might be relevant) and ranking (when the algorithm actually
+attempts to predict the score a user would implicitly give to the candidate
+videos).
+
+Another relevant aspect of recommender systems that is well-exemplified by
+YouTube is the use of balancing factors such as novelty, dispersity, and
+stability. In the case of Google's video giant, there is a baked-in bias for
+recency, strongly favoring newer videos in detriment of older content.
 
 \section{Radicalization}
 \label{sec:extremism}
