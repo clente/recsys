@@ -5,23 +5,46 @@
 \chapter{Literature review}
 
 Topic-Specific YouTube Crawling to Detect Online Radicalization
-\citet{agarwal_topic-specific_2015}
+\citet{agarwal_topic-specific_2015}: an early example of techniques developed to
+try and find extremist content on YouTube. Using advanced machine learning
+methods, the authors create a YouTube crawler that starts from a seed video and
+iteratively classifies featured channels and videos according to their potential
+extremism.
 
 Technologically scaffolded atypical cognition: the case of YouTube's recommender
-system \citet{alfano_technologically_2020}
-
-Recommender systems survey \citet{bobadilla_recommender_2013}
+system \citet{alfano_technologically_2020}: according to its authors, this paper
+was "the first systematic, pre-registered attempt to establish whether and to
+what extent the recommender system tends to promote such [extremist] content."
+The results presented are in line with the recommender system radicalization
+hypothesis.
 
 Evaluating the dynamic properties of recommendation algorithms
-\citet{burke_evaluating_2010}
+\citet{burke_evaluating_2010}: most methods for evaluating recommender systems
+are static, that is, involve static snapshots of user and item data. The authors
+of this paper propose a novel evaluation technique that helps provide insight
+into the evolution of recommendation behavior: the "temporal leave-one-out"
+approach.
 
 Do Search Algorithms Endanger Democracy? An Experimental Investigation of
-Algorithm Effects on Political Polarization \citet{cho_search_2020}
+Algorithm Effects on Political Polarization \citet{cho_search_2020}: by
+experimentally manipulating user search/watch history, the authors of this paper
+concluded that algorithmically recommended content can reinforce a participant's
+political opinions.
 
-Deep Neural Networks for YouTube Recommendations \citet{covington_deep_2016}
+Deep Neural Networks for YouTube Recommendations \citet{covington_deep_2016}:
+this paper marks YouTube's move towards the usage of deep neural networks to
+generate video recommendations. The authors describe a two-stage model that
+first generates a list of candidates and then ranks them, also reporting
+dramatic performance improvements.
 
 A Longitudinal Analysis of YouTube's Promotion of Conspiracy Videos
-\citet{faddoul_longitudinal_2020}
+\citet{faddoul_longitudinal_2020}: after some high-profile cases of users being
+radicalized through YouTube videos, the platform announced efforts to curb the
+spread of conspiracy theories on the website. The paper aims to verify this
+claim by developing both an emulation of YouTube's recommendation algorithm and
+a classifier that labels whether a video is conspiratorial or not. The authors
+describe an overall decrease in the number of conspiracy recommendations, though
+not when weighing these recommendations by views.
 
 The Statistical Properties of Random Bitstreams and the Sampling Distribution of
 Cosine Similarity \citet{giller_statistical_2012}: this paper identifies certain
@@ -32,18 +55,26 @@ significantly different from the average. This is noteworthy because many
 recommendation algorithms use cosine similarity in order to determine the
 similarity between two items to recommend.
 
-Social media recommendation based on people and tags \citet{guy_social_2010}
-
-Interactive recommender systems: A survey of the state of the art and future
-research challenges and opportunities \citet{he_interactive_2016}
+Social media recommendation based on people and tags \citet{guy_social_2010}:
+this is a landmark paper that inaugurates the usage of user data alongside
+labels to create a recommendation algorithm that is highly accurate and a staple
+of modern social networks.
 
 Evaluating the scale, growth, and origins of right-wing echo chambers on YouTube
-\citet{hosseinmardi_evaluating_2020}
-
-Diversity in recommender systems – A survey \citet{kunaver_diversity_2017}
+\citet{hosseinmardi_evaluating_2020}: the authors find evidence via a
+longitudinal study that there exists "a small but growing echo chamber or
+far-right content consumption" on YouTube. According to their research, these
+users are more engaged than other, with YouTube generally accounting for a
+larger share of their online news diet than the average. The authors, however,
+find no evidence of this phenomenon being due to recommendations.
 
 Algorithmic Extremism: Examining YouTube's Rabbit Hole of Radicalization
-\citet{ledwich_algorithmic_2019}
+\citet{ledwich_algorithmic_2019}: highly controversial, the authors of this
+paper claim to have found evidence to support the hypothesis that YouTube's
+recommendation algorithm favors mainstream and left-leaning channels instead of
+right-wing ones. They categorize almost 800 channels into groups of similar
+political leaning and analyze recommentations between each group, finding that
+YouTube might actually discourage users from viewing radicalizing content.
 
 Right-Wing YouTube: A Supply and Demand Perspective
 \citet{munger_right-wing_2020}: controversial article that postulates a new
@@ -53,11 +84,6 @@ recommender system only supplies them. Its methods were highly questioned by the
 community and is currently the only paper that spouses the supply and demand
 hypothesis.
 
-Analyzing Right-wing YouTube Channels: Hate, Violence and Discrimination
-\citet{ottoni_analyzing_2018}
-
-A study of the dynamic features of recommender systems \citet{rana_study_2012}
-
 Auditing radicalization pathways on YouTube \citet{ribeiro_auditing_2020}: this
 is one of the seminal articles that explore the radicalization pipeline
 hypothesis of algorithmic enabled radicalization. The authors collect huge
@@ -66,12 +92,18 @@ of users from ``lighter'' content towards more extreme videos. This doesn't
 prove that the pipeline exists, but is a strong argument for its existence.
 
 Algorithmic bias amplifies opinion fragmentation and polarization: A bounded
-confidence model \citet{sirbu_algorithmic_2019}
+confidence model \citet{sirbu_algorithmic_2019}: this paper provides an
+interesting theoretical model of how inherent biases in algorithmic
+recommendations might highten opinion polarization. Using a bounded confidence
+model, the authors propose the addition of a $\gamma$ term that represents the
+odds of an algorithm recommending content that differs from that of a user.
 
-Algorithmic Fairness for Networked Algorithms \citet{stoica_algorithmic_2020}
-
-Hegemony in Social Media and the effect of recommendations
-\citet{stoica_hegemony_2019}
+Algorithmic Fairness for Networked Algorithms \citet{stoica_algorithmic_2020}:
+this paper shows that the most commonly used metrics in recommender systems
+"exacerbate disparity between different communities" because they reinforce
+homophilic behavior of the network. This has profound implications, since these
+algorithms might further suppress already minoritary viewpoints without being
+explicitly programmed to do so.
 
 Algorithmic Glass Ceiling in Social Networks: The effects of social
 recommendations on network diversity \citet{stoica_algorithmic_2018}: this paper
@@ -84,6 +116,14 @@ the algorithm learns biases in the population, that is, male preference for male
 profiles (which doesn't happens for females and thus characterizes an
 asymmetric---differentiated---homophily), and ends up enhancing this effect.
 
+Hegemony in Social Media and the effect of recommendations
+\citet{stoica_hegemony_2019}: building on top of their authors' previous work,
+this paper is the proposal for new recommender systems that take differentiated
+homophily into account in order to reduce the "glass ceiling" effect observed in
+non-corrected recommendation algorithms. The work focuses on the theoretical
+description of the algorithm, but also attempts to validate its hypothesis in
+real world data.
+
 The Effect of Recommendations on Network Structure \citet{su_effect_2016}
 
 An automated pipeline for the discovery of conspiracy and conspiracy theory
@@ -92,3 +132,14 @@ narrative frameworks: Bridgegate, Pizzagate and storytelling on the web
 
 Recommending what video to watch next: a multitask ranking system
 \citet{zhao_recommending_2019}
+
+
+
+
+
+Recommender systems survey \citet{bobadilla_recommender_2013}
+
+Interactive recommender systems: A survey of the state of the art and future
+research challenges and opportunities \citet{he_interactive_2016}
+
+Diversity in recommender systems – A survey \citet{kunaver_diversity_2017}
