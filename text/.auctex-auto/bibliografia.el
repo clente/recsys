@@ -2,6 +2,8 @@
  "bibliografia"
  (lambda ()
    (LaTeX-add-bibitems
+    "roth_tubes_2020"
+    "matakos_maximizing_2020"
     "sun_mining_2012"
     "gilbert_predicting_2009"
     "zamani_differences_2019"
