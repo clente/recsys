@@ -4,170 +4,161 @@
 
 \chapter{Literature review}
 
-Topic-Specific YouTube Crawling to Detect Online Radicalization
-\citet{agarwal_topic-specific_2015}: an early example of techniques developed to
+There are three types of work that are relevant to the current topic: general
+literature about recommender systems, evidence for the radicalization
+hypothesis, and evidence against the radicalization hypothesis. Since this area
+of study is still mostly unexplored, there is no consensus on whether
+social media recommender systems favor extremist content (or even whether they
+are actually deradicalisation agents). Original research is, therefore, still
+required before a final verdict is issued.
+
+General literature about recommendation algorithms is abound. One of the most
+cited surveys was elaborated by \citet{bobadilla_recommender_2013}, but
+works by \citet{he_interactive_2016} (about interactive recommender systems),
+and by \citet{kunaver_diversity_2017} (about diversity in recommender systems)
+were also used in order to draw a complete panorama of the field.
+
+Another relevant article, by \citet{guy_social_2010}, is the landmark paper that
+inaugurates the usage of user data alongside labels to create a recommendation
+algorithm that is highly accurate and a staple of modern social networks. This
+essentially starts the usage of recommenders systems in social media.
+
+When talking specifically about YouTube's recommendation algorithms, two papers
+deserve special attention. The first one, by \citet{covington_deep_2016}, marks
+YouTube's move towards the usage of deep neural networks to generate video
+recommendations. The authors describe a two-stage model that first generates a
+list of candidates and then ranks them, also reporting dramatic performance
+improvements. The second one, by \citet{zhao_recommending_2019}, describing a
+more recent version of YouTube's recommendation algorithm, explores the
+Multi-gate Mixture-of-Experts technique to optimize recommendations for more
+than one ranking objective and the Wide \& Deep framework to mitigate selection
+biases. The authors also make it clear that YouTube's recommender system has a
+strong bias towards more recent content instead of more traditional metrics.
+
+\citet{agarwal_topic-specific_2015} developed an early example of a technique to
 try and find extremist content on YouTube. Using advanced machine learning
 methods, the authors create a YouTube crawler that starts from a seed video and
 iteratively classifies featured channels and videos according to their potential
-extremism.
+extremism. A more recent example of this can be found in
+\citet{tangherlini_automated_2020}, where the authors propose a novel approach
+for identifying conspiracy theories online. By analyzing the narrative structure
+of a conspiracy theory (Pizzagate) and comparing it to an actual conspiracy
+(Bridgegate), they create a model that can guess whether a conspiratorial
+narrative is or not fabricated. According to their findings, a multi-domain
+nature and the presence of keystone nodes are signs that strongly indicate a
+conspiracy theory.
 
-Technologically scaffolded atypical cognition: the case of YouTube's recommender
-system \citet{alfano_technologically_2020}: according to its authors, this paper
-was ``the first systematic, pre-registered attempt to establish whether and to
-what extent the recommender system tends to promote such [extremist] content.''
-The results presented are in line with the recommender system radicalization
-hypothesis.
+Besides just finding and identifying radicalizing content on YouTube, many
+authors have been concerned with studying the radicalization dynamics directly.
+\citet{alfano_technologically_2020}, for example, claim to be ``the first
+systematic, pre-registered attempt to establish whether and to what extent the
+recommender system tends to promote such [extremist] content.'' The results
+presented in this paper are in line with the recommender system radicalization
+hypothesis. \citet{cho_search_2020} also attempt to understand how users can be
+radicalized by the algorithm. By experimentally manipulating user search/watch
+history, the authors concluded that algorithmically recommended content can
+reinforce a participant's political opinions.
 
-Evaluating the dynamic properties of recommendation algorithms
-\citet{burke_evaluating_2010}: most methods for evaluating recommender systems
-are static, that is, involve static snapshots of user and item data. The authors
-of this paper propose a novel evaluation technique that helps provide insight
-into the evolution of recommendation behavior: the ``temporal leave-one-out''
-approach.
+In the same vein, \citet{faddoul_longitudinal_2020}, after some high-profile
+cases of users being radicalized through YouTube videos, studied the efforts
+announced by the platform to curb the spread of conspiracy theories on the
+website. The paper aimed to verify this claim by developing both an emulation of
+YouTube's recommendation algorithm and a classifier that labeled whether a video
+is conspiratorial or not. The authors describe an overall decrease in the number
+of conspiracy recommendations, though not when weighing these recommendations by
+views.
 
-Do Search Algorithms Endanger Democracy? An Experimental Investigation of
-Algorithm Effects on Political Polarization \citet{cho_search_2020}: by
-experimentally manipulating user search/watch history, the authors of this paper
-concluded that algorithmically recommended content can reinforce a participant's
-political opinions.
-
-Deep Neural Networks for YouTube Recommendations \citet{covington_deep_2016}:
-this paper marks YouTube's move towards the usage of deep neural networks to
-generate video recommendations. The authors describe a two-stage model that
-first generates a list of candidates and then ranks them, also reporting
-dramatic performance improvements.
-
-A Longitudinal Analysis of YouTube's Promotion of Conspiracy Videos
-\citet{faddoul_longitudinal_2020}: after some high-profile cases of users being
-radicalized through YouTube videos, the platform announced efforts to curb the
-spread of conspiracy theories on the website. The paper aims to verify this
-claim by developing both an emulation of YouTube's recommendation algorithm and
-a classifier that labels whether a video is conspiratorial or not. The authors
-describe an overall decrease in the number of conspiracy recommendations, though
-not when weighing these recommendations by views.
-
-The Statistical Properties of Random Bitstreams and the Sampling Distribution of
-Cosine Similarity \citet{giller_statistical_2012}: this paper identifies certain
-aspects of cosine similarity that are often overlooked. Starting from simple
-theorems regarding the density of n-dimensional spheres, the authors conclude
-that the expected cosine similarity between random bitstreams might be
-significantly different from the average. This is noteworthy because many
-recommendation algorithms use cosine similarity in order to determine the
-similarity between two items to recommend.
-
-Social media recommendation based on people and tags \citet{guy_social_2010}:
-this is a landmark paper that inaugurates the usage of user data alongside
-labels to create a recommendation algorithm that is highly accurate and a staple
-of modern social networks.
-
-Evaluating the scale, growth, and origins of right-wing echo chambers on YouTube
-\citet{hosseinmardi_evaluating_2020}: the authors find evidence via a
-longitudinal study that there exists ``a small but growing echo chamber o\r
-far-right content consumption'' on YouTube. According to their research, these
-users are more engaged than other, with YouTube generally accounting for a
-larger share of their online news diet than the average. The authors, however,
-find no evidence of this phenomenon being due to recommendations.
-
-Algorithmic Extremism: Examining YouTube's Rabbit Hole of Radicalization
-\citet{ledwich_algorithmic_2019}: highly controversial, the authors of this
-paper claim to have found evidence to support the hypothesis that YouTube's
-recommendation algorithm favors mainstream and left-leaning channels instead of
-right-wing ones. They categorize almost 800 channels into groups of similar
-political leaning and analyze recommentations between each group, finding that
-YouTube might actually discourage users from viewing radicalizing content.
-
-Right-Wing YouTube: A Supply and Demand Perspective
-\citet{munger_right-wing_2020}: controversial article that postulates a new
-model for YouTube radicalization. According to the authors, YouTube's algorithm
-is not to blame, the users themselves are looking for extreme content and the
-recommender system only supplies them. Its methods were highly questioned by the
-community and is currently the only paper that spouses the supply and demand
-hypothesis.
-
-Auditing radicalization pathways on YouTube \citet{ribeiro_auditing_2020}: this
-is one of the seminal articles that explore the radicalization pipeline
-hypothesis of algorithmic enabled radicalization. The authors collect huge
-amounts of YouTube comment data over time, and determine a significant migration
-of users from ``lighter'' content towards more extreme videos. This doesn't
-prove that the pipeline exists, but is a strong argument for its existence.
-
-Algorithmic bias amplifies opinion fragmentation and polarization: A bounded
-confidence model \citet{sirbu_algorithmic_2019}: this paper provides an
-interesting theoretical model of how inherent biases in algorithmic
-recommendations might highten opinion polarization. Using a bounded confidence
-model, the authors propose the addition of a $\gamma$ term that represents the
-odds of an algorithm recommending content that differs from that of a user.
-
-Algorithmic Fairness for Networked Algorithms \citet{stoica_algorithmic_2020}:
-this paper shows that the most commonly used metrics in recommender systems
+Three papers that deserve a closer look are those that investigate how regular
+recommendation algorithms can learn covert biases in the users of a social
+network and amplify them to previously unimaginable rates.
+\citet{stoica_algorithmic_2018} explore the existence of an ``algorithmic glass
+ceiling'' and introduces the concept of differentiated homophily. The authors
+experiment on a Instagram dataset before and after the introduction of
+algorithmic recommendations and discover that, even though most of that
+network's users were female, the most followed profiles were male. They explain
+this phenomenon by postulating that the algorithm learns biases in the
+population, that is, male preference for male profiles (which doesn't happens
+for females and thus characterizes an asymmetric---differentiated---homophily), and
+ends up enhancing this effect. \citet{stoica_hegemony_2019}, building on top of
+their previous work, create a proposal for new recommender systems that take
+differentiated homophily into account in order to reduce the ``glass ceiling''
+effect observed in non-corrected recommendation algorithms. The work focuses on
+the theoretical description of the algorithm, but also attempts to validate its
+hypothesis in real world data. \citet{stoica_algorithmic_2020}, in their most
+recent paper, show that the most commonly used metrics in recommender systems
 ``exacerbate disparity between different communities'' because they reinforce
 homophilic behavior of the network. This has profound implications, since these
 algorithms might further suppress already minoritary viewpoints without being
 explicitly programmed to do so.
 
-Algorithmic Glass Ceiling in Social Networks: The effects of social
-recommendations on network diversity \citet{stoica_algorithmic_2018}: this paper
-explores the existence of an ``algorithmic glass ceiling'' and introduces the
-concept of differentiated homophily. The authors experiment on a Instagram
-dataset before and after the introduction of algorithmic recommendations and
-discover that, even though most of that network's users were female, the most
-followed profiles were male. They explain this phenomenon by postulating that
-the algorithm learns biases in the population, that is, male preference for male
-profiles (which doesn't happens for females and thus characterizes an
-asymmetric---differentiated---homophily), and ends up enhancing this effect.
+Like \citet{stoica_hegemony_2019}, \citet{matakos_maximizing_2020} also propose
+a novel recommendation algorithm that tries to strike a balance between
+information spread and ensuring that the users are exposed to diverse
+viewpoints. The authors show that this goal is important if we want to foster
+healthy online debate, and that the algorithm is efficient and scalable with a
+minor approximation. One possible inspiration for thees papers might be one by
+\citet{su_effect_2016} that studyed the network structure of Twitter before and
+after the introduction of algorithmic recommendations (``Who to Follow''). The
+authors of the paper discovered that all users benefitted recommendations, but
+that users with already popular profiles benefitted even more, effectively
+changing the network structure and dynamics.
 
-Hegemony in Social Media and the effect of recommendations
-\citet{stoica_hegemony_2019}: building on top of their authors' previous work,
-this paper is the proposal for new recommender systems that take differentiated
-homophily into account in order to reduce the ``glass ceiling '' effect observed
-in non-corrected recommendation algorithms. The work focuses on the theoretical
-description of the algorithm, but also attempts to validate its hypothesis in
-real world data.
-
-The Effect of Recommendations on Network Structure \citet{su_effect_2016}: by
-studying the network structure of Twitter before and after the introduction of
-algorithmic recommendations (``Who to Follow''), the authors of the paper
-discover that all users benefitted recommendations, but that users with already
-popular profiles benefitted even more, effectively changing the network
-structure and dynamics.
-
-An automated pipeline for the discovery of conspiracy and conspiracy theory
-narrative frameworks: Bridgegate, Pizzagate and storytelling on the web
-\citet{tangherlini_automated_2020}: the authors of this paper propose a novel
-approach for identifying conspiracy theories online. By analyzing the narrative
-structure of a conspiracy theory (Pizzagate) and comparing it to an actual
-conspiracy (Bridgegate), they create a model that can guess whether a
-conspiratorial narrative is or not fabricated. According to their findings,
-a multi-domain nature and the presence of keystone nodes are signs that strongly
-indicate a conspiracy theory.
-
-Recommending what video to watch next: a multitask ranking system
-\citet{zhao_recommending_2019}: describing a more recent version of YouTube's
-recommendation algorithm, this paper explores the Multi-gate Mixture-of-Experts
-technique to optimize recommendations for more than one ranking objective and
-the Wide \& Deep framework to mitigate selection biases. The authors also make
-it clear that YouTube's recommender system has a strong bias towards more recent
-content instead of more traditional metrics.
-
-Tubes and bubbles topological confinement of YouTube recommendations
-\citet{roth_tubes_2020}: this paper delves into the confinement dynamics
+Because of data limitations, there still are few studies that investigate how
+recommendation algorithms work dinamicaly, over time.
+\citet{burke_evaluating_2010} point out that most methods for evaluating
+recommender systems are static, that is, involve static snapshots of user and
+item data. The authors propose a novel evaluation technique that helps provide
+insight into the evolution of recommendation behavior: the ``temporal
+leave-one-out'' approach. A more recent example of this approach was developed
+by \citet{roth_tubes_2020}. Their paper delves into the confinement dynamics
 possibly fostered by YouTube's recommendation algorithm. The authors create,
 from a diverse set of seed videos, a graph of the videos iteratively recommended
 by YouTube and, from this, study whether there were created ``filter bubbles''.
 They find that indeed YouTubes recommendations are prone to confinement dynamics
 be it topological, topical or temporal.
 
-Maximizing the Diversity of Exposure in a Social Network
-\citet{matakos_maximizing_2020}: the authors of this paper propose a novel
-recommendation algorithm that tries to strike a balance between information
-spread and ensuring that the users are exposed to diverse viewpoints. They show
-that this goal is important if we want to foster healthy online debate, and that
-the algorithm is efficient and scalable with a minor approximation.
+A different approach to understanding biases in recommendation algorithms range
+from analyzing similarity metrics to developing theoretical bounded confidence
+models. \citet{giller_statistical_2012} goes with the first strategy, and
+identifies certain aspects of cosine similarity that are often overlooked.
+Starting from simple theorems regarding the density of n-dimensional spheres,
+the author concludes that the expected cosine similarity between random
+bitstreams might be significantly different from the average. This is noteworthy
+because many recommendation algorithms use cosine similarity in order to
+determine the similarity between two items to recommend.
+\citet{sirbu_algorithmic_2019} go with the latter, providing an interesting
+theoretical model of how inherent biases in algorithmic recommendations might
+highten opinion polarization. Using a bounded confidence model, the authors
+propose the addition of a $\gamma$ term that represents the odds of an algorithm
+recommending content that differs from that of a user.
 
+Some recent papers also try to understand how YouTube might be favoring
+right-wing and fascist content in specific, as opposed to trying to prove a more
+general (and possibly less tractable) claim.
+\citet{hosseinmardi_evaluating_2020} find evidence via a longitudinal study that
+there exists ``a small but growing echo chamber of far-right content
+consumption'' on YouTube. According to their research, these users are more
+engaged than other, with YouTube generally accounting for a larger share of
+their online news diet than the average. The authors, however, find no evidence
+of this phenomenon being due to recommendations. A seminal article in the field,
+by \citet{ribeiro_auditing_2020}, explored the radicalization pipeline
+hypothesis of algorithmic enabled radicalization. The authors collect huge
+amounts of YouTube comment data over time, and determine a significant migration
+of users from ``lighter'' content towards more extreme videos. This doesn't
+prove that the pipeline exists, but is a strong argument for its existence.
 
-Recommender systems survey \citet{bobadilla_recommender_2013}
-
-Interactive recommender systems: A survey of the state of the art and future
-research challenges and opportunities \citet{he_interactive_2016}
-
-Diversity in recommender systems – A survey \citet{kunaver_diversity_2017}
+A minortiy of papers tries to disprove the hypothesis that social networks in
+general, and YouTube in specific, have a radicalizing tendency.
+\citet{munger_right-wing_2020} published a controversial article that postulates
+a new model for YouTube radicalization. According to the authors, YouTube's
+algorithm is not to blame, the users themselves are looking for extreme content
+and the recommender system only supplies them. Its methods were highly
+questioned by the community and is currently the only paper that spouses the
+supply and demand hypothesis. \citet{ledwich_algorithmic_2019} also wrote a
+highly controversial paper where its authors claim to have found evidence to
+support the hypothesis that YouTube's recommendation algorithm favors mainstream
+and left-leaning channels instead of right-wing ones. They categorize almost 800
+channels into groups of similar political leaning and analyze recommentations
+between each group, finding that YouTube might actually discourage users from
+viewing radicalizing content. Most researchers though do not support the methods
+employed by these two articles.
