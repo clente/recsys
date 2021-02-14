@@ -1,0 +1,69 @@
+%!TeX root=../tese.tex
+%("dica" para o editor de texto: este arquivo é parte de um documento maior)
+% para saber mais: https://tex.stackexchange.com/q/78101/183146
+
+% Vamos definir alguns comandos auxiliares para facilitar.
+
+% "textbackslash" é muito comprido.
+% \newcommand{\sla}{\textbackslash}
+
+% Vamos escrever comandos (como "make" ou "itemize") com formatação especial.
+% \newcommand{\cmd}[1]{\textsf{#1}}
+
+% Idem para packages; aqui estamos usando a mesma formatação de \cmd,
+% mas poderíamos escolher outra.
+% \newcommand{\pkg}[1]{\textsf{#1}}
+
+% A maioria dos comandos LaTeX começa com "\"; vamos criar um
+% comando que já coloca essa barra e formata com "\cmd".
+% \newcommand{\ltxcmd}[1]{\cmd{\sla{}#1}}
+
+\chapter{Proposal}
+\label{cap:proposal}
+
+As discussed in the previous chapters, understanding how social networks
+recommend content to users is central to the debate around the recent waves of
+political polarization and radicalization that have been taking over many
+developing and developed countries alike. There are many ways of exploring
+recommender systems without examining their code, from simulating their behavior
+after careful observation to directly collecting recommendation data, but most
+of them allow us to examine only one perspective of the algorithm at work. This
+means that studying a social network's recommendation technique has inherent
+limitations.
+
+Since the life and blood of almost all social media platforms revolve around
+their recommendations, most of the algorithms currently employed by these
+companies are trade secrets. They are also subject to constant experimentation
+and tuning, which might render worthless any research performed before an update
+to the algorithm, no matter how carefull the design of the study was. YouTube,
+for example, currently has over 2 billion monthly logged-in users (which is more
+people than any country in the planet), but it makes no significant effort to
+clarify changes made to the algorithm or even whether they fulfill their
+promisses of reducing user exposure to radicalizing content. With more than 500
+hours of content being uploaded every minute, if 1\% of all videos can be
+considered radicalizing and the algorithm can detect 99\% of them, that still
+leaves over 25.000 hours of brand new extremist content free to spread on the
+platform every year. YouTube claims only a small fraction of its content is
+political in nature, but that doesn't mean it is not enough to spread across the
+internet and help radicalize users the world over. It is also worth noting that
+most of these platforms' efforts are concentrated in their parent countries
+(usually the United States), so, even if they actually try and remove extreme
+content, most of the non-English-speaking world would still not be impacted by
+their policy changes.
+
+Even with a quickly growing body of research, further studies are desperately
+needed in order to shed more light into the inner workings of how recommendation
+algorithms are used by social networks. Articles like the ones described in the
+last chapter are of utter importance to this task, but generalist studies that
+are able to capture dynamics common to all or most recommender systems are still
+nonexistent.
+
+This leads right into the goal of the present report. The dissertation to be
+presented as a result of this program aims to make a tangible contribution to
+the field of recommender systems, specifically how their design might (or might
+not) foster confinement dynamics in the ``phase space'' of recommendations. If
+the main hypothesis is confirmed, this could mean that recommendation algorithms
+always create ``filter bubbles'', suggesting ever more engaging videos about a
+certain topic of interest to a user, and possibly sending them on a
+radicalization spiral if that topic is related to politics or other contentious
+subjects.
