@@ -9,11 +9,12 @@ save_plot <- function(df, txt) {
   
   p <- ggplot2::qplot(
     d$t, d$y, xlab = "Ranking",
-    ylab = "Recommendations", main = txt
-  )
+    ylab = "Recommendations" #, main = txt
+  ) +
+    ggplot2::theme_minimal()
   
-  file <- paste0("img/", fs::path_file(fs::path_ext_set(df, "png")))
-  ggplot2::ggsave(file, p)
+  file <- paste0("img/", fs::path_file(fs::path_ext_set(df, "pdf")))
+  ggplot2::ggsave(file, p, width = 10, height = 10, units = "cm")
   
   p
 }

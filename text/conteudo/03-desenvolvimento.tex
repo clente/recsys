@@ -18,7 +18,7 @@
 % comando que já coloca essa barra e formata com "\cmd".
 % \newcommand{\ltxcmd}[1]{\cmd{\sla{}#1}}
 
-\chapter{Proposal}
+\chapter{Proposal and Preliminary Experiments}
 \label{cap:proposal}
 
 As discussed in the previous chapters, understanding how social networks
@@ -67,3 +67,108 @@ always create ``filter bubbles'', suggesting ever more engaging videos about a
 certain topic of interest to a user, and possibly sending them on a
 radicalization spiral if that topic is related to politics or other contentious
 subjects.
+
+\begin{figure}
+  \centering
+  \begin{subfigure}{0.45\textwidth}
+    \centering
+    \includegraphics[width=\textwidth]{02_rec_vanilla}
+    \caption{Rec. based on movie metadata.\label{fig:fig1:a}}
+  \end{subfigure}
+  \begin{subfigure}{0.45\textwidth}
+    \centering
+    \includegraphics[width=\textwidth]{16_rec_random}
+    \caption{Random recommendations.\label{fig:fig1:b}}
+  \end{subfigure}
+  \caption{Vanilla recommendation model and control.\label{fig:fig1}}
+\end{figure}
+
+\begin{figure}
+  \centering
+  \begin{subfigure}{0.3\textwidth}
+    \centering
+    \includegraphics[width=\textwidth]{03_rec_cutoff_med}
+    \caption{Cutoff $n \leqslant 5$.\label{fig:fig2:a}}
+  \end{subfigure}
+  \begin{subfigure}{0.3\textwidth}
+    \centering
+    \includegraphics[width=\textwidth]{04_rec_cutoff_low}
+    \caption{Cutoff $n \leqslant 2$.\label{fig:fig2:b}}
+  \end{subfigure}
+  \begin{subfigure}{0.3\textwidth}
+    \centering
+    \includegraphics[width=\textwidth]{05_rec_cutoff_high}
+    \caption{Cutoff $n \leqslant 8$.\label{fig:fig2:c}}
+  \end{subfigure}
+  \caption{Vanilla model with cutoff point.\label{fig:fig2}}
+\end{figure}
+
+\begin{figure}
+  \centering
+  \begin{subfigure}{0.3\textwidth}
+    \centering
+    \includegraphics[width=\textwidth]{06_rec_cosine}
+    \caption{Cosine distance.\label{fig:fig3:a}}
+  \end{subfigure}
+  \begin{subfigure}{0.3\textwidth}
+    \centering
+    \includegraphics[width=\textwidth]{07_rec_euclidean}
+    \caption{Euclidean distance.\label{fig:fig3:b}}
+  \end{subfigure}
+  \begin{subfigure}{0.3\textwidth}
+    \centering
+    \includegraphics[width=\textwidth]{08_rec_manhattan}
+    \caption{Manhattan distance.\label{fig:fig3:c}}
+  \end{subfigure}
+  \caption{Using distances instead of cosine similarity.\label{fig:fig3}}
+\end{figure}
+
+\begin{figure}
+  \centering
+  \begin{subfigure}{0.3\textwidth}
+    \centering
+    \includegraphics[width=\textwidth]{11_rec_p}
+    \caption{$P(w) = P(V_w)$.\label{fig:fig4:a}}
+  \end{subfigure}
+  \begin{subfigure}{0.3\textwidth}
+    \centering
+    \includegraphics[width=\textwidth]{12_rec_p10}
+    \caption{$P(w) = 10 \times P(V_w)$.\label{fig:fig4:b}}
+  \end{subfigure}
+  \begin{subfigure}{0.3\textwidth}
+    \centering
+    \includegraphics[width=\textwidth]{13_rec_p100}
+    \caption{$P(w) = 100 \times P(V_w)$.\label{fig:fig4:c}}
+  \end{subfigure}
+  \caption{Random sample of words from metadata.\label{fig:fig4}}
+\end{figure}
+
+\begin{figure}
+  \centering
+  \begin{subfigure}{0.45\textwidth}
+    \centering
+    \includegraphics[width=\textwidth]{09_rec_artificial_movie}
+    \caption{Artificial movie.\label{fig:fig5:a}}
+  \end{subfigure}
+  \begin{subfigure}{0.45\textwidth}
+    \centering
+    \includegraphics[width=\textwidth]{14_rec_long}
+    \caption{Long and narrow.\label{fig:fig5:b}}
+  \end{subfigure}
+  \caption{Sanity checks.\label{fig:fig5}}
+\end{figure}
+
+\begin{figure}
+  \centering
+  \begin{subfigure}{0.45\textwidth}
+    \centering
+    \includegraphics[width=\textwidth]{10_rec_books}
+    \caption{Book dataset.\label{fig:fig6:a}}
+  \end{subfigure}
+  \begin{subfigure}{0.45\textwidth}
+    \centering
+    \includegraphics[width=\textwidth]{15_rec_mimic}
+    \caption{Simulation of vanilla.\label{fig:fig6:b}}
+  \end{subfigure}
+  \caption{Confirmation of hypothesis.\label{fig:fig6}}
+\end{figure}

@@ -83,28 +83,6 @@ as subfiguras \ref{fig:subfigures:a} e \ref{fig:subfigures:b}.
 % package subfigure! A package subfigure é obsoleta.
 
 %%%%%%%%% Figuras lado-a-lado %%%%%%%%%
-\begin{figure}
-  \centering
-
-  \begin{subfigure}{0.4\textwidth}
-    \centering
-    \includegraphics[width=.7\textwidth]{exemplo-grafo}
-    \caption{Uma figura simples.\label{fig:subfigures:a}}
-  \end{subfigure}
-  % ATENÇÃO: Se você deixar uma linha em branco entre as subfiguras,
-  % LaTeX vai considerar que cada uma delas pertence a um "parágrafo"
-  % diferente e, portanto, vai colocá-las em linhas separadas ao invés
-  % de lado a lado.
-  \begin{subfigure}{0.4\textwidth}
-    \centering
-    \begin{turn}{90}
-      \includegraphics[width=.7\textwidth]{exemplo-grafo}
-    \end{turn}
-    \caption{O mesmo exemplo, girado.\label{fig:subfigures:b}}
-  \end{subfigure}
-
-  \caption{Exemplo de subfiguras.\label{fig:subfigures}}
-\end{figure}
 
 Uma ``figura'', na verdade, pode ser qualquer tipo de conteúdo ilustrativo
 (um exemplo interessante é o cronograma mostrado na Figura~\ref{fig:gantt}) mas, com a
