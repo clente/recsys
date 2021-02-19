@@ -2,6 +2,7 @@
  "bibliografia"
  (lambda ()
    (LaTeX-add-bibitems
+    "harper_movielens_2015"
     "roth_tubes_2020"
     "matakos_maximizing_2020"
     "sun_mining_2012"

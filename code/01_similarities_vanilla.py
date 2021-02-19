@@ -87,7 +87,7 @@ tfidf = TfidfVectorizer(stop_words='english')
 
 # Compute cosine similarity matrix
 tfidf_matrix = tfidf.fit_transform(metadata['overview'])
-cosine_sim = linear_kernel(tfidf_matrix, tfidf_matrix)
+cosine_sim = cosine_similarity(tfidf_matrix, tfidf_matrix)
 
 # Save model for further use
 np.savetxt("data/01_sim_vanilla_overview.csv", cosine_sim, fmt="%1.8f", delimiter=',')

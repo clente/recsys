@@ -3,6 +3,7 @@
  (lambda ()
    (LaTeX-add-labels
     "cap:proposal"
+    "sec:experiments"
     "fig:fig1:a"
     "fig:fig1:b"
     "fig:fig1"

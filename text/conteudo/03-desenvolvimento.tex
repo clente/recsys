@@ -68,6 +68,53 @@ certain topic of interest to a user, and possibly sending them on a
 radicalization spiral if that topic is related to politics or other contentious
 subjects.
 
+\section{Experiments}
+\label{sec:experiments}
+
+Some preliminary experiments have already been conducted in order to gather some
+evidence in favor or against the main hypothesis being tested. If these
+experiments had failed, then there would be no reason to continue pursuing this
+argumentative path. In total, fifteen different recommendation models were
+trained and analyzed, with each visualization below representing one of these
+models.
+
+The goal of these experiments was trying to identify if even a simple
+recommendation algorithm could demonstrate some sort of bias towards a subset of
+the items being recommended. More specifically, given an algorithm that cannot
+be influenced by users' personal preferences, would the resulting recommender
+system favor some kind of item? Excluding user information is important because,
+as demonstrated by \citet{stoica_algorithmic_2018}, users might have their own
+biases and these would get transferred on to the model; the objective here is
+understanding the algorithm by itself without external influences.
+
+The chosen type of recommender system to be trained was, therefore, a
+content-based recommender. In the real world this is an algorithm that is able
+to identify similar items based on their metadata (description, tags, etc.) and
+suggest the closest items to the one being purchased or viewed. A
+straightforward way of building such an algorithm is creating a vector
+representation of each item and then using a similarity metric to recommend the
+items most similar to the one in question. The chosen similarity metric was
+cosine similarity because of its simplicity, robustness, and ubiquity.
+
+The main recommendation model (henceforth referred to as the ``vanilla'' model)
+was trained with the MovieLens dataset \citep{harper_movielens_2015}. The
+metadata for each movie was made up of its keywords, main cast, director, and
+genres. The vector transformation was very simple, with each position
+representing one of the words of the corpus, and each element indicating how
+many times that word appeared in the metadata for that movie. When the
+recommendation for a movie was requested, the algorithm measured the cosine
+similarity between it and every other movie, returning the IDs belonging to
+the top $k$ most similar vectors.
+
+Once the model was ready, the analysis started: the algorithm was asked to
+generate a list of the top $k = 10$ most similar movies to each movie; since
+there were 30689 movies in the dataset, this created a list of $30689 \times 10$
+movie IDs. After this computationally intensive calculation, the occurrence of
+each ID was counted and ranked accordingly, namely, the movie ranked number 1
+was to be the movie featured the most times in the set of all recommendations,
+and so forth for every other rank. The result of this process can be seen in
+Figure~\ref{fig:fig1:a}.
+
 \begin{figure}
   \centering
   \begin{subfigure}{0.45\textwidth}
@@ -82,6 +129,20 @@ subjects.
   \end{subfigure}
   \caption{Vanilla recommendation model and control.\label{fig:fig1}}
 \end{figure}
+
+For comparison, Figure~\ref{fig:fig1:b} is the same visualization for the
+trivial model (sampling $k$ movies at random when asked for a recommendation).
+The number of times each movie appeared in the final list of all recommendations
+averaged, evidently, $k$, with an appearance very similar to that of the CDF of
+the normal distribution. The ``most recommended'' movie appeared 25 times in the
+final list, while the ``least recommended'' movie did not appear at all.
+However, the distribution of the vanilla model differs immensely: the movie
+ranked number 1 appeared more than 2000 times in the final list, with an almost
+exponential decrease in the number of appearances from then on.
+
+In order to better understand this phenomenon, more models were trained and
+analyzed. Since all visualizations present exactly the same quantities, obtained
+in the exact same way, all of them can be compared.
 
 \begin{figure}
   \centering
