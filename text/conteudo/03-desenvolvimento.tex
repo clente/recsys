@@ -164,6 +164,16 @@ in the exact same way, all of them can be compared.
   \caption{Vanilla model with cutoff point.\label{fig:fig2}}
 \end{figure}
 
+The first variation on the vanilla model that was experimented on was creating
+cutoff points for words to be included in the vector representation of the
+movies. Since most words appear only once (given that many are director and cast
+names), the few movies whose metadata contained popular terms could have been
+favored by the recommendation algorithm. Three cutoff points were created, and
+the model was retrained with datasets that only contained words that appeared at
+least twice, five times, and eight times. The results can be seen in
+Figure~\ref{fig:fig2} and, aside from variations in the $y$-intercept, all plots
+are qualitatively very similar to Figure~\ref{fig:fig1:a}.
+
 \begin{figure}
   \centering
   \begin{subfigure}{0.3\textwidth}
@@ -183,6 +193,16 @@ in the exact same way, all of them can be compared.
   \end{subfigure}
   \caption{Using distances instead of cosine similarity.\label{fig:fig3}}
 \end{figure}
+
+The second validation experiment involved using distance metrics instead of
+cosine similarity. The goal here was verifying whether other metrics could
+do a better job at not creating a subset of movies that ended up exponentially
+more recommended that the rest. As attested by Figure~\ref{fig:fig3}, this was
+not the case. No other similarity metrics were used because cosine seems to be
+the most popular one used in simple recommender systems. More experiments have
+still to be conducted on this front, specially comparing what IDs belong to
+the group of top-recommended movies for each metric and if there is intersection
+between them.
 
 \begin{figure}
   \centering
@@ -204,6 +224,20 @@ in the exact same way, all of them can be compared.
   \caption{Random sample of words from metadata.\label{fig:fig4}}
 \end{figure}
 
+At this point it is safe to say that the exponential decay in recommendation
+frequencies is not spurious and must have a clear cause. A hypothesis that was
+later mostly confirmed involved the average number of non-zero elements in the
+vector representation of the movies: the sparser the vectors, the higher the
+odds of the recommendation curve displaying a steep left-hand side.
+Figure~\ref{fig:fig4} displays the curves of three different models trained from
+random data; for each, the propability of an element being non-zero in the
+vector representation of a movie was the average probability that an arbitrary
+element of the MovieLens dataset was non-zero (times 1, 10, and 100). This was
+equivalent to creating random metadata for the movies where the probability of a
+word occurring was approximately $1.54 \times 10^{-4}$, $1.54 \times 10^{-3}$,
+and $1.54 \times 10^{-2}$ respectively. The results support the aforementioned
+hypothesis.
+
 \begin{figure}
   \centering
   \begin{subfigure}{0.45\textwidth}
@@ -219,6 +253,16 @@ in the exact same way, all of them can be compared.
   \caption{Sanity checks.\label{fig:fig5}}
 \end{figure}
 
+Figure~\ref{fig:fig5} showcases two sanity checks. Figure~\ref{fig:fig5:a} was a
+model trained with the vanilla dataset, but with the addition of an artificial
+movie created as a combination of the metadata from other movies favored by the
+recommendation algorithm. As expected, this movie also featured in the
+top-recommended subset. Figure~\ref{fig:fig5:b} comes from a model trained on
+random data generated in a similar fashion to the model in
+Figure~\ref{fig:fig4:a}, except each vector could only have 15,000 elements
+instead of 55,681 as with the vanilla model (which is why it is called ``long
+and narrow''). The patter observed before persisted.
+
 \begin{figure}
   \centering
   \begin{subfigure}{0.45\textwidth}
@@ -233,3 +277,18 @@ in the exact same way, all of them can be compared.
   \end{subfigure}
   \caption{Confirmation of hypothesis.\label{fig:fig6}}
 \end{figure}
+
+The last two models were considered the confirmations of the hypothesis that
+(at least for this kind of recommendation systems) a subset of items was always
+exponentially more recommended than the rest as long as the data was sparse.
+Figure~\ref{fig:fig6:a} represents the same recommendation algorithm applied to
+another dataset, the Book-Crossing Dataset. Figure~\ref{fig:fig6:b} contains the
+results of the model applied to another random dataset, this time with the
+probability of each element being non-zero respecting the marginal distributions
+of the vanilla dataset. Again, the exponential decay pattern persisted, only
+slightly less pronounced in the Book-Crossing case.
+
+\section{Further Experiments and Schedule}
+\label{sec:schedule}
+
+Lorem ipsum.
