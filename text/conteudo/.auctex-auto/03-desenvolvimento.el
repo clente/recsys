@@ -25,6 +25,7 @@
     "fig:fig6:a"
     "fig:fig6:b"
     "fig:fig6"
-    "sec:schedule"))
+    "sec:schedule"
+    "fig:gantt"))
  :latex)
 

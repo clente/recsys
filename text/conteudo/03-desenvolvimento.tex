@@ -291,4 +291,45 @@ slightly less pronounced in the Book-Crossing case.
 \section{Further Experiments and Schedule}
 \label{sec:schedule}
 
-Lorem ipsum.
+As previously mentioned, more experiments are still necessary in order to
+identify exactly what is the nature of the bias detected in the MovieLens study.
+For example, it would be interesting to perform an analysis of what movies are
+the most recommended in each case and whether the subset of top-recommended
+movies is roughly consistent overall. Better understanding of the literature
+about recommender systems would also be of great help in searching for possible
+explanations to this phenomenon.
+
+The most important experiment that hasn't yet been conducted regards the dynamic
+nature of recommendation algorithms. Using Google's newly released TensorFlow
+Recommenders library it might be possible to gather data about what happens to
+a system's recommendations as users follow (or don't follow) its suggestions,
+specially when talking about deep learning models used by social networks like
+YouTube. This could either support or disprove the hypothesis that these
+algorithms could be suggesting ever more extreme content in order to engage
+users, creating a filter bubble effect. Literature about this topic is still
+scarce, but every day new papers about the effects that social media has on
+Democracy are being released, so following up on popular publications is of the
+utmost importance.
+
+These two main tasks, alongside writing the final dissertation, will be the
+focus of the comming semester. A full schedule can be seen below in
+Figure~\ref{fig:gantt}.
+
+\begin{figure}
+  \centering
+
+  \begin{ganttchart}{2021-2}{2021-12}
+    \gantttitlecalendar{year,month=shortname} \ganttnewline
+
+    \ganttbar[progress=0]{Literature review}{2021-2}{2021-8} \ganttnewline
+    \ganttbar[progress=0]{Algorithm implementation}{2021-3}{2021-6} \ganttnewline
+    \ganttbar[progress=0]{Tests and experiments}{2021-4}{2021-7} \ganttnewline
+    \ganttbar[progress=0]{Writing dissertation}{2021-5}{2021-9} \ganttnewline
+    \ganttbar[progress=0]{Proofreading}{2021-8}{2021-10} \ganttnewline
+    \ganttbar[progress=0]{Writing paper}{2021-10}{2021-12} \ganttnewline
+
+    \ganttmilestone{Submission}{2021-10}
+  \end{ganttchart}
+
+  \caption{Schedule.\label{fig:gantt}}
+\end{figure}
