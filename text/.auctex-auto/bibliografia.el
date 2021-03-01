@@ -2,6 +2,13 @@
  "bibliografia"
  (lambda ()
    (LaTeX-add-bibitems
+    "noauthor_tensorflow_nodate"
+    "ziegler_book-crossing_2004"
+    "banik_movies_2017"
+    "sarwar_item-based_2001"
+    "ricci_introduction_2011"
+    "goldberg_using_1992"
+    "mcluhan1994understanding"
     "harper_movielens_2015"
     "roth_tubes_2020"
     "matakos_maximizing_2020"

@@ -83,14 +83,14 @@ specific type of media. For instance, YouTube (2009) centers around videos,
 WhatsApp (2009) and WeChat (2011) were originally designed for text-based
 communication, and Instagram's (2010) main focus is photos.
 
-Some social media services, very much in agreement with McLuhan's teachings,
-have what could be considered a ``style''. Instagram's content, for example,
-tends toward more personal (i.e. egoic) photos and videos. As of November 28th,
-2020, six of the top 20 most-liked posts on Instagram are from american
-socialite Kylie Jenner, consisting of four photos of her daughter and two of her
-ex-boyfriend. Even though there are many different niches inside Instagram,
-personal posts seam to have an edge over other kinds of content.
-
+Some social media services, very much in agreement with McLuhan's teachings
+\citep{mcluhan1994understanding}, have what could be considered a ``style''.
+Instagram's content, for example, tends toward more personal (i.e. egoic) photos
+and videos. As of November 28th, 2020, six of the top 20 most-liked posts on
+Instagram are from American socialite Kylie Jenner, consisting of four photos of
+her daughter and two of her ex-boyfriend. Even though there are many different
+niches inside Instagram, personal posts seam to have an edge over other kinds of
+content.
 Twitter, unlike most other social networks, allows for asymmetrical connections,
 meaning users can follow profiles without being followed back. This enables the
 emergence of Twitter communities (e.g. Fintwit, Black Twitter) that can be
@@ -107,12 +107,13 @@ studies, these recommendations have become the main drivers of interactions.
 \section{Recommender Systems}
 \label{sec:recommender_systems}
 
-Recommender systems (sometimes called recommendation systems or recomender
+Recommender systems (sometimes called recommendation systems or recommender
 algorithms) first appeared in 1992 under the name ``collaborative filtering'',
-even though that term nowadays refers to a subclass of recommender systems. The
-aim of such an algorithm is providing users with personalized product or service
-recommendations, an essential task when considering the ever increasing number
-of possible videos to watch, music to listen, products to buy.
+even though that term nowadays refers to a subclass of recommender systems
+\citep{goldberg_using_1992}. The aim of such an algorithm is providing users
+with personalized product or service recommendations, an essential task when
+considering the ever increasing number of possible videos to watch, music to
+listen, products to buy.
 
 The input of a recommender system is usually information about the preferences
 (ratings, likes/dislikes, watch time, etc.) of consumers for a set of items.
@@ -128,7 +129,7 @@ the rating a user would attribute to a yet unrated item, while the second type
 of output involves gathering the items that most likely would interest the user.
 Simple recommender systems that suggest items similar to the one being queried
 do not necessarily involve rating predictions, but it is common to have the list
-of rcommended items based on the ratings the algorithms estimated the user would
+of recommended items based on the ratings the algorithms estimated the user would
 give to those items.
 
 Most recommender systems follow into one of four categories according to the
@@ -137,18 +138,19 @@ or selecting the top-N items: content-based filtering, demographic filtering,
 collaborative filtering, and hybrid filtering.
 
 Content-based filtering leverages characteristics of the content in order to
-generate the recommendations. One such algorithm might use the genres of watched
-movies in order to recommend new ones, while another might analyse the sound
-signature of a song to recommend similar ones, but, either way, all
-content-based systems establish a similarity between items as a basis for
-recommendations. Analogously, demographic filtering uses demographic data to
-establish a similarity between users and recommend items positively rated by
-similar people.
+generate the recommendations \citep{ricci_introduction_2011}. One such algorithm
+might use the genres of watched movies in order to recommend new ones, while
+another might analyze the sound signature of a song to recommend similar ones,
+but, either way, all content-based systems establish a similarity between items
+as a basis for recommendations. Analogously, demographic filtering uses
+demographic data to establish a similarity between users and recommend items
+positively rated by similar people.
 
 Collaborative filtering algorithms also recommend items that similar users
 liked, but, in this case, the similarity between users is based on past ratings
-and not demographic information. Hybrid filtering usually mix collaborative
-methods with either content-based or demographic filtering.
+and not demographic information \citep{ricci_introduction_2011}. Hybrid
+filtering usually mix collaborative methods with either content-based or
+demographic filtering \citep{ricci_introduction_2011}.
 
 As with other knowledge-based systems, recommendation algorithms have quickly
 incorporated neural networks and other machine learning techniques over the past
@@ -163,8 +165,9 @@ videos).
 
 Another relevant aspect of recommender systems that is well-exemplified by
 YouTube is the use of balancing factors such as novelty, dispersity, and
-stability. In the case of Google's video giant, there is a baked-in bias for
-recency, strongly favoring newer videos in detriment of older content.
+stability \citep{zhao_recommending_2019}. In the case of Google's video giant,
+there is a baked-in bias for recency, strongly favoring newer videos in
+detriment of older content \citep{zhao_recommending_2019}.
 
 \section{Radicalization}
 \label{sec:radicalization}
@@ -181,7 +184,7 @@ One possible byproduct of polarization is radicalization. Despite not being
 entirely different phenomena, these concepts deserve distinct levels of
 attention. While polarization can be considered a natural part of democratic
 discourse, radicalization only happens when certain conditions are met. UNESCO
-defines radicalization as:
+defines radicalization as \citep{seraphin_youth_2017}:
 
 \begin{itemize}
   \item The individual person's search for fundamental meaning, origin and
@@ -216,9 +219,9 @@ radicalizing content.
 
 Proponents of the pipeline hypothesis, for instance, argue that recommendation
 systems, aiming to maximize content consumption, suggest items that reinforce
-preconceived notions of the user and that play on fear and paranoia. This second
-point is of note: content that appears urgent and leaves the user fearful (for
-their live, their community, or their identity) is more engaging and, therefore,
+preconceived notions of the user and that play on fear and paranoia. Content
+that appears urgent and leaves the user fearful (for their live, their
+community, or their identity) could be more engaging and, therefore, might be
 more susceptible to being considered as relevant by the algorithm.
 
 Even if the pipeline hypothesis is correct, specifics of how much algorithms are
@@ -248,6 +251,6 @@ sequence of items suggested to an arbitrary user over time) and how they might
 lead to ``fixed points'' in an algorithm's phase space.
 
 In short, the main goal is to test the pipeline hypothesis in a setting where
-recommendation algorithms are modeled as dynamical systems. This will allow for
-a better understanding of how these systems behave in the wild, possibly taking
+recommendation algorithms are dynamically simulated. This will allow for a
+better understanding of how these systems behave in the wild, possibly taking
 the user in a radicalizing ``trip'' through the space of all possible items.
