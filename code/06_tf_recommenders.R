@@ -1,3 +1,25 @@
+# # Setup datasets
+# pd <- import("pandas", convert = FALSE)
+# ratings <- tfds$load("movielens/100k-ratings", split = "train")
+# pd$DataFrame(ratings)$to_csv("data-raw/ratings.csv")
+# 
+# movies  <- tfds$load("movielens/100k-movies", split = "train")
+# pd$DataFrame(movies)$to_csv("data-raw/movies.csv")
+# 
+# "data-raw/ratings.csv" %>%
+#   readr::read_csv() %>%
+#   dplyr::select(movie_title, user_id) %>%
+#   dplyr::mutate_all(stringr::str_remove, "tf.Tensor\\(b.") %>%
+#   dplyr::mutate_all(stringr::str_remove, "., shape.+$") %>%
+#   dplyr::mutate(user_id = as.integer(user_id)) %>%
+#   readr::write_csv("data-raw/ratings.csv")
+# 
+# "data-raw/movies.csv" %>%
+#   readr::read_csv() %>%
+#   dplyr::select(movie_title) %>%
+#   dplyr::mutate_all(stringr::str_remove, "tf.Tensor\\(b.") %>%
+#   dplyr::mutate_all(stringr::str_remove, "., shape.+$") %>%
+#   readr::write_csv("data-raw/movies.csv")
 
 # # Setup env
 # reticulate::miniconda_update()
@@ -7,6 +29,7 @@
 # reticulate::conda_install("tfrs", "tensorflow==2.4.0", pip = TRUE)
 # reticulate::conda_install("tfrs", "tensorflow_recommenders", pip = TRUE)
 # reticulate::conda_install("tfrs", "tensorflow_datasets", pip = TRUE)
+# reticulate::conda_install("tfrs", "pandas", pip = TRUE)
 
 # Load R packages
 library(reticulate)
@@ -25,13 +48,12 @@ tf   <- import("tensorflow", convert = FALSE)
 tfds <- import("tensorflow_datasets", convert = FALSE)
 tfrs <- import("tensorflow_recommenders", convert = FALSE)
 
-# Datasets
-ratings <- tfds$load("movielens/100k-ratings", split = "train")
-movies  <- tfds$load("movielens/100k-movies", split = "train")
+# Datasets with basic features
+ratings <- tf$data$experimental$CsvDataset("data-raw/ratings.csv", list(tf$string, tf$string))
+movies <- tf$data$experimental$CsvDataset("data-raw/movies.csv", list(tf$string))
 
-# Select the basic features
-ratings <- ratings$map(function(x) { list(movie_title = x[["movie_title"]], user_id = x[["user_id"]]) })
-movies  <- movies$map(function(x) { x[["movie_title"]] })
+ratings <- ratings$map(function(x, y) { list(movie_title = x, user_id = y) })
+movies  <- movies$map(function(x) { x })
 
 user_ids_vocabulary <- tf$keras$layers$experimental$preprocessing$StringLookup(mask_token = NULL)
 user_ids_vocabulary$adapt(ratings$map(function(x) { x[["user_id"]] }))
