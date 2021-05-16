@@ -32,6 +32,7 @@
 # reticulate::conda_install("tfrs", "pandas", pip = TRUE)
 
 # Load R packages
+library(magrittr)
 library(reticulate)
 
 # Load env
@@ -138,12 +139,13 @@ get_recs <- function(id, index) {
   purrr::map_chr(titles, ~.x$decode("utf-8"))
 }
 
-# Vanilla model
+# Vanilla datasets
 ratings <- readr::read_csv("data-raw/ratings.csv")
 movies <- readr::read_csv("data-raw/movies.csv")
-idx <- train_model(ratings, movies)
 
-library(magrittr)
+# VANILLA MODEL -----------------------------------------------------------
+
+idx <- train_model(ratings, movies)
 
 recs_count <- ratings %>%
   dplyr::pull(user_id) %>%
@@ -156,5 +158,114 @@ recs_count <- ratings %>%
   dplyr::arrange(-n) %>%
   tibble::rowid_to_column("i")
 
+# Sub-exponential profile present!
 ggplot2::qplot(recs_count$i, recs_count$n)
+ggplot2::ggsave("img/tf/01_rec_vanilla.png")
 
+# NATURAL VARIANCE --------------------------------------------------------
+
+recs <- list()
+for (i in 1:5) {
+  idx <- train_model(ratings, movies)
+  recs[[i]] <- get_recs(237, idx)
+}
+
+# Only recs #1 and #2 are always the same!
+recs %>%
+  purrr::flatten_chr() %>%
+  unique()
+
+# FORCE REC ---------------------------------------------------------------
+
+# 10 new watches for Fantasia
+idx <- ratings %>%
+  dplyr::slice_sample(n = 10) %>%
+  dplyr::mutate(movie_title = "Fantasia (1940)") %>%
+  dplyr::bind_rows(ratings) %>%
+  train_model(movies)
+
+recs_count <- ratings %>%
+  dplyr::pull(user_id) %>%
+  base::unique() %>%
+  base::sort() %>%
+  purrr::map(get_recs, idx) %>%
+  purrr::flatten_chr() %>%
+  dplyr::tibble(title = .) %>%
+  dplyr::count(title) %>%
+  dplyr::arrange(-n) %>%
+  tibble::rowid_to_column("i")
+
+# Forced rec works!
+ggplot2::qplot(recs_count$i, recs_count$n)
+ggplot2::ggsave("img/tf/02_rec_force_10.png")
+
+# 100 new watches for Fantasia
+idx <- ratings %>%
+  dplyr::slice_sample(n = 100) %>%
+  dplyr::mutate(movie_title = "Fantasia (1940)") %>%
+  dplyr::bind_rows(ratings) %>%
+  train_model(movies)
+
+recs_count <- ratings %>%
+  dplyr::pull(user_id) %>%
+  base::unique() %>%
+  base::sort() %>%
+  purrr::map(get_recs, idx) %>%
+  purrr::flatten_chr() %>%
+  dplyr::tibble(title = .) %>%
+  dplyr::count(title) %>%
+  dplyr::arrange(-n) %>%
+  tibble::rowid_to_column("i")
+
+# Forced rec doesn't work as much?
+ggplot2::qplot(recs_count$i, recs_count$n)
+ggplot2::ggsave("img/tf/03_rec_force_100.png")
+
+# 1000 new watches for Fantasia
+idx <- ratings %>%
+  dplyr::slice_sample(n = 1000) %>%
+  dplyr::mutate(movie_title = "Fantasia (1940)") %>%
+  dplyr::bind_rows(ratings) %>%
+  train_model(movies)
+
+recs_count <- ratings %>%
+  dplyr::pull(user_id) %>%
+  base::unique() %>%
+  base::sort() %>%
+  purrr::map(get_recs, idx) %>%
+  purrr::flatten_chr() %>%
+  dplyr::tibble(title = .) %>%
+  dplyr::count(title) %>%
+  dplyr::arrange(-n) %>%
+  tibble::rowid_to_column("i")
+
+# Forced rec seems to work again?
+ggplot2::qplot(recs_count$i, recs_count$n)
+ggplot2::ggsave("img/tf/04_rec_force_1000.png")
+
+# PROFILE VARIANCE --------------------------------------------------------
+
+recs <- list()
+for (i in 1:5) {
+  idx <- train_model(ratings, movies)
+  
+  recs_count <- ratings %>%
+    dplyr::pull(user_id) %>%
+    base::unique() %>%
+    base::sort() %>%
+    purrr::map(get_recs, idx) %>%
+    purrr::flatten_chr() %>%
+    dplyr::tibble(title = .) %>%
+    dplyr::count(title) %>%
+    dplyr::arrange(-n) %>%
+    tibble::rowid_to_column("i")
+  
+  recs[[i]] <- recs_count
+}
+
+recs %>%
+  purrr::imap(~dplyr::mutate(.x, run = .y)) %>%
+  dplyr::bind_rows() %>%
+  dplyr::mutate(run = factor(run)) %>%
+  ggplot2::qplot(data = ., i, n, color = run, alpha = 0.1)
+ggplot2::ggsave("img/tf/05_rec_profile_5.png")
