@@ -269,3 +269,71 @@ recs %>%
   dplyr::mutate(run = factor(run)) %>%
   ggplot2::qplot(data = ., i, n, color = run, alpha = 0.1)
 ggplot2::ggsave("img/tf/05_rec_profile_5.png")
+
+# FOLLOWING RECS ----------------------------------------------------------
+
+tmp_ratings <- ratings
+recs <- list()
+for (i in 1:5) {
+  idx <- train_model(tmp_ratings, movies)
+  recs[[i]] <- get_recs(237, idx)
+  
+  tmp_ratings <- dplyr::bind_rows(
+    tmp_ratings,
+    dplyr::tibble(movie_title = recs[[i]], user_id = 237)
+  )
+}
+
+# Recommender doesn't care about aleady watched
+recs
+
+### Usuário ingora o que ele já viu ###
+
+# NOT FOLLOWING RECS ------------------------------------------------------
+
+tmp_ratings <- ratings
+recs <- list()
+for (i in 1:5) {
+  idx <- train_model(tmp_ratings, movies)
+  recs[[i]] <- get_recs(237, idx)
+  
+  tmp_ratings <- dplyr::bind_rows(
+    tmp_ratings,
+    dplyr::tibble(movie_title = sample(movies$movie_title, 10), user_id = 237)
+  )
+}
+
+# Recommendations change a lot
+recs
+
+# ALL USERS FOLLOWING RECS ------------------------------------------------
+
+tmp_ratings <- ratings
+recs <- list()
+for (i in 1:5) {
+  idx <- train_model(tmp_ratings, movies)
+  
+  recs_count <- ratings %>%
+    dplyr::pull(user_id) %>%
+    base::unique() %>%
+    base::sort() %>%
+    purrr::map(get_recs, idx) %>%
+    purrr::flatten_chr() %>%
+    dplyr::tibble(title = .) %>%
+    dplyr::count(title) %>%
+    dplyr::arrange(-n) %>%
+    tibble::rowid_to_column("i")
+  
+  recs[[i]] <- recs_count
+  
+  tmp_ratings <- tmp_ratings %>%
+    dplyr::pull(user_id) %>%
+    base::unique() %>%
+    base::sort() %>%
+    purrr::map(~dplyr::tibble(movie_title = get_recs(.x, idx), user_id = .x)) %>%
+    dplyr::bind_rows(tmp_ratings) %>%
+    dplyr::distinct()
+}
+
+ggplot2::qplot(recs_count$i, recs_count$n)
+ggplot2::ggsave("img/tf/06_rec_followed.png")
