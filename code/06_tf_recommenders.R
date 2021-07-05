@@ -1,12 +1,13 @@
 # # Setup env
 # reticulate::miniconda_update()
-# reticulate::conda_create("tfrs", python_version = "3.8")
+# reticulate::conda_create("tfrs", python_version = "3.9.5")
 
 # # Install dependencies
-# reticulate::conda_install("tfrs", "tensorflow==2.4.0", pip = TRUE)
+# reticulate::conda_install("tfrs", "tensorflow", pip = TRUE)
 # reticulate::conda_install("tfrs", "tensorflow_recommenders", pip = TRUE)
 # reticulate::conda_install("tfrs", "tensorflow_datasets", pip = TRUE)
 # reticulate::conda_install("tfrs", "pandas", pip = TRUE)
+# reticulate::conda_install("tfrs", "numpy==1.19.2", pip = TRUE)
 
 # # Setup datasets
 # pd <- import("pandas", convert = FALSE)
