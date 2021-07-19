@@ -1,3 +1,4 @@
+options("reticulate.conda_binary" = "/Users/clente/miniforge3/bin/conda")
 
 # Load R packages
 library(magrittr)
@@ -14,7 +15,7 @@ tfds <- import("tensorflow_datasets", convert = FALSE)
 tfrs <- import("tensorflow_recommenders", convert = FALSE)
 
 ratings <- tfds$load("movielens/100k-ratings", split = "train")
-# movies <- tfds$load("movie_lens/100k-movies", split = "train")
+movies <- tfds$load("movielens/100k-movies", split = "train")
 
 ratings_ <- ratings$map(function(x) {
   list(
@@ -47,7 +48,6 @@ for (feature_name in feature_names) {
   })
   vocabularies[[feature_name]] <- np$unique(np$concatenate(bi$list(vocab)))
 }
-
 
 DCN <- PyClass("DCN", list(
   
@@ -102,7 +102,7 @@ DCN <- PyClass("DCN", list(
     return(NULL)
   },
   
-  call = function(self, features) {
+  call = function(self, features, training = NULL, mask = NULL) {
     
     embeddings <- list()
     
@@ -128,6 +128,8 @@ DCN <- PyClass("DCN", list(
       x <- self$`_deep_layers`[[i-1]](x)
     }
     
+    message(self$`_logit_layer`(x))
+    
     return(self$`_logit_layer`(x))
   },
   
@@ -146,30 +148,17 @@ DCN <- PyClass("DCN", list(
 cached_train <- train$shuffle(100000L)$batch(8192L)$cache()
 cached_test <- test$batch(4096L)$cache()
 
-run_models <- function(use_cross_layer, deep_layer_sizes, projection_dim = NULL, num_runs = 5L) {
-
-  models <- c()
-  rmses <- c()
-  
-  for (i in as.integer(1:num_runs)) {
-    
-    # use_cross_layer = TRUE; deep_layer_sizes = c(192L, 192L); projection_dim = NULL
-    model <- DCN(use_cross_layer = use_cross_layer, deep_layer_sizes = deep_layer_sizes, projection_dim = projection_dim)
-    model$compile(optimizer = tf$keras$optimizers$Adam(learning_rate))
-    models <- c(models, model)
-    
-    model$fit(cached_train, epochs = epochs, verbose = FALSE)
-    metrics <- model$evaluate(cached_test, return_dict = TRUE)
-    rmses <- c(rmses, metrics["RMSE"])
-  }
-  
-  mean <- mean(as.numeric(rmses))
-  stdv <- sd(as.numeric(rmses))
-  
-  return(list("mean" = mean, "stdv" = stdv))
-}
-
 epochs = 8L
 learning_rate = 0.01
+use_cross_layer = TRUE; deep_layer_sizes = c(192L, 192L); projection_dim = NULL
+model <- DCN(use_cross_layer = use_cross_layer, deep_layer_sizes = deep_layer_sizes, projection_dim = projection_dim)
+model$compile(optimizer = tf$keras$optimizers$Adam(learning_rate))
 
-dcn_result <- run_models(use_cross_layer = TRUE, deep_layer_sizes = c(192L, 192L))
+model$fit(cached_train, epochs = epochs, verbose = FALSE)
+
+ids <- ratings_$map(function(x) x["user_id"])
+
+brute_force <- tfrs$layers$factorized_top_k$BruteForce(model)
+index <- brute_force$index(ratings_$batch(128L)$map(model), ids)
+
+model$predict(ratings_$batch(128L))
