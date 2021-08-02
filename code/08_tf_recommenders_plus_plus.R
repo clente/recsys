@@ -19,13 +19,13 @@ library(reticulate)
 #   ) %>%
 #   dplyr::mutate_all(stringr::str_remove, "tf.Tensor\\(b?'?") %>%
 #   dplyr::mutate_all(stringr::str_remove, "'?, shape.+$") %>%
-#   # dplyr::mutate(
-#   #   movie_id = as.integer(movie_id),
-#   #   user_id = as.integer(user_id),
-#   #   user_rating = as.integer(user_rating),
-#   #   user_gender = ifelse(user_gender == "Tru", 1L, 0L),
-#   #   bucketized_user_age = as.integer(bucketized_user_age)
-#   # ) %>%
+#   dplyr::mutate(
+#     movie_id = as.integer(movie_id),
+#     user_id = as.integer(user_id),
+#     user_rating = as.integer(user_rating),
+#     user_gender = ifelse(user_gender == "Tru", 1L, 0L),
+#     bucketized_user_age = as.integer(bucketized_user_age)
+#   ) %>%
 #   readr::write_csv("data-raw/1m-ratings.csv")
 
 # Load env
@@ -40,42 +40,28 @@ tfrs <- import("tensorflow_recommenders", convert = FALSE)
 
 train_model <- function(ratings) {
   
-  # # Temporary files
-  # tmp_ratings <- fs::file_temp(ext = "csv")
-  # on.exit({ fs::file_delete(tmp_ratings) })
-  # ratings %>% 
-  #   dplyr::mutate(user_gender = as.integer(user_gender)) %>% 
-  #   dplyr::mutate_all(as.character) %>% 
-  #   readr::write_csv(tmp_ratings, col_names = FALSE)
-  # 
-  # # Datasets with basic features
-  # ratings <- tf$data$experimental$CsvDataset(tmp_ratings, list(
-  #   tf$string, tf$string, tf$string, tf$int32,
-  #   tf$string, tf$string, tf$int32
-  # ))
-  # 
-  # ratings <- ratings$map(function(a, b, c, d, e, f, g) {
-  #   list(
-  #     movie_id = tf$cast(a, tf$string),
-  #     user_id = tf$cast(b, tf$string),
-  #     user_rating = tf$cast(c, tf$string),
-  #     user_gender = tf$cast(d, tf$int32),
-  #     user_zip_code = tf$cast(e, tf$string),
-  #     user_occupation_text = tf$cast(f, tf$string),
-  #     bucketized_user_age = tf$cast(g, tf$int32)
-  #   )
-  # })
+  # Temporary files
+  tmp_ratings <- fs::file_temp(ext = "csv")
+  on.exit({ fs::file_delete(tmp_ratings) })
+  ratings %>%
+    readr::write_csv(tmp_ratings, col_names = FALSE)
+
+  # Datasets with basic features
+  ratings <- tf$data$experimental$CsvDataset(tmp_ratings, list(
+    tf$string, tf$string, tf$int32, tf$int32,
+    tf$string, tf$string, tf$int32
+  ), header = FALSE)
   
-  ratings <- tfds$load("movie_lens/100k-ratings", split = "train")
-  ratings <- ratings$map(function(x) {
+  # Add names to columns
+  ratings <- ratings$map(function(a, b, c, d, e, f, g) {
     list(
-      movie_id = x["movie_id"],
-      user_id = x["user_id"],
-      user_rating = x["user_rating"],
-      user_gender = tf$cast(x["user_gender"], tf$int32),
-      user_zip_code = x["user_zip_code"],
-      user_occupation_text = x["user_occupation_text"],
-      bucketized_user_age = tf$cast(x["bucketized_user_age"], tf$int32)
+      movie_id = a,
+      user_id = b,
+      user_rating = c,
+      user_gender = d,
+      user_zip_code = e,
+      user_occupation_text = f,
+      bucketized_user_age = g
     )
   })
   
@@ -151,20 +137,13 @@ train_model <- function(ratings) {
     call = function(self, features, training = NULL, mask = NULL) {
       embeddings <- list()
       
-      message("teste")
       for (i in seq_along(self$`_all_features`) ) {
         feature_name <- self$`_all_features`[[i-1]]
         embedding_fn <- self$`_embeddings`[[feature_name]]
-        message(feature_name)
-        message(self$`_embeddings`[[feature_name]])
-        message(embedding_fn(features[[feature_name]]))
         embeddings <- c(embeddings, embedding_fn(features[[feature_name]]))
       }
-      message("teste2")
-      message(embeddings)
       
       x <- tf$concat(embeddings, axis = 1L)
-      message("teste3")
       
       # Build Cross Network
       if (!is.null(self$`_cross_layer`)) {
@@ -182,14 +161,10 @@ train_model <- function(ratings) {
     
     compute_loss = function(self, features, training = FALSE) {
       
-      message("help")
       labels <- features[["user_rating"]]
       features <- features[names(features) != "user_rating"]
-      message("help2")
       
-      message("help3")
       scores <- self$call(features)
-      message("help4")
       
       return(self$task(labels=labels, predictions=scores))
     }
@@ -207,43 +182,66 @@ train_model <- function(ratings) {
   model <- DCN(use_cross_layer = use_cross_layer, deep_layer_sizes = deep_layer_sizes, projection_dim = projection_dim)
   model$compile(optimizer = tf$keras$optimizers$Adam(learning_rate))
   
-  # cached_train <- train$map(function(x) {
-  #   list(
-  #     movie_id = tf$cast(x["movie_id"], tf$string),
-  #     user_id = tf$cast(x["user_id"], tf$string),
-  #     user_rating = tf$cast(x["user_rating"], tf$string),
-  #     user_gender = tf$cast(x["user_gender"], tf$int32),
-  #     user_zip_code = tf$cast(x["user_zip_code"], tf$string),
-  #     user_occupation_text = tf$cast(x["user_occupation_text"], tf$string),
-  #     bucketized_user_age = tf$cast(x["bucketized_user_age"], tf$int32)
-  #   )
-  # })
-  
   model$fit(cached_train, epochs = epochs, verbose = FALSE)
   
   return(model)
 }
 
 # Get recommendations
-get_recs <- function(id, index) {
-  id <- as.character(id)
-  titles <- py_to_r(index$call(np$array(list(id)))[[1]][0]$numpy()$tolist())
-  purrr::map_chr(titles, ~.x$decode("utf-8"))
+get_recs <- function(ratings, model) {
+  
+  # Temporary files
+  tmp_ratings <- fs::file_temp(ext = "csv")
+  on.exit({ fs::file_delete(tmp_ratings) })
+  ratings %>%
+    readr::write_csv(tmp_ratings, col_names = FALSE)
+  
+  # Datasets with basic features
+  ratings <- tf$data$experimental$CsvDataset(tmp_ratings, list(
+    tf$string, tf$string, tf$int32, tf$int32,
+    tf$string, tf$string, tf$int32
+  ), header = FALSE)
+  
+  # Add names to columns
+  ratings <- ratings$map(function(a, b, c, d, e, f, g) {
+    list(
+      movie_id = a,
+      user_id = b,
+      user_rating = c,
+      user_gender = d,
+      user_zip_code = e,
+      user_occupation_text = f,
+      bucketized_user_age = g
+    )
+  })
+
+  model$predict(ratings$batch(128L))[,1]
 }
 
 ratings <- readr::read_csv("data-raw/1m-ratings.csv")
 model <- train_model(ratings)
 
-model$predict(ratings$batch(128L))
+# movies <- ratings %>% 
+#   dplyr::select(movie_id) %>% 
+#   dplyr::distinct() %>% 
+#   dplyr::arrange(movie_id) %>% 
+#   dplyr::rowwise() %>% 
+#   dplyr::group_split()
+# 
+# users <- ratings %>% 
+#   dplyr::select(-movie_id, -user_rating) %>% 
+#   dplyr::distinct() %>% 
+#   dplyr::arrange(user_id) %>% 
+#   dplyr::rowwise() %>% 
+#   dplyr::group_split()
+# 
+# list(movie = movies, user = users) %>%
+#   purrr::cross_df() %>%
+#   tidyr::unnest(dplyr::everything()) %>%
+#   dplyr::mutate_if(is.numeric, as.integer) %>%
+#   dplyr::mutate(user_ratings = 0) %>%
+#   dplyr::relocate(user_ratings, .after = user_id) %>%
+#   readr::write_csv("data-raw/all_combinations.csv")
 
-
-
-
-
-
-
-
-
-
-
-
+all_combinations <- readr::read_csv("data-raw/all_combinations.csv")
+recs <- get_recs(all_combinations, model)
