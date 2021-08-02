@@ -13,21 +13,21 @@
 # pd <- import("pandas", convert = FALSE)
 # ratings <- tfds$load("movielens/100k-ratings", split = "train")
 # pd$DataFrame(ratings)$to_csv("data-raw/ratings.csv")
-#
+# 
 # movies  <- tfds$load("movielens/100k-movies", split = "train")
 # pd$DataFrame(movies)$to_csv("data-raw/movies.csv")
-#
+# 
 # "data-raw/ratings.csv" %>%
 #   readr::read_csv() %>%
-#   dplyr::select(movie_title, user_id) %>%
+#   # dplyr::select(movie_title, user_id) %>%
 #   dplyr::mutate_all(stringr::str_remove, "tf.Tensor\\(b.") %>%
 #   dplyr::mutate_all(stringr::str_remove, "., shape.+$") %>%
 #   dplyr::mutate(user_id = as.integer(user_id)) %>%
 #   readr::write_csv("data-raw/ratings.csv")
-#
+# 
 # "data-raw/movies.csv" %>%
 #   readr::read_csv() %>%
-#   dplyr::select(movie_title) %>%
+#   # dplyr::select(movie_title) %>%
 #   dplyr::mutate_all(stringr::str_remove, "tf.Tensor\\(b.") %>%
 #   dplyr::mutate_all(stringr::str_remove, "., shape.+$") %>%
 #   readr::write_csv("data-raw/movies.csv")
@@ -51,7 +51,7 @@ tfds <- import("tensorflow_datasets", convert = FALSE)
 tfrs <- import("tensorflow_recommenders", convert = FALSE)
 
 # Train full model from tibbles in-memory
-train_model <- function(ratings, movies) {
+train_model <- function(ratings) {
 
   # Temporary files
   tmp_ratings <- fs::file_temp(ext = "csv")
