@@ -8,8 +8,8 @@ library(reticulate)
 # use_condaenv("tfrs", required = TRUE)
 # pd <- import("pandas", convert = FALSE)
 # tfds <- import("tensorflow_datasets", convert = FALSE)
-# ratings <- tfds$load("movielens/1m-ratings", split = "train")
-# pd$DataFrame(ratings)$to_csv("data-raw/raw-1m-ratings.csv")
+# ratings <- tfds$load("movielens/25m-ratings", split = "train")
+# pd$DataFrame(ratings)$to_csv("data-raw/raw-25m-ratings.csv")
 # 
 # "data-raw/raw-1m-ratings.csv" %>%
 #   readr::read_csv() %>%
@@ -45,7 +45,7 @@ train_model <- function(ratings) {
   on.exit({ fs::file_delete(tmp_ratings) })
   ratings %>%
     readr::write_csv(tmp_ratings, col_names = FALSE)
-
+  
   # Datasets with basic features
   ratings <- tf$data$experimental$CsvDataset(tmp_ratings, list(
     tf$string, tf$string, tf$int32, tf$int32,
@@ -122,7 +122,9 @@ train_model <- function(ratings) {
         self$`_cross_layer` <- NULL
       }
       
-      self$`_deep_layers` <- purrr::map(deep_layer_sizes, ~tf$keras$layers$Dense(.x, activation = "relu"))
+      self$`_deep_layers` <- purrr::map(
+        deep_layer_sizes, ~tf$keras$layers$Dense(.x, activation = "relu")
+      )
       
       self$`_logit_layer` <- tf$keras$layers$Dense(1L)
       
@@ -155,7 +157,6 @@ train_model <- function(ratings) {
         x <- self$`_deep_layers`[[i-1]](x)
       }
       
-      
       return(self$`_logit_layer`(x))
     },
     
@@ -166,7 +167,7 @@ train_model <- function(ratings) {
       
       scores <- self$call(features)
       
-      return(self$task(labels=labels, predictions=scores))
+      return(self$task(labels = labels, predictions = scores))
     }
     
   ), inherit = tfrs$models$Model)
@@ -178,8 +179,11 @@ train_model <- function(ratings) {
   use_cross_layer = TRUE
   deep_layer_sizes = c(192L, 192L)
   projection_dim = NULL
-
-  model <- DCN(use_cross_layer = use_cross_layer, deep_layer_sizes = deep_layer_sizes, projection_dim = projection_dim)
+  
+  model <- DCN(
+    use_cross_layer = use_cross_layer, deep_layer_sizes = deep_layer_sizes,
+    projection_dim = projection_dim
+  )
   model$compile(optimizer = tf$keras$optimizers$Adam(learning_rate))
   
   model$fit(cached_train, epochs = epochs, verbose = FALSE)
@@ -214,7 +218,7 @@ get_recs <- function(ratings, model) {
       bucketized_user_age = g
     )
   })
-
+  
   model$predict(ratings$batch(128L))[,1]
 }
 
@@ -234,7 +238,7 @@ model <- train_model(ratings)
 #   dplyr::arrange(user_id) %>% 
 #   dplyr::rowwise() %>% 
 #   dplyr::group_split()
-# 
+#
 # list(movie = movies, user = users) %>%
 #   purrr::cross_df() %>%
 #   tidyr::unnest(dplyr::everything()) %>%
@@ -243,5 +247,21 @@ model <- train_model(ratings)
 #   dplyr::relocate(user_ratings, .after = user_id) %>%
 #   readr::write_csv("data-raw/all_combinations.csv")
 
-all_combinations <- readr::read_csv("data-raw/all_combinations.csv")
-recs <- get_recs(all_combinations, model)
+all_combinations <- readr::read_csv("data-raw/all_combinations.csv", lazy = TRUE)
+amostra <- dplyr::slice_sample(all_combinations, prop = 0.01)
+recs <- get_recs(amostra, model)
+
+df <- amostra %>% 
+  dplyr::mutate(y = recs) %>% 
+  dplyr::group_by(user_id) %>% 
+  dplyr::slice_max(y, n = 10) %>% 
+  dplyr::ungroup() %>% 
+  dplyr::count(movie_id) %>% 
+  dplyr::arrange(-n) %>% 
+  tibble::rowid_to_column()
+
+ggplot2::qplot(df$rowid, df$n, geom = "point")
+
+#
+
+
