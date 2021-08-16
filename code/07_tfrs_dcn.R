@@ -249,6 +249,63 @@ model <- train_model(ratings)
 
 all_combinations <- readr::read_csv("data-raw/all_combinations.csv", lazy = TRUE)
 amostra <- dplyr::slice_sample(all_combinations, prop = 0.01)
+
+# VANILLA MODEL -----------------------------------------------------------
+
+recs <- get_recs(amostra, model)
+
+df <- amostra %>% 
+  dplyr::mutate(y = recs) %>% 
+  dplyr::group_by(user_id) %>% 
+  dplyr::slice_max(y, n = 10) %>% 
+  dplyr::ungroup() %>% 
+  dplyr::count(movie_id) %>% 
+  dplyr::arrange(-n) %>% 
+  tibble::rowid_to_column()
+
+# Sub-exponential profile present!
+ggplot2::qplot(df$rowid, df$n, geom = "point")
+# ggplot2::ggsave("img/tf/01_rec_vanilla.png")
+
+# FAZER GRÁFICO DA POPULARIDADE DOS FILMES CONSUMIDOS PELOS USUÁRIOS AO LONGO
+# DO TEMPO. IMITAR OS GRÁFICOS DO PAPER DA GOOGLE SOBRE TRAGETÓRIAS DE USUÁRIOS
+
+
+
+
+# NATURAL VARIANCE --------------------------------------------------------
+
+recs <- list()
+for (i in 1:5) {
+  model <- train_model(ratings)
+  recs[[i]] <- get_recs(amostra, model)
+}
+
+for (i in seq_along(recs)) {
+  recs[[i]] <- amostra %>% 
+    dplyr::mutate(y = recs[[i]], set = i) %>% 
+    dplyr::group_by(user_id) %>% 
+    dplyr::slice_max(y, n = 10) %>% 
+    dplyr::ungroup() %>% 
+    dplyr::count(movie_id) %>% 
+    dplyr::arrange(-n)
+}
+
+df <- recs %>%
+  purrr::map(tibble::rowid_to_column) %>% 
+  dplyr::bind_rows()
+
+ggplot2::qplot(df$rowid, df$n, color = as.character(df$set), geom = "point")
+
+# FORCE REC ---------------------------------------------------------------
+
+# 10 new watches for Fantasia
+model <- amostra %>%
+  dplyr::slice_sample(n = 10) %>%
+  dplyr::mutate(movie_id = 1430) %>%
+  dplyr::bind_rows(amostra) %>%
+  train_model()
+
 recs <- get_recs(amostra, model)
 
 df <- amostra %>% 
@@ -261,7 +318,120 @@ df <- amostra %>%
   tibble::rowid_to_column()
 
 ggplot2::qplot(df$rowid, df$n, geom = "point")
+# ggplot2::ggsave("img/tf/02_rec_force_10.png")
 
-#
+# 1000 new watches for Fantasia
+model <- amostra %>%
+  dplyr::slice_sample(n = 100) %>%
+  dplyr::mutate(movie_id = 1430) %>%
+  dplyr::bind_rows(amostra) %>%
+  train_model()
 
+recs <- get_recs(amostra, model)
 
+df <- amostra %>% 
+  dplyr::mutate(y = recs) %>% 
+  dplyr::group_by(user_id) %>% 
+  dplyr::slice_max(y, n = 10) %>% 
+  dplyr::ungroup() %>% 
+  dplyr::count(movie_id) %>% 
+  dplyr::arrange(-n) %>% 
+  tibble::rowid_to_column()
+
+ggplot2::qplot(df$rowid, df$n, geom = "point")
+# ggplot2::ggsave("img/tf/04_rec_force_1000.png")
+
+# PROFILE VARIANCE --------------------------------------------------------
+
+recs <- list()
+for (i in 1:5) {
+  idx <- train_model(ratings, movies)
+  
+  recs_count <- ratings %>%
+    dplyr::pull(user_id) %>%
+    base::unique() %>%
+    base::sort() %>%
+    purrr::map(get_recs, idx) %>%
+    purrr::flatten_chr() %>%
+    dplyr::tibble(title = .) %>%
+    dplyr::count(title) %>%
+    dplyr::arrange(-n) %>%
+    tibble::rowid_to_column("i")
+  
+  recs[[i]] <- recs_count
+}
+
+recs %>%
+  purrr::imap(~dplyr::mutate(.x, run = .y)) %>%
+  dplyr::bind_rows() %>%
+  dplyr::mutate(run = factor(run)) %>%
+  ggplot2::qplot(data = ., i, n, color = run, alpha = 0.1)
+ggplot2::ggsave("img/tf/05_rec_profile_5.png")
+
+# FOLLOWING RECS ----------------------------------------------------------
+
+tmp_ratings <- ratings
+recs <- list()
+for (i in 1:5) {
+  idx <- train_model(tmp_ratings, movies)
+  recs[[i]] <- get_recs(237, idx)
+  
+  tmp_ratings <- dplyr::bind_rows(
+    tmp_ratings,
+    dplyr::tibble(movie_title = recs[[i]], user_id = 237)
+  )
+}
+
+# Recommender doesn't care about aleady watched
+recs
+
+### Usuário ingora o que ele já viu ###
+
+# NOT FOLLOWING RECS ------------------------------------------------------
+
+tmp_ratings <- ratings
+recs <- list()
+for (i in 1:5) {
+  idx <- train_model(tmp_ratings, movies)
+  recs[[i]] <- get_recs(237, idx)
+  
+  tmp_ratings <- dplyr::bind_rows(
+    tmp_ratings,
+    dplyr::tibble(movie_title = sample(movies$movie_title, 10), user_id = 237)
+  )
+}
+
+# Recommendations change a lot
+recs
+
+# ALL USERS FOLLOWING RECS ------------------------------------------------
+
+tmp_ratings <- ratings
+recs <- list()
+for (i in 1:5) {
+  idx <- train_model(tmp_ratings, movies)
+  
+  recs_count <- ratings %>%
+    dplyr::pull(user_id) %>%
+    base::unique() %>%
+    base::sort() %>%
+    purrr::map(get_recs, idx) %>%
+    purrr::flatten_chr() %>%
+    dplyr::tibble(title = .) %>%
+    dplyr::count(title) %>%
+    dplyr::arrange(-n) %>%
+    tibble::rowid_to_column("i")
+  
+  recs[[i]] <- recs_count
+  
+  tmp_ratings <- tmp_ratings %>%
+    dplyr::pull(user_id) %>%
+    base::unique() %>%
+    base::sort() %>%
+    purrr::map(~dplyr::tibble(movie_title = get_recs(.x, idx), user_id = .x)) %>%
+    dplyr::bind_rows(tmp_ratings) %>%
+    dplyr::distinct()
+}
+
+ggplot2::qplot(recs_count$i, recs_count$n)
+ggplot2::ggsave("img/tf/06_rec_followed.png")
