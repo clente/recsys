@@ -8,8 +8,8 @@ library(reticulate)
 # use_condaenv("tfrs", required = TRUE)
 # pd <- import("pandas", convert = FALSE)
 # tfds <- import("tensorflow_datasets", convert = FALSE)
-# ratings <- tfds$load("movielens/25m-ratings", split = "train")
-# pd$DataFrame(ratings)$to_csv("data-raw/raw-25m-ratings.csv")
+# ratings <- tfds$load("movielens/1m-ratings", split = "train")
+# pd$DataFrame(ratings)$to_csv("data-raw/raw-1m-ratings.csv")
 # 
 # "data-raw/raw-1m-ratings.csv" %>%
 #   readr::read_csv() %>%
@@ -247,7 +247,9 @@ model <- train_model(ratings)
 #   dplyr::relocate(user_ratings, .after = user_id) %>%
 #   readr::write_csv("data-raw/all_combinations.csv")
 
-all_combinations <- readr::read_csv("data-raw/all_combinations.csv", lazy = TRUE)
+all_combinations <- "data-raw/all_combinations.csv" %>%
+  readr::read_csv(lazy = TRUE) %>% 
+  dplyr::anti_join(dplyr::select(ratings, movie_id, user_id))
 amostra <- dplyr::slice_sample(all_combinations, prop = 0.01)
 
 # VANILLA MODEL -----------------------------------------------------------
@@ -267,11 +269,49 @@ df <- amostra %>%
 ggplot2::qplot(df$rowid, df$n, geom = "point")
 # ggplot2::ggsave("img/tf/01_rec_vanilla.png")
 
-# FAZER GRÁFICO DA POPULARIDADE DOS FILMES CONSUMIDOS PELOS USUÁRIOS AO LONGO
-# DO TEMPO. IMITAR OS GRÁFICOS DO PAPER DA GOOGLE SOBRE TRAGETÓRIAS DE USUÁRIOS
+# POPULARITY OVER TIME ----------------------------------------------------
 
+recs <- get_recs(all_combinations, model)
 
+next_df <- all_combinations %>% 
+  dplyr::mutate(y = recs) %>% 
+  dplyr::group_by(user_id) %>% 
+  dplyr::slice_max(y, n = 1, with_ties = FALSE) %>% 
+  dplyr::ungroup() %>% 
+  dplyr::transmute(
+    user_id = as.character(user_id),
+    movie_id = as.character(movie_id),
+    time = 2
+  )
 
+ratings_raw <- "data-raw/raw-1m-ratings.csv" %>%
+  readr::read_csv() %>%
+  dplyr::mutate_all(stringr::str_remove, "tf.Tensor\\(b?'?") %>%
+  dplyr::mutate_all(stringr::str_remove, "'?, shape.+$")
+
+movie_pop <- ratings_raw %>% 
+  dplyr::group_by(movie_id) %>% 
+  dplyr::summarise(pop = length(unique(user_id))) %>% 
+  dplyr::arrange(-pop) %>%
+  tibble::rowid_to_column() %>% 
+  dplyr::select(movie_id, pop = rowid)
+
+df <- ratings_raw %>% 
+  dplyr::mutate(
+    timestamp = as.numeric(timestamp),
+    timestamp = lubridate::as_datetime(timestamp)
+  ) %>% 
+  dplyr::group_by(user_id) %>% 
+  dplyr::slice_max(timestamp, n = 1, with_ties = FALSE) %>% 
+  dplyr::ungroup() %>% 
+  dplyr::select(user_id, movie_id) %>% 
+  dplyr::mutate(time = 1) %>% 
+  dplyr::bind_rows(next_df) %>% 
+  dplyr::left_join(movie_pop)
+
+library(ggplot2)
+
+ggplot(df, aes(x = as.character(time), y = pop)) + geom_boxplot()
 
 # NATURAL VARIANCE --------------------------------------------------------
 
