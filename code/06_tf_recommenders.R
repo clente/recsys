@@ -1,4 +1,5 @@
 # # Setup env
+# options("reticulate.conda_binary" = "/Users/clente/miniforge3/bin/conda")
 # reticulate::miniconda_update()
 # reticulate::conda_create("tfrs", python_version = "3.9.6")
 

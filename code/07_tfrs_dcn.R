@@ -271,6 +271,39 @@ ggplot2::qplot(df$rowid, df$n, geom = "point")
 
 # POPULARITY OVER TIME ----------------------------------------------------
 
+# ratings_raw <- "data-raw/raw-1m-ratings.csv" %>%
+#   readr::read_csv() %>%
+#   dplyr::mutate_all(stringr::str_remove, "tf.Tensor\\(b?'?") %>%
+#   dplyr::mutate_all(stringr::str_remove, "'?, shape.+$")
+
+movie_pop <- "data-raw/1m-ratings.csv" %>%
+  readr::read_csv() %>% 
+  dplyr::group_by(movie_id) %>% 
+  dplyr::summarise(pop = dplyr::n()) %>% 
+  dplyr::arrange(-pop) %>%
+  tibble::rowid_to_column(var = "rank")
+
+# Figure 2 (a) from Yao et al.
+ggplot2::qplot(x = movie_pop$rank, y = log10(movie_pop$pop), geom = "point")
+
+
+mean_pop <- "~/Downloads/sequences.csv" %>%
+  readr::read_csv(col_names = FALSE) %>%
+  dplyr::rename_with(~stringr::str_replace(.x, "X([0-9])$", "X0\\1")) %>%
+  tidyr::pivot_longer(1:10, names_to = "ith", values_to = "movie_id") %>%
+  dplyr::left_join(movie_pop, "movie_id") %>%
+  dplyr::select(ith, pop) %>%
+  dplyr::group_by(ith) %>%
+  dplyr::summarise(pop = mean(pop, na.rm = TRUE)) %>%
+  dplyr::pull(pop)
+
+rec <- movie_pop %>%
+  dplyr::filter(movie_id == 105) %>%
+  dplyr::pull(pop)
+
+ggplot2::qplot(x = 1:11, y = c(mean_pop, rec), geom = "line", size = 1)
+
+
 recs <- get_recs(all_combinations, model)
 
 next_df <- all_combinations %>% 
@@ -283,18 +316,6 @@ next_df <- all_combinations %>%
     movie_id = as.character(movie_id),
     time = 2
   )
-
-ratings_raw <- "data-raw/raw-1m-ratings.csv" %>%
-  readr::read_csv() %>%
-  dplyr::mutate_all(stringr::str_remove, "tf.Tensor\\(b?'?") %>%
-  dplyr::mutate_all(stringr::str_remove, "'?, shape.+$")
-
-movie_pop <- ratings_raw %>% 
-  dplyr::group_by(movie_id) %>% 
-  dplyr::summarise(pop = length(unique(user_id))) %>% 
-  dplyr::arrange(-pop) %>%
-  tibble::rowid_to_column() %>% 
-  dplyr::select(movie_id, pop = rowid)
 
 df <- ratings_raw %>% 
   dplyr::mutate(
