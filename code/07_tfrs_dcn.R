@@ -42,13 +42,13 @@ ggplot2::qplot(x = 1:20, y = c(mean_pop, rec), geom = "line", size = 1)
 
 poison <- "data-raw/sequences.csv" %>%
   readr::read_csv(col_names = FALSE) %>%
-  dplyr::slice_sample(prop = 0.01) %>%
+  dplyr::slice_sample(prop = 0.02) %>%
   tibble::rowid_to_column() %>%
   dplyr::rename_with(~stringr::str_replace(.x, "X([0-9])$", "X0\\1")) %>%
   tidyr::pivot_longer(2:11, names_to = "ith", values_to = "movie_id") %>%
-  dplyr::mutate(
-    movie_id = purrr::map_dbl(movie_id, ~ifelse(runif(1) < 0.1, 9999, .x))
-  ) %>%
+  dplyr::mutate(movie_id = purrr::map_dbl(
+    movie_id, ~ifelse(runif(1) < 0.1, round(runif(1, 9990, 9999)), .x)
+  )) %>%
   tidyr::pivot_wider(names_from = ith, values_from = movie_id) %>%
   dplyr::select(-rowid) %>%
   dplyr::rename_with(~stringr::str_replace(.x, "^X0", "X"))
@@ -57,6 +57,12 @@ poisoned <- "data-raw/sequences.csv" %>%
   readr::read_csv(col_names = FALSE) %>%
   dplyr::slice_sample(prop = 0.1) %>%
   dplyr::bind_rows(poison)
+
+# poisoned %>%
+#   purrr::flatten() %>%
+#   as.vector() %>%
+#   magrittr::is_greater_than(5000) %>%
+#   table()
 
 readr::write_csv(poisoned, "~/Downloads/poisoned.csv", col_names = FALSE)
 
@@ -160,27 +166,7 @@ seqs <- "data-raw/sequences.csv" %>%
   purrr::flatten_dbl() %>%
   ggplot2::qplot(x = 1:20, y = ., geom = "col")
 
-# POISON 0.5% -----------------------------------------------------------------
-
-poison <- "data-raw/sequences.csv" %>%
-  readr::read_csv(col_names = FALSE) %>%
-  dplyr::slice_sample(prop = 0.01) %>%
-  tibble::rowid_to_column() %>%
-  dplyr::rename_with(~stringr::str_replace(.x, "X([0-9])$", "X0\\1")) %>%
-  tidyr::pivot_longer(2:11, names_to = "ith", values_to = "movie_id") %>%
-  dplyr::mutate(
-    movie_id = purrr::map_dbl(movie_id, ~ifelse(runif(1) < 0.1, 9999, .x))
-  ) %>%
-  tidyr::pivot_wider(names_from = ith, values_from = movie_id) %>%
-  dplyr::select(-rowid) %>%
-  dplyr::rename_with(~stringr::str_replace(.x, "^X0", "X"))
-
-poisoned <- "data-raw/sequences.csv" %>%
-  readr::read_csv(col_names = FALSE) %>%
-  dplyr::slice_sample(prop = 0.2) %>%
-  dplyr::bind_rows(poison)
-
-readr::write_csv(poisoned, "~/Downloads/poisoned.csv", col_names = FALSE)
+# POISON 1.5% -----------------------------------------------------------------
 
 fs::file_move("~/Downloads/sequences_poisoned_05pct.csv", "data-raw/")
 fs::file_move("~/Downloads/preds_poisoned_05pct.csv", "data-raw/")
@@ -229,7 +215,7 @@ seqs <- "data-raw/sequences_poisoned_05pct.csv" %>%
   dplyr::rename_with(~stringr::str_replace(.x, "X([0-9])$", "X1\\1")) %>%
   dplyr::rename(X20 = X10) %>%
   dplyr::bind_cols(seqs, .) %>%
-  dplyr::summarise_all(~sum(.x == 9999)) %>%
+  dplyr::summarise_all(~sum(.x > 9000)) %>%
   purrr::flatten_dbl() %>%
   ggplot2::qplot(x = 1:20, y = ., geom = "col")
 
