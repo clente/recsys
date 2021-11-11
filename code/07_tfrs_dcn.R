@@ -219,6 +219,17 @@ seqs <- "data-raw/sequences_poisoned_05pct.csv" %>%
   purrr::flatten_dbl() %>%
   ggplot2::qplot(x = 1:20, y = ., geom = "col")
 
+ids <- sample(movie_pop$movie_id, 10)
+
+"data-raw/preds_poisoned_05pct.csv" %>%
+  readr::read_csv(col_names = FALSE) %>%
+  dplyr::rename_with(~stringr::str_replace(.x, "X([0-9])$", "X1\\1")) %>%
+  dplyr::rename(X20 = X10) %>%
+  dplyr::bind_cols(seqs, .) %>%
+  dplyr::summarise_all(~sum(.x < 9000)) %>%
+  purrr::flatten_dbl() %>%
+  ggplot2::qplot(x = 1:20, y = ., geom = "col")
+
 "data-raw/preds_poisoned_05pct.csv" %>%
   readr::read_csv(col_names = FALSE) %>%
   dplyr::rename_with(~stringr::str_replace(.x, "X([0-9])$", "X1\\1")) %>%
@@ -227,3 +238,6 @@ seqs <- "data-raw/sequences_poisoned_05pct.csv" %>%
   dplyr::summarise_all(~sum(.x == 105)) %>%
   purrr::flatten_dbl() %>%
   ggplot2::qplot(x = 1:20, y = ., geom = "col")
+
+# Quão surpreendente é que haja amplificação para a base sem o poison?
+# Investigar pq antes funcionou e depois parou de funcionar
