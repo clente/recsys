@@ -118,41 +118,6 @@ seqs <- "data-raw/sequences_poisoned.csv" %>%
 
 # NON-POISON PREDS ------------------------------------------------------------
 
-movie_pop <- "data-raw/sequences.csv" %>%
-  readr::read_csv(col_names = FALSE) %>%
-  dplyr::rename_with(~stringr::str_replace(.x, "X([0-9])$", "X0\\1")) %>%
-  tidyr::pivot_longer(1:10, names_to = "ith", values_to = "movie_id") %>%
-  dplyr::filter(movie_id != 0) %>%
-  dplyr::count(movie_id, name = "pop") %>%
-  dplyr::arrange(-pop) %>%
-  tibble::rowid_to_column(var = "rank")
-
-ggplot2::qplot(x = movie_pop$rank, y = log10(movie_pop$pop), geom = "point")
-
-mean_pop <- "data-raw/sequences.csv" %>%
-  readr::read_csv(col_names = FALSE) %>%
-  dplyr::rename_with(~stringr::str_replace(.x, "X([0-9])$", "X0\\1")) %>%
-  tidyr::pivot_longer(1:10, names_to = "ith", values_to = "movie_id") %>%
-  dplyr::filter(movie_id != 0) %>%
-  dplyr::left_join(movie_pop, "movie_id") %>%
-  dplyr::select(ith, pop) %>%
-  dplyr::group_by(ith) %>%
-  dplyr::summarise(pop = mean(pop, na.rm = TRUE)) %>%
-  dplyr::pull(pop)
-
-rec <- "data-raw/preds.csv" %>%
-  readr::read_csv(col_names = FALSE) %>%
-  dplyr::rename_with(~stringr::str_replace(.x, "X([0-9])$", "X0\\1")) %>%
-  tidyr::pivot_longer(1:10, names_to = "ith", values_to = "movie_id") %>%
-  dplyr::filter(movie_id != 0) %>%
-  dplyr::left_join(movie_pop, "movie_id") %>%
-  dplyr::select(ith, pop) %>%
-  dplyr::group_by(ith) %>%
-  dplyr::summarise(pop = mean(pop, na.rm = TRUE)) %>%
-  dplyr::pull(pop)
-
-ggplot2::qplot(x = 1:20, y = c(mean_pop, rec), geom = "line", size = 1)
-
 seqs <- "data-raw/sequences.csv" %>%
   readr::read_csv(col_names = FALSE) %>%
   dplyr::rename_with(~stringr::str_replace(.x, "X([0-9])$", "X0\\1"))
@@ -162,11 +127,23 @@ seqs <- "data-raw/sequences.csv" %>%
   dplyr::rename_with(~stringr::str_replace(.x, "X([0-9])$", "X1\\1")) %>%
   dplyr::rename(X20 = X10) %>%
   dplyr::bind_cols(seqs, .) %>%
-  dplyr::summarise_all(~sum(.x == 105)) %>%
+  purrr::map(~tibble::tibble(col = .x)) %>%
+  purrr::map(dplyr::count, col) %>%
+  purrr::imap(~purrr::set_names(.x, "col", paste0("n", .y))) %>%
+  purrr::reduce(dplyr::left_join, "col") %>%
+  purrr::map_dfc(tidyr::replace_na, 0) %>%
+  dplyr::rename(movie_id = col) %>%
+  dplyr::rename_with(~stringr::str_remove(.x, "^n")) %>%
+  dplyr::mutate(boom = X09 < X11 & X09 < X12 & X10 < X11 & X10 < X12) %>%
+  # dplyr::count(boom)
+  dplyr::filter(boom) %>%
+  dplyr::slice_sample(n = 1) %>%
+  dplyr::select(-movie_id, -boom) %>%
   purrr::flatten_dbl() %>%
   ggplot2::qplot(x = 1:20, y = ., geom = "col")
 
 # POISON 1.5% -----------------------------------------------------------------
+
 
 fs::file_move("~/Downloads/sequences_poisoned_05pct.csv", "data-raw/")
 fs::file_move("~/Downloads/preds_poisoned_05pct.csv", "data-raw/")
@@ -239,5 +216,31 @@ ids <- sample(movie_pop$movie_id, 10)
   purrr::flatten_dbl() %>%
   ggplot2::qplot(x = 1:20, y = ., geom = "col")
 
-# Quão surpreendente é que haja amplificação para a base sem o poison?
+# -------
+
+seqs <- "data-raw/sequences_poisoned_05pct.csv" %>%
+  readr::read_csv(col_names = FALSE) %>%
+  dplyr::rename_with(~stringr::str_replace(.x, "X([0-9])$", "X0\\1"))
+
+"data-raw/preds_poisoned_05pct.csv" %>%
+  readr::read_csv(col_names = FALSE) %>%
+  dplyr::rename_with(~stringr::str_replace(.x, "X([0-9])$", "X1\\1")) %>%
+  dplyr::rename(X20 = X10) %>%
+  dplyr::bind_cols(seqs, .) %>%
+  purrr::map(~tibble::tibble(col = .x)) %>%
+  purrr::map(dplyr::count, col) %>%
+  purrr::imap(~purrr::set_names(.x, "col", paste0("n", .y))) %>%
+  purrr::reduce(dplyr::left_join, "col") %>%
+  purrr::map_dfc(tidyr::replace_na, 0) %>%
+  dplyr::rename(movie_id = col) %>%
+  dplyr::rename_with(~stringr::str_remove(.x, "^n")) %>%
+  dplyr::mutate(boom = X09 < X11 & X09 < X12 & X10 < X11 & X10 < X12) %>%
+  # dplyr::count(boom)
+  dplyr::filter(boom) %>%
+  dplyr::slice_sample(n = 1) %>%
+  dplyr::select(-movie_id, -boom) %>%
+  purrr::flatten_dbl() %>%
+  ggplot2::qplot(x = 1:20, y = ., geom = "col")
+
+# Usar derivada discreta ao invés de X09 < X11 & X09 < X12 & X10 < X11 & X10 < X12
 # Investigar pq antes funcionou e depois parou de funcionar
