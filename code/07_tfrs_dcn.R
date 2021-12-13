@@ -242,5 +242,50 @@ seqs <- "data-raw/sequences_poisoned_05pct.csv" %>%
   purrr::flatten_dbl() %>%
   ggplot2::qplot(x = 1:20, y = ., geom = "col")
 
-# Usar derivada discreta ao invés de X09 < X11 & X09 < X12 & X10 < X11 & X10 < X12
+# ------
+
+seqs <- "data-raw/sequences.csv" %>%
+  readr::read_csv(col_names = FALSE) %>%
+  dplyr::rename_with(~stringr::str_replace(.x, "X([0-9])$", "X0\\1"))
+
+"data-raw/preds.csv" %>%
+  readr::read_csv(col_names = FALSE) %>%
+  dplyr::rename_with(~stringr::str_replace(.x, "X([0-9])$", "X1\\1")) %>%
+  dplyr::rename(X20 = X10) %>%
+  dplyr::bind_cols(seqs, .) %>%
+  dplyr::select(X02:X11) %>%
+  readr::write_csv("data-raw/sequences_follow_first.csv", col_names = FALSE)
+
+fs::file_move("~/Downloads/sequences_follow_first.csv", "data-raw/")
+fs::file_move("~/Downloads/preds_follow_first.csv", "data-raw/")
+
+seqs <- "data-raw/sequences_follow_first.csv" %>%
+  readr::read_csv(col_names = FALSE) %>%
+  dplyr::rename_with(~stringr::str_replace(.x, "X([0-9])$", "X0\\1"))
+
+"data-raw/preds_follow_first.csv" %>%
+  readr::read_csv(col_names = FALSE) %>%
+  dplyr::rename_with(~stringr::str_replace(.x, "X([0-9])$", "X1\\1")) %>%
+  dplyr::rename(X20 = X10) %>%
+  dplyr::bind_cols(seqs, .) %>%
+  purrr::map(~tibble::tibble(col = .x)) %>%
+  purrr::map(dplyr::count, col) %>%
+  purrr::imap(~purrr::set_names(.x, "col", paste0("n", .y))) %>%
+  purrr::reduce(dplyr::left_join, "col") %>%
+  purrr::map_dfc(tidyr::replace_na, 0) %>%
+  dplyr::rename(movie_id = col) %>%
+  dplyr::rename_with(~stringr::str_remove(.x, "^n")) %>%
+  dplyr::mutate(boom = X09 < X11 & X09 < X12 & X10 < X11 & X10 < X12) %>%
+  # dplyr::count(boom)
+  dplyr::filter(boom) %>%
+  dplyr::slice_sample(n = 1) %>%
+  dplyr::select(-movie_id, -boom) %>%
+  purrr::flatten_dbl() %>%
+  ggplot2::qplot(x = 1:20, y = ., geom = "col")
+
+
+# Usar derivada discreta: já é usado
+# Acompanhar o boom no t11 em diante, fazendo pessoas assistirem de fato:
+#   número parecido de filmes tem boom
+
 # Investigar pq antes funcionou e depois parou de funcionar
