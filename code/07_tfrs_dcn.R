@@ -363,4 +363,31 @@ seqs <- "data-raw/sequences_follow_third.csv" %>%
   purrr::flatten_dbl() %>%
   ggplot2::qplot(x = 1:20, y = ., geom = "col")
 
+"data-raw/preds_follow_third.csv" %>%
+  readr::read_csv(col_names = FALSE) %>%
+  dplyr::rename_with(~stringr::str_replace(.x, "X([0-9])$", "X1\\1")) %>%
+  dplyr::rename(X20 = X10) %>%
+  dplyr::bind_cols(seqs, .) %>%
+  purrr::map(~tibble::tibble(col = .x)) %>%
+  purrr::map(dplyr::count, col) %>%
+  purrr::imap(~purrr::set_names(.x, "col", paste0("n", .y))) %>%
+  purrr::reduce(dplyr::left_join, "col") %>%
+  purrr::map_dfc(tidyr::replace_na, 0) %>%
+  dplyr::rename(movie_id = col) %>%
+  dplyr::rename_with(~stringr::str_remove(.x, "^n")) |>
+  dplyr::select(movie_id, X11) |>
+  dplyr::arrange(-X11)
+
+movie_pop <- "data-raw/sequences_follow_third.csv" %>%
+  readr::read_csv(col_names = FALSE) %>%
+  dplyr::rename_with(~stringr::str_replace(.x, "X([0-9])$", "X0\\1")) %>%
+  tidyr::pivot_longer(1:10, names_to = "ith", values_to = "movie_id") %>%
+  dplyr::filter(movie_id != 0) %>%
+  dplyr::count(movie_id, name = "pop") %>%
+  dplyr::arrange(-pop) %>%
+  tibble::rowid_to_column(var = "rank")
+
+# Figure 2 (a) from Yao et al.
+ggplot2::qplot(x = movie_pop$rank, y = log10(movie_pop$pop), geom = "point")
+
 # Investigar pq antes funcionou e depois parou de funcionar
