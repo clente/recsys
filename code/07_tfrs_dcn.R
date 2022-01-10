@@ -390,4 +390,62 @@ movie_pop <- "data-raw/sequences_follow_third.csv" %>%
 # Figure 2 (a) from Yao et al.
 ggplot2::qplot(x = movie_pop$rank, y = log10(movie_pop$pop), geom = "point")
 
-# Investigar pq antes funcionou e depois parou de funcionar
+# TESTS ------------------------------------------------------------------------
+
+seqs <- "data-raw/sequences.csv" %>%
+  readr::read_csv(col_names = FALSE) %>%
+  dplyr::rename_with(~stringr::str_replace(.x, "X([0-9])$", "X0\\1")) %>%
+  tidyr::pivot_longer(1:10, names_to = "ith", values_to = "movie_id") %>%
+  dplyr::filter(movie_id != 0) %>%
+  dplyr::count(movie_id, name = "pop") %>%
+  dplyr::arrange(-pop) %>%
+  tibble::rowid_to_column(var = "rank")
+
+preds0 <- "data-raw/preds.csv" %>%
+  readr::read_csv(col_names = FALSE) %>%
+  dplyr::rename_with(~stringr::str_replace(.x, "X([0-9])$", "X0\\1")) %>%
+  tidyr::pivot_longer(1:10, names_to = "ith", values_to = "movie_id") %>%
+  dplyr::filter(movie_id != 0) %>%
+  dplyr::count(movie_id, name = "pop") %>%
+  dplyr::arrange(-pop) %>%
+  tibble::rowid_to_column(var = "rank")
+
+preds1 <- "data-raw/preds_follow_first.csv" %>%
+  readr::read_csv(col_names = FALSE) %>%
+  dplyr::rename_with(~stringr::str_replace(.x, "X([0-9])$", "X0\\1")) %>%
+  tidyr::pivot_longer(1:10, names_to = "ith", values_to = "movie_id") %>%
+  dplyr::filter(movie_id != 0) %>%
+  dplyr::count(movie_id, name = "pop") %>%
+  dplyr::arrange(-pop) %>%
+  tibble::rowid_to_column(var = "rank")
+
+preds2 <- "data-raw/preds_follow_second.csv" %>%
+  readr::read_csv(col_names = FALSE) %>%
+  dplyr::rename_with(~stringr::str_replace(.x, "X([0-9])$", "X0\\1")) %>%
+  tidyr::pivot_longer(1:10, names_to = "ith", values_to = "movie_id") %>%
+  dplyr::filter(movie_id != 0) %>%
+  dplyr::count(movie_id, name = "pop") %>%
+  dplyr::arrange(-pop) %>%
+  tibble::rowid_to_column(var = "rank")
+
+preds3 <- "data-raw/preds_follow_third.csv" %>%
+  readr::read_csv(col_names = FALSE) %>%
+  dplyr::rename_with(~stringr::str_replace(.x, "X([0-9])$", "X0\\1")) %>%
+  tidyr::pivot_longer(1:10, names_to = "ith", values_to = "movie_id") %>%
+  dplyr::filter(movie_id != 0) %>%
+  dplyr::count(movie_id, name = "pop") %>%
+  dplyr::arrange(-pop) %>%
+  tibble::rowid_to_column(var = "rank")
+
+library(gamlss)
+library(gamlss.dist)
+library(gamlss.add)
+
+x <- unique(seqs$pop)
+
+fit <- fitDist(x, k = 2, type = "realplus", trace = FALSE, try.gamlss = TRUE)
+
+summary(fit)
+
+# Ele disse que ia pensar se precisa mesmo de um teste de hipótese
+# Eu preciso ver os parâmetros das WEI2 no X01 ao X10 do seqs
