@@ -12,7 +12,7 @@ movie_pop <- "data-raw/sequences.csv" %>%
   tibble::rowid_to_column(var = "rank")
 
 # Figure 2 (a) from Yao et al.
-ggplot2::qplot(x = movie_pop$rank, y = log10(movie_pop$pop), geom = "point")
+ggplot2::qplot(x = movie_pop$rank, y = movie_pop$pop, geom = "point")
 
 mean_pop <- "data-raw/sequences.csv" %>%
   readr::read_csv(col_names = FALSE) %>%
@@ -444,32 +444,48 @@ library(gamlss.add)
 seqs %>%
   dplyr::pull(pop) %>%
   unique() %>%
-  fitDist(k = 2, type = "realplus", trace = FALSE, try.gamlss = TRUE) %>%
-  summary()
+  fitDist(type = "counts") %>%
+  purrr::pluck("fits")
+#     NBII       NBI     ZANBI       BNB    SICHEL       NBF     ZINBI       DEL        SI  ZISICHEL     ZINBF     ZINBF     ZIBNB      GEOM     GEOMo
+# 11878.09  11878.09  11879.46  11880.09  11880.09  11880.09  11880.09  11880.09  11880.09  11882.09  11882.09  11882.09  11882.09  11909.86  11909.86
+#   WARING       DPO       GPO       PIG     ZAPIG     ZIPIG        LG      ZALG      ZIPF    ZAZIPF      YULE        PO       ZIP      ZIP2       ZAP
+# 11911.86  11923.32  12146.04  12270.95  12272.95  12272.95  13243.34  13245.34  14240.74  14242.74  19167.29 283240.17 283242.17 283242.17 283242.17
 
 preds0 %>%
   dplyr::pull(pop) %>%
   unique() %>%
-  fitDist(k = 2, type = "realplus", trace = FALSE, try.gamlss = TRUE) %>%
-  summary()
+  fitDist(type = "counts") %>%
+  purrr::pluck("fits")
+#          SI      SICHEL    ZISICHEL         BNB       ZANBI         DEL       ZIBNB      WARING        NBII         NBI         NBF       ZINBI       ZINBF
+#    8043.719    8043.719    8045.719    8068.852    8069.249    8070.721    8070.852    8082.396    8082.515    8082.515    8084.515    8084.515    8086.515
+#       ZINBF         DPO         GPO         PIG       ZAPIG       ZIPIG       GEOMo        GEOM          LG        ZALG        ZIPF      ZAZIPF        YULE
+#    8086.515    8093.317    8164.240    8228.358    8230.358    8230.358    8238.086    8238.086    8448.238    8450.238    8983.473    8985.473   12268.723
+#          PO         ZIP         ZAP        ZIP2
+# 1300090.287 1300092.287 1300092.287 1300092.287
 
 preds1 %>%
   dplyr::pull(pop) %>%
   unique() %>%
-  fitDist(k = 2, type = "realplus", trace = FALSE, try.gamlss = TRUE) %>%
-  summary()
+  fitDist(type = "counts") %>%
+  purrr::pluck("fits")
+#          SI      SICHEL    ZISICHEL         BNB       ZIBNB       ZANBI         DEL      WARING        NBII         NBI         NBF       ZINBI       ZINBF
+#    6311.718    6311.718    6313.718    6332.056    6334.056    6338.931    6342.379    6344.470    6356.683    6356.683    6358.683    6358.683    6360.683
+#       ZINBF         DPO         GPO         PIG       ZAPIG       ZIPIG       GEOMo        GEOM          LG        ZALG        ZIPF      ZAZIPF        YULE
+#    6360.683    6365.843    6411.884    6465.080    6467.080    6467.080    6567.283    6567.283    6568.669    6570.669    6964.412    6966.412    9526.488
+#          PO         ZAP        ZIP2         ZIP
+# 1604934.162 1604936.162 1604936.162 1604936.162
 
 preds2 %>%
   dplyr::pull(pop) %>%
   unique() %>%
-  fitDist(k = 2, type = "realplus", trace = FALSE, try.gamlss = TRUE) %>%
-  summary()
+  fitDist(type = "counts") %>%
+  purrr::pluck("fits")
 
 preds3 %>%
   dplyr::pull(pop) %>%
   unique() %>%
-  fitDist(k = 2, type = "realplus", trace = FALSE, try.gamlss = TRUE) %>%
-  summary()
+  fitDist(type = "counts") %>%
+  purrr::pluck("fits")
 
 "data-raw/sequences.csv" %>%
   readr::read_csv(col_names = FALSE) %>%
@@ -484,7 +500,7 @@ preds3 %>%
       dplyr::arrange(-pop) %>%
       dplyr::pull(pop) %>%
       unique() %>%
-      fitDist(k = 2, type = "realplus", trace = FALSE, try.gamlss = TRUE) %>%
+      fitDist(type = "counts") %>%
       purrr::pluck("family", 2)
   )
 
@@ -501,7 +517,7 @@ preds3 %>%
       dplyr::arrange(-pop) %>%
       dplyr::pull(pop) %>%
       unique() %>%
-      fitDist(k = 2, type = "realplus", trace = FALSE, try.gamlss = TRUE) %>%
+      fitDist(type = "counts") %>%
       purrr::pluck("family", 2)
   )
 
@@ -518,7 +534,7 @@ preds3 %>%
       dplyr::arrange(-pop) %>%
       dplyr::pull(pop) %>%
       unique() %>%
-      fitDist(k = 2, type = "realplus", trace = FALSE, try.gamlss = TRUE) %>%
+      fitDist(type = "counts") %>%
       purrr::pluck("family", 2)
   )
 
@@ -535,7 +551,7 @@ preds3 %>%
       dplyr::arrange(-pop) %>%
       dplyr::pull(pop) %>%
       unique() %>%
-      fitDist(k = 2, type = "realplus", trace = FALSE, try.gamlss = TRUE) %>%
+      fitDist(type = "counts") %>%
       purrr::pluck("family", 2)
   )
 
@@ -552,6 +568,34 @@ preds3 %>%
       dplyr::arrange(-pop) %>%
       dplyr::pull(pop) %>%
       unique() %>%
-      fitDist(k = 2, type = "realplus", trace = FALSE, try.gamlss = TRUE) %>%
+      fitDist(type = "counts") %>%
       purrr::pluck("family", 2)
   )
+
+# Mais experimentos (outra janela, etc.)
+# Olhar notebooks: https://github.com/biasinrecsys/umap2020
+
+# U | T-10    | ... | T-1 | T0
+# 0 | titanic |     | etc | etc
+# 1 | filme2  | ... | etc | etc
+
+# -----------------------
+
+# F       | P (-10 a -1)
+# titanic | 1
+# filme2  | 1
+# etc     | 2
+
+# F       | P (-9 a 0)
+# titanic | 0
+# filme2  | 0
+# etc     | 4
+
+# -----------------------
+
+# multinomial -> entropia(
+#   mínima = 1 recomendado sempre,
+#   máxima = todos iguais
+# )
+
+# Também: q-entropia, variância, coef. var. (talvez), ...
