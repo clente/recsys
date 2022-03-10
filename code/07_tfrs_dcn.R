@@ -451,3 +451,41 @@ entropy::KL.empirical(freqs$seqs[freqs$preds0 != 0], freqs$preds0[freqs$preds0 !
 entropy::KL.empirical(freqs$seqs[freqs$preds1 != 0], freqs$preds1[freqs$preds1 != 0])
 entropy::KL.empirical(freqs$seqs[freqs$preds2 != 0], freqs$preds2[freqs$preds2 != 0])
 entropy::KL.empirical(freqs$seqs[freqs$preds3 != 0], freqs$preds3[freqs$preds3 != 0])
+
+# Colocar um epsilon positivo pequeno ao invés de 0
+#   - Pode ser 1 visualização dividida entre todos os 0s
+# Outra medida que não descarta o 0?
+# Fazer evolução por gênero do filme
+
+plot(as.numeric(pop[1, 2:6]), type = "l", ylim = range(pop[,2:6]), lwd = 0.5)
+for (i in 2:nrow(pop)) {
+  points(as.numeric(pop[i, 2:6]), type = "l", lwd = 0.5)
+}
+
+zero <- pop[pop$preds3 == 0, ]
+plot(as.numeric(zero[1, 2:6]), type = "l", ylim = range(zero[,2:6]), lwd = 0.5)
+for (i in 2:nrow(zero)) {
+  points(as.numeric(zero[i, 2:6]), type = "l", lwd = 0.5)
+}
+
+zero <- pop[pop$preds3 > 0, ]
+plot(log(as.numeric(zero[1, 2:6])), type = "l", ylim = c(0, 11.21782), lwd = 0.5)
+for (i in 2:nrow(zero)) {
+  points(log(as.numeric(zero[i, 2:6])), type = "l", lwd = 0.5)
+}
+
+zero <- pop[pop$preds3 > 0, ]
+col0 <- ifelse(log(zero$preds3) > 5, "tomato", "black")
+plot(log(as.numeric(zero[1, 2:6])), type = "l", ylim = c(0, 11.21782), lwd = 0.5, col = col0[1])
+for (i in 2:nrow(zero)) {
+  points(log(as.numeric(zero[i, 2:6])), type = "l", lwd = 0.5, col = col0[i])
+}
+
+pop %>%
+  purrr::set_names("id", paste0("X", 0:4)) %>%
+  tidyr::pivot_longer(X0:X4) %>%
+  dplyr::mutate(
+    name = as.numeric(stringr::str_remove(name, "X"))
+  ) %>%
+  ggplot2::ggplot(ggplot2::aes(x = name, y = value, color = id)) +
+  ggplot2::geom_line()
