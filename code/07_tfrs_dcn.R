@@ -432,7 +432,8 @@ pop <- seqs %>%
   dplyr::left_join(preds1, "movie_id") %>%
   dplyr::left_join(preds2, "movie_id") %>%
   dplyr::left_join(preds3, "movie_id") %>%
-  dplyr::mutate_all(tidyr::replace_na, 0)
+  dplyr::mutate_all(tidyr::replace_na, 0) %>%
+  dplyr::mutate_all(~ifelse(.x == 0, 1 / sum(.x == 0), .x))
 
 entropy::entropy.empirical(pop$seqs)
 entropy::entropy.empirical(pop$preds0)
@@ -444,13 +445,6 @@ entropy::KL.empirical(pop$seqs, pop$preds0)
 entropy::KL.empirical(pop$seqs, pop$preds1)
 entropy::KL.empirical(pop$seqs, pop$preds2)
 entropy::KL.empirical(pop$seqs, pop$preds3)
-
-freqs <- dplyr::mutate(pop, dplyr::across(-movie_id, entropy::freqs.empirical))
-
-entropy::KL.empirical(freqs$seqs[freqs$preds0 != 0], freqs$preds0[freqs$preds0 != 0])
-entropy::KL.empirical(freqs$seqs[freqs$preds1 != 0], freqs$preds1[freqs$preds1 != 0])
-entropy::KL.empirical(freqs$seqs[freqs$preds2 != 0], freqs$preds2[freqs$preds2 != 0])
-entropy::KL.empirical(freqs$seqs[freqs$preds3 != 0], freqs$preds3[freqs$preds3 != 0])
 
 # Colocar um epsilon positivo pequeno ao invés de 0
 #   - Pode ser 1 visualização dividida entre todos os 0s
@@ -489,3 +483,5 @@ pop %>%
   ) %>%
   ggplot2::ggplot(ggplot2::aes(x = name, y = value, color = id)) +
   ggplot2::geom_line()
+
+
