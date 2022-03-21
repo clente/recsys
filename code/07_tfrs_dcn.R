@@ -446,42 +446,112 @@ entropy::KL.empirical(pop$seqs, pop$preds1)
 entropy::KL.empirical(pop$seqs, pop$preds2)
 entropy::KL.empirical(pop$seqs, pop$preds3)
 
-# Colocar um epsilon positivo pequeno ao invés de 0
-#   - Pode ser 1 visualização dividida entre todos os 0s
-# Outra medida que não descarta o 0?
-# Fazer evolução por gênero do filme
-
 plot(as.numeric(pop[1, 2:6]), type = "l", ylim = range(pop[,2:6]), lwd = 0.5)
 for (i in 2:nrow(pop)) {
   points(as.numeric(pop[i, 2:6]), type = "l", lwd = 0.5)
 }
 
-zero <- pop[pop$preds3 == 0, ]
+zero <- pop[pop$preds3 >= 1, ]
 plot(as.numeric(zero[1, 2:6]), type = "l", ylim = range(zero[,2:6]), lwd = 0.5)
 for (i in 2:nrow(zero)) {
   points(as.numeric(zero[i, 2:6]), type = "l", lwd = 0.5)
 }
 
-zero <- pop[pop$preds3 > 0, ]
+zero <- pop[pop$preds3 >= 1, ]
 plot(log(as.numeric(zero[1, 2:6])), type = "l", ylim = c(0, 11.21782), lwd = 0.5)
 for (i in 2:nrow(zero)) {
   points(log(as.numeric(zero[i, 2:6])), type = "l", lwd = 0.5)
 }
 
-zero <- pop[pop$preds3 > 0, ]
+zero <- pop[pop$preds3 >= 1, ]
 col0 <- ifelse(log(zero$preds3) > 5, "tomato", "black")
 plot(log(as.numeric(zero[1, 2:6])), type = "l", ylim = c(0, 11.21782), lwd = 0.5, col = col0[1])
 for (i in 2:nrow(zero)) {
   points(log(as.numeric(zero[i, 2:6])), type = "l", lwd = 0.5, col = col0[i])
 }
 
-pop %>%
-  purrr::set_names("id", paste0("X", 0:4)) %>%
-  tidyr::pivot_longer(X0:X4) %>%
+genres <- "data-raw/metadata.csv" %>%
+  readr::read_csv() %>%
+  dplyr::select(id, genres) %>%
+  dplyr::transmute(
+    id = as.integer(id),
+    genre = stringr::str_extract(genres, "(?<='name': ')[A-Za-z]+")
+  )
+
+df <- pop %>%
+  dplyr::left_join(genres, c("movie_id" = "id")) %>%
+  dplyr::filter(!is.na(genre)) %>%
+  purrr::set_names("id", paste0("X", 1:5), "x") %>%
+  tidyr::pivot_longer(X1:X5, "t", values_to = "y") %>%
   dplyr::mutate(
-    name = as.numeric(stringr::str_remove(name, "X"))
-  ) %>%
-  ggplot2::ggplot(ggplot2::aes(x = name, y = value, color = id)) +
-  ggplot2::geom_line()
+    y = round(y),
+    t = as.integer(stringr::str_remove(t, "X"))
+  )
 
+summary(glm(y ~ t + x, family = "poisson", data = df))
 
+summary(MASS::glm.nb(y ~ t + x, data = df))
+
+pop_genre <- pop %>%
+  dplyr::left_join(genres, c("movie_id" = "id")) %>%
+  dplyr::filter(!is.na(genre))
+
+tmp <- dplyr::filter(pop_genre, genre == "Family")
+plot(as.numeric(tmp[1, 2:6]), type = "l", ylim = range(tmp[, 2:6]), lwd = 0.5)
+for (i in 2:nrow(tmp)) {
+  points(as.numeric(tmp[i, 2:6]), type = "l", lwd = 0.5)
+}
+
+tmp <- dplyr::filter(pop_genre, genre == "Action")
+plot(as.numeric(tmp[1, 2:6]), type = "l", ylim = range(tmp[, 2:6]), lwd = 0.5)
+for (i in 2:nrow(tmp)) {
+  points(as.numeric(tmp[i, 2:6]), type = "l", lwd = 0.5)
+}
+
+tmp <- dplyr::filter(pop_genre, genre == "Adventure")
+plot(as.numeric(tmp[1, 2:6]), type = "l", ylim = range(tmp[, 2:6]), lwd = 0.5)
+for (i in 2:nrow(tmp)) {
+  points(as.numeric(tmp[i, 2:6]), type = "l", lwd = 0.5)
+}
+
+tmp <- dplyr::filter(pop_genre, genre == "Comedy")
+plot(as.numeric(tmp[1, 2:6]), type = "l", ylim = range(tmp[, 2:6]), lwd = 0.5)
+for (i in 2:nrow(tmp)) {
+  points(as.numeric(tmp[i, 2:6]), type = "l", lwd = 0.5)
+}
+
+tmp <- dplyr::filter(pop_genre, genre == "Crime")
+plot(as.numeric(tmp[1, 2:6]), type = "l", ylim = range(tmp[, 2:6]), lwd = 0.5)
+for (i in 2:nrow(tmp)) {
+  points(as.numeric(tmp[i, 2:6]), type = "l", lwd = 0.5)
+}
+
+tmp <- dplyr::filter(pop_genre, genre == "Drama")
+plot(as.numeric(tmp[1, 2:6]), type = "l", ylim = range(tmp[, 2:6]), lwd = 0.5)
+for (i in 2:nrow(tmp)) {
+  points(as.numeric(tmp[i, 2:6]), type = "l", lwd = 0.5)
+}
+
+pop %>%
+  dplyr::filter(preds3 >= 1) %>%
+  dplyr::left_join(genres, c("movie_id" = "id")) %>%
+  dplyr::filter(!is.na(genre))  %>%
+  dplyr::count(genre)
+
+imdb_pop <- pop %>%
+  dplyr::left_join(readr::read_csv("data-raw/metadata.csv"), c("movie_id" = "id")) %>%
+  dplyr::select(preds3, popularity) %>%
+  dplyr::filter(!is.na(popularity)) %>%
+  dplyr::mutate(preds3 = round(preds3))
+
+ggplot2::qplot(imdb_pop$popularity, log(imdb_pop$preds3))
+
+imdb_pop <- pop %>%
+  dplyr::left_join(readr::read_csv("data-raw/metadata.csv"), c("movie_id" = "id")) %>%
+  dplyr::select(seqs, popularity) %>%
+  dplyr::filter(!is.na(popularity)) %>%
+  dplyr::mutate(seqs = round(seqs))
+
+ggplot2::qplot(imdb_pop$popularity, log(imdb_pop$seqs))
+
+# Edge/line bundling
