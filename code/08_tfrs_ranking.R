@@ -1,27 +1,4 @@
 
-ratings <- "data-raw/1m_movielens/ratings.dat" |>
-  readr::read_delim(delim = "::", col_types = "iiic") |>
-  purrr::set_names("user_id", "movie_id", "rating", "timestamp") |>
-  readr::write_csv("data-raw/1m_movielens/ratings.csv")
-
-movies <- "data-raw/1m_movielens/movies.dat" |>
-  readr::read_delim(delim = "::", col_types = "icc") |>
-  purrr::set_names("movie_id", "movie_title", "genres") |>
-  readr::write_csv("data-raw/1m_movielens/movies.csv")
-
-users_movies <- unique(ratings$user_id) |>
-  list(unique(ratings$movie_id)) |>
-  purrr::cross() |>
-  purrr::transpose() |>
-  purrr::set_names("user_id", "movie_id") |>
-  tibble::as_tibble() |>
-  tidyr::unnest(dplyr::everything()) |>
-  dplyr::left_join(dplyr::select(movies, -genres), "movie_id") |>
-  dplyr::select(-movie_id) |>
-  readr::write_csv("data-raw/users_movies.csv")
-
-### 08_tfrs_ranking.py and back
-
 set.seed(42)
 
 ratings <- readr::read_csv("data-raw/1m_movielens/ratings.csv", col_types = "iiid")
@@ -32,7 +9,7 @@ predictions0 <- "data-raw/predictions0.csv" |>
   readr::read_csv(col_names = "prediction", col_types = "d") |>
   dplyr::bind_cols(users_movies) |>
   dplyr::group_by(user_id) |>
-  dplyr::slice_max(prediction, n = 1) |>
+  dplyr::slice_max(prediction, n = 10) |>
   dplyr::slice_sample(n = 1) |>
   dplyr::ungroup()
 
