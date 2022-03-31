@@ -1,7 +1,7 @@
 set.seed(42)
 
-ratings0 <- readr::read_csv("data-raw/1m_movielens/ratings.csv", col_types = "iiid")
-movies <- readr::read_csv("data-raw/1m_movielens/movies.csv", col_types = "icc")
+ratings0 <- readr::read_csv("data-raw/ratings0.csv", col_types = "iiid")
+movies <- readr::read_csv("data-raw/movies.csv", col_types = "icc")
 users_movies <- readr::read_csv("data-raw/users_movies.csv", col_types = "ic")
 
 read_predictions <- function(file, users_movies) {

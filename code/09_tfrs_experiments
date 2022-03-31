@@ -9,8 +9,8 @@ read_ratings <- function(file, movies) {
     dplyr::select(user_id, movie_id, rating = user_rating, timestamp)
 }
 
-movies <- readr::read_csv("data-raw/1m_movielens/movies.csv", col_types = "icc")
-ratings0 <- readr::read_csv("data-raw/1m_movielens/ratings.csv", col_types = "iiid")
+movies <- readr::read_csv("data-raw/movies.csv", col_types = "icc")
+ratings0 <- readr::read_csv("data-raw/ratings0.csv", col_types = "iiid")
 ratings1 <- read_ratings("data-raw/ratings1.csv", movies)
 ratings2 <- read_ratings("data-raw/ratings2.csv", movies)
 ratings3 <- read_ratings("data-raw/ratings3.csv", movies)

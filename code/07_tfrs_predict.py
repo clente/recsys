@@ -5,7 +5,7 @@ import tensorflow_datasets as tfds
 import tensorflow_recommenders as tfrs
 
 file_predictions = "data-raw/predictions3.csv"
-dir_model = "data-raw/1m_model3"
+dir_model = "data-raw/model3"
 
 ### Chunk 1 --------------------------------------------------------------------
 

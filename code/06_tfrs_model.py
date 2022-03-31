@@ -35,7 +35,7 @@ drive.mount('/content/drive')
 # !pip install -q --upgrade tensorflow-datasets
 
 file_ratings = "drive/MyDrive/ratings3.csv"
-dir_model = "drive/MyDrive/1m_model3"
+dir_model = "drive/MyDrive/model3"
 
 import os
 import pprint
