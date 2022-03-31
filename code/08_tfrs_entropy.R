@@ -158,115 +158,118 @@ ratings4 |>
   ratings_to_sequences() |>
   sequences_to_entropy()
 
-### Other ----------------------------------------------------------------------
+### Popularity -----------------------------------------------------------------
 
+pop0 <- ratings0 |>
+  ratings_to_sequences() |>
+  sequences_to_popularity() |>
+  dplyr::select(-rank) |>
+  dplyr::rename(pop0 = pop)
 
+pop1 <- ratings1 |>
+  ratings_to_sequences() |>
+  sequences_to_popularity() |>
+  dplyr::select(-rank) |>
+  dplyr::rename(pop1 = pop)
 
-# plot(as.numeric(pop[1, 2:6]), type = "l", ylim = range(pop[,2:6]), lwd = 0.5)
-# for (i in 2:nrow(pop)) {
-#   points(as.numeric(pop[i, 2:6]), type = "l", lwd = 0.5)
-# }
+pop2 <- ratings2 |>
+  ratings_to_sequences() |>
+  sequences_to_popularity() |>
+  dplyr::select(-rank) |>
+  dplyr::rename(pop2 = pop)
 
-# zero <- pop[pop$preds3 >= 1, ]
-# plot(as.numeric(zero[1, 2:6]), type = "l", ylim = range(zero[,2:6]), lwd = 0.5)
-# for (i in 2:nrow(zero)) {
-#   points(as.numeric(zero[i, 2:6]), type = "l", lwd = 0.5)
-# }
+pop3 <- ratings3 |>
+  ratings_to_sequences() |>
+  sequences_to_popularity() |>
+  dplyr::select(-rank) |>
+  dplyr::rename(pop3 = pop)
 
-# zero <- pop[pop$preds3 >= 1, ]
-# plot(log(as.numeric(zero[1, 2:6])), type = "l", ylim = c(0, 11.21782), lwd = 0.5)
-# for (i in 2:nrow(zero)) {
-#   points(log(as.numeric(zero[i, 2:6])), type = "l", lwd = 0.5)
-# }
+pop4 <- ratings4 |>
+  ratings_to_sequences() |>
+  sequences_to_popularity() |>
+  dplyr::select(-rank) |>
+  dplyr::rename(pop4 = pop)
 
-# zero <- pop[pop$preds3 >= 1, ]
-# col0 <- ifelse(log(zero$preds3) > 5, "tomato", "black")
-# plot(log(as.numeric(zero[1, 2:6])), type = "l", ylim = c(0, 11.21782), lwd = 0.5, col = col0[1])
-# for (i in 2:nrow(zero)) {
-#   points(log(as.numeric(zero[i, 2:6])), type = "l", lwd = 0.5, col = col0[i])
-# }
+pop <- pop0 |>
+  dplyr::left_join(pop1, "movie_id") |>
+  dplyr::left_join(pop2, "movie_id") |>
+  dplyr::left_join(pop3, "movie_id") |>
+  dplyr::left_join(pop4, "movie_id") |>
+  dplyr::mutate_all(tidyr::replace_na, 0) |>
+  dplyr::mutate_all(~ifelse(.x == 0, 1 / sum(.x == 0), .x))
 
-# genres <- "data-raw/metadata.csv" |>
-#   readr::read_csv() |>
-#   dplyr::select(id, genres) |>
-#   dplyr::transmute(
-#     id = as.integer(id),
-#     genre = stringr::str_extract(genres, "(?<='name': ')[A-Za-z]+")
-#   )
+plot(as.numeric(pop[1, 2:6]), type = "l", ylim = range(pop[,2:6]), lwd = 0.5)
+for (i in 2:nrow(pop)) {
+  points(as.numeric(pop[i, 2:6]), type = "l", lwd = 0.5)
+}
 
-# df <- pop |>
-#   dplyr::left_join(genres, c("movie_id" = "id")) |>
-#   dplyr::filter(!is.na(genre)) |>
-#   purrr::set_names("id", paste0("X", 1:5), "x") |>
-#   tidyr::pivot_longer(X1:X5, "t", values_to = "y") |>
-#   dplyr::mutate(
-#     y = round(y),
-#     t = as.integer(stringr::str_remove(t, "X"))
-#   )
+zero <- pop[pop$pop4 >= 1, ]
+plot(as.numeric(zero[1, 2:6]), type = "l", ylim = range(zero[,2:6]), lwd = 0.5)
+for (i in 2:nrow(zero)) {
+  points(as.numeric(zero[i, 2:6]), type = "l", lwd = 0.5)
+}
 
-# summary(glm(y ~ t + x, family = "poisson", data = df))
+zero <- pop[pop$pop4 >= 1, ]
+plot(log(as.numeric(zero[1, 2:6])), type = "l", ylim = c(0, 11.21782), lwd = 0.5)
+for (i in 2:nrow(zero)) {
+  points(log(as.numeric(zero[i, 2:6])), type = "l", lwd = 0.5)
+}
 
-# summary(MASS::glm.nb(y ~ t + x, data = df))
+zero <- pop[pop$pop4 >= 1, ]
+col0 <- ifelse(log(zero$pop4) > 5, "tomato", "black")
+plot(log(as.numeric(zero[1, 2:6])), type = "l", ylim = c(0, 11.21782), lwd = 0.5, col = col0[1])
+for (i in 2:nrow(zero)) {
+  points(log(as.numeric(zero[i, 2:6])), type = "l", lwd = 0.5, col = col0[i])
+}
 
-# pop_genre <- pop |>
-#   dplyr::left_join(genres, c("movie_id" = "id")) |>
-#   dplyr::filter(!is.na(genre))
+df <- pop |>
+  dplyr::left_join(movies, "movie_id") |>
+  dplyr::select(-movie_title) |>
+  dplyr::filter(!is.na(genres)) |>
+  dplyr::mutate(genres = stringr::str_remove(genres, "\\|.+")) |>
+  purrr::set_names("id", paste0("X", 1:5), "x") |>
+  tidyr::pivot_longer(X1:X5, "t", values_to = "y") |>
+  dplyr::mutate(
+    y = round(y),
+    t = as.integer(stringr::str_remove(t, "X"))
+  )
 
-# tmp <- dplyr::filter(pop_genre, genre == "Family")
-# plot(as.numeric(tmp[1, 2:6]), type = "l", ylim = range(tmp[, 2:6]), lwd = 0.5)
-# for (i in 2:nrow(tmp)) {
-#   points(as.numeric(tmp[i, 2:6]), type = "l", lwd = 0.5)
-# }
+summary(glm(y ~ t + x, family = "poisson", data = df))
 
-# tmp <- dplyr::filter(pop_genre, genre == "Action")
-# plot(as.numeric(tmp[1, 2:6]), type = "l", ylim = range(tmp[, 2:6]), lwd = 0.5)
-# for (i in 2:nrow(tmp)) {
-#   points(as.numeric(tmp[i, 2:6]), type = "l", lwd = 0.5)
-# }
+summary(MASS::glm.nb(y ~ t + x, data = df))
 
-# tmp <- dplyr::filter(pop_genre, genre == "Adventure")
-# plot(as.numeric(tmp[1, 2:6]), type = "l", ylim = range(tmp[, 2:6]), lwd = 0.5)
-# for (i in 2:nrow(tmp)) {
-#   points(as.numeric(tmp[i, 2:6]), type = "l", lwd = 0.5)
-# }
+pop_genre <- pop |>
+  dplyr::left_join(movies, "movie_id") |>
+  dplyr::select(-movie_title) |>
+  dplyr::filter(!is.na(genres)) |>
+  dplyr::mutate(genres = stringr::str_remove(genres, "\\|.+"))
 
-# tmp <- dplyr::filter(pop_genre, genre == "Comedy")
-# plot(as.numeric(tmp[1, 2:6]), type = "l", ylim = range(tmp[, 2:6]), lwd = 0.5)
-# for (i in 2:nrow(tmp)) {
-#   points(as.numeric(tmp[i, 2:6]), type = "l", lwd = 0.5)
-# }
+tmp <- dplyr::filter(pop_genre, genres == "Action")
+plot(as.numeric(tmp[1, 2:6]), type = "l", ylim = range(tmp[, 2:6]), lwd = 0.5)
+for (i in 2:nrow(tmp)) {
+  points(as.numeric(tmp[i, 2:6]), type = "l", lwd = 0.5)
+}
 
-# tmp <- dplyr::filter(pop_genre, genre == "Crime")
-# plot(as.numeric(tmp[1, 2:6]), type = "l", ylim = range(tmp[, 2:6]), lwd = 0.5)
-# for (i in 2:nrow(tmp)) {
-#   points(as.numeric(tmp[i, 2:6]), type = "l", lwd = 0.5)
-# }
+tmp <- dplyr::filter(pop_genre, genres == "Adventure")
+plot(as.numeric(tmp[1, 2:6]), type = "l", ylim = range(tmp[, 2:6]), lwd = 0.5)
+for (i in 2:nrow(tmp)) {
+  points(as.numeric(tmp[i, 2:6]), type = "l", lwd = 0.5)
+}
 
-# tmp <- dplyr::filter(pop_genre, genre == "Drama")
-# plot(as.numeric(tmp[1, 2:6]), type = "l", ylim = range(tmp[, 2:6]), lwd = 0.5)
-# for (i in 2:nrow(tmp)) {
-#   points(as.numeric(tmp[i, 2:6]), type = "l", lwd = 0.5)
-# }
+tmp <- dplyr::filter(pop_genre, genres == "Comedy")
+plot(as.numeric(tmp[1, 2:6]), type = "l", ylim = range(tmp[, 2:6]), lwd = 0.5)
+for (i in 2:nrow(tmp)) {
+  points(as.numeric(tmp[i, 2:6]), type = "l", lwd = 0.5)
+}
 
-# pop |>
-#   dplyr::filter(preds3 >= 1) |>
-#   dplyr::left_join(genres, c("movie_id" = "id")) |>
-#   dplyr::filter(!is.na(genre))  |>
-#   dplyr::count(genre)
+tmp <- dplyr::filter(pop_genre, genres == "Crime")
+plot(as.numeric(tmp[1, 2:6]), type = "l", ylim = range(tmp[, 2:6]), lwd = 0.5)
+for (i in 2:nrow(tmp)) {
+  points(as.numeric(tmp[i, 2:6]), type = "l", lwd = 0.5)
+}
 
-# imdb_pop <- pop |>
-#   dplyr::left_join(readr::read_csv("data-raw/metadata.csv"), c("movie_id" = "id")) |>
-#   dplyr::select(preds3, popularity) |>
-#   dplyr::filter(!is.na(popularity)) |>
-#   dplyr::mutate(preds3 = round(preds3))
-
-# ggplot2::qplot(imdb_pop$popularity, log(imdb_pop$preds3))
-
-# imdb_pop <- pop |>
-#   dplyr::left_join(readr::read_csv("data-raw/metadata.csv"), c("movie_id" = "id")) |>
-#   dplyr::select(seqs, popularity) |>
-#   dplyr::filter(!is.na(popularity)) |>
-#   dplyr::mutate(seqs = round(seqs))
-
-# ggplot2::qplot(imdb_pop$popularity, log(imdb_pop$seqs))
-
+tmp <- dplyr::filter(pop_genre, genres == "Drama")
+plot(as.numeric(tmp[1, 2:6]), type = "l", ylim = range(tmp[, 2:6]), lwd = 0.5)
+for (i in 2:nrow(tmp)) {
+  points(as.numeric(tmp[i, 2:6]), type = "l", lwd = 0.5)
+}
