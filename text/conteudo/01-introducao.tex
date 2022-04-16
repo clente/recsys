@@ -13,10 +13,11 @@ argued, are positive (shortening distances, political accountability, social
 organizing), but they are not perfect institutions.
 
 Social media companies already face significant backlash for their questionable
-business model and ethics. Cambridge Analytica's election meddling, Facebook's
-subliminal experiments, YouTube's problem with disturbing content marketed at
-kids, and Twitter's bot infestation are just a few recent scandals that have put
-the societal role of social media into question.
+business model and ethics. Cambridge Analytica's election meddling \citep{},
+Facebook's subliminal experiments \citep{}, YouTube's problem with disturbing
+content marketed at kids \citep{}, and Twitter's bot infestation \citep{} are
+just a few recent scandals that have put the societal role of social media into
+question.
 
 One particular controversy that has taken over public discourse around social
 networks is the role that their algorithms might have in radicalizing users,
@@ -29,29 +30,25 @@ algorithms.
 News organizations, in general, have been skeptical of social networks.
 Journalists and specialists alike argue that social media's algorithms
 (specially recommender algorithms) are tuned to peddle conspiracy theories,
-extremist views, and false information. This would be the source cause for a
-plethora of what they consider contemporary evils: religious extremism,
+extremist views, and false information \citep{}. This would be the source cause
+for a plethora of what they consider contemporary evils: religious extremism,
 anti-democratic leaders, widespread depression among teenagers, anti-science
 movements, etc.
 
 This narrative, of course, has been questioned for a variety of reasons. Some
 say that it is self serving: traditional news organizations are being displaced
 by social media and it would be convenient for them to mine the public's trust
-in them. Others claim that these recommender algorithms are not to blame for
-political polarization and that social networks even have a tendency to favor
-more left-wing viewpoints.
+in them \citep{}. Others claim that these recommender algorithms are not to
+blame for political polarization and that social networks even have a tendency
+to favor more left-wing viewpoints \citep{}.
 
 The debate around the role of recommender systems in social media radicalization
-is still, unfortunately, too recent and based in anecdotes. Since its impacts
-are all but universal, more quality research is vital to inform both the public
-and opinion makers about if and how much recommendation algorithms influence
-social media users.
+is still, unfortunately, too recent and based in anecdotes \citep{}. Since its
+impacts are all but universal, more quality research is vital to inform both the
+public and opinion makers about if and how much recommendation algorithms
+influence social media users.
 
-This dissertation aims to further such research. The rest of Chapter 1 is
-dedicated to core concepts covered in the rest of the work, ending in subsection
-1.4, which tackles the main hypothesis of this dissertation. Chapter 2 contains
-the literature review, Chapter 3 explains the experiments already conducted and
-their results, and Chapter 4 is about next steps.
+This dissertation aims to further such research.
 
 \section{Social Networks}
 \label{sec:social_networks}
@@ -59,8 +56,8 @@ their results, and Chapter 4 is about next steps.
 Social networking services, also referred to as social networks and social
 media, are notoriously difficult to define. Some definitions might be too narrow
 (excluding instant messaging services), while some might be too broad (including
-technologies such as telephone networks). Most definitions include some common
-features:
+technologies such as telephone networks). Most definitions \citep{} include some
+common features:
 
 \begin{itemize}
   \item Internet-based
@@ -75,7 +72,7 @@ Friendster and Myspace followed in 2003, with Orkut and Facebook slightly
 lagging behind in 2004. Each hit their peak at different moments and different
 countries, but Facebook overtook all of them in 2009 when it became the most
 popular social networking service in the world, still maintaining the title over
-11 years latter at the moment of writing.
+13 years latter at the moment of writing \citep{}.
 
 Even though all aforementioned social networks are multimedia, that is, users
 can post text, photos and videos, some of the most popular services focus on a
@@ -83,26 +80,11 @@ specific type of media. For instance, YouTube (2009) centers around videos,
 WhatsApp (2009) and WeChat (2011) were originally designed for text-based
 communication, and Instagram's (2010) main focus is photos.
 
-Some social media services, very much in agreement with McLuhan's teachings
-\citep{mcluhan1994understanding}, have what could be considered a ``style''.
-Instagram's content, for example, tends toward more personal (i.e. egoic) photos
-and videos. As of November 28th, 2020, six of the top 20 most-liked posts on
-Instagram are from American socialite Kylie Jenner, consisting of four photos of
-her daughter and two of her ex-boyfriend. Even though there are many different
-niches inside Instagram, personal posts seam to have an edge over other kinds of
-content.
-Twitter, unlike most other social networks, allows for asymmetrical connections,
-meaning users can follow profiles without being followed back. This enables the
-emergence of Twitter communities (e.g. Fintwit, Black Twitter) that can be
-largely self referential and/or organized around certain subjects. Facebook
-users, on the other hand, can belong to groups, user-moderated profiles that
-might revolve around any particular topics of interest; there are groups that
-organize pet owners and groups that organize neonazis.
-
 Parallel to all other features and idiosyncrasies, there lay the recommendation
 algorithms. While a few social networking services (e.g. WhatsApp) do not
 recommend any content or profiles to the user, most do and, according to recent
-studies, these recommendations have become the main drivers of interactions.
+studies, these recommendations have become the main drivers of interactions
+\citep{}.
 
 \section{Recommender Systems}
 \label{sec:recommender_systems}
@@ -121,7 +103,7 @@ Preference information can be gathered from explicit behaviors (e.g. rating a
 product in a scale ranging from 0 to 5 stars) or from implicit behaviors (e.g.
 how much time the user lingers on a product's page). These data can be combined
 with information about the user (age, political leaning, etc.) in order to
-create the best possible representation of the user's preferences.
+create the best possible representation of the user's preferences \citep{}.
 
 The output of these systems can come in the form of a prediction or a list of
 recommended items. In the first case, the goal of the algorithm is approximating
@@ -130,12 +112,12 @@ of output involves gathering the items that most likely would interest the user.
 Simple recommender systems that suggest items similar to the one being queried
 do not necessarily involve rating predictions, but it is common to have the list
 of recommended items based on the ratings the algorithms estimated the user would
-give to those items.
+give to those items \citep{}.
 
-Most recommender systems follow into one of four categories according to the
+Most recommender systems fall into one of four categories according to the
 filtering algorithm they use, that it, the strategy for generating predictions
 or selecting the top-N items: content-based filtering, demographic filtering,
-collaborative filtering, and hybrid filtering.
+collaborative filtering, and hybrid filtering \citep{}.
 
 Content-based filtering leverages characteristics of the content in order to
 generate the recommendations \citep{ricci_introduction_2011}. One such algorithm
@@ -161,7 +143,7 @@ be trained. It also involves two distinct steps: candidate generation (when the
 billions of videos available on the platform are quickly narrowed down to a few
 hundreds that might be relevant) and ranking (when the algorithm actually
 attempts to predict the score a user would implicitly give to the candidate
-videos).
+videos) \citep{}.
 
 Another relevant aspect of recommender systems that is well-exemplified by
 YouTube is the use of balancing factors such as novelty, dispersity, and
@@ -169,8 +151,13 @@ stability \citep{zhao_recommending_2019}. In the case of Google's video giant,
 there is a baked-in bias for recency, strongly favoring newer videos in
 detriment of older content \citep{zhao_recommending_2019}.
 
-\section{Radicalization}
-\label{sec:radicalization}
+From this kind of bias stems much debate: as recommender systems explode in
+popularity, so does research regarding its shortcommings. User radicalization
+and algorithmic bias (explicitly programmed or not) are hotly debated subjects
+in the literature.
+
+\section{Radicalization and Bias}
+\label{sec:radicalization_bias}
 
 Opinion polarization is far from a recent phenomenon, and social media is only
 the most recent communication medium where it can be detected and studied. An
@@ -208,19 +195,19 @@ democracies, specially in the digital age. Since most social networks, as of
 this writing, are still poorly moderated, they allow users to be exposed to a
 plethora of viewpoints, from benign to insidious, possibly configuring a
 ``pipeline of radicalization'' through which regular users end up radicalized by
-coming into contact with extreme content.
+coming into contact with extreme content \citep{}.
 
 Of course this argument is still very much open for debate. Researchers have
-found evidences both for and against the pipeline hypothesis and even proposed
-other means though which social media might help radicalize users (e.g. the supply
-and demand hypothesis). Despite all disagreements, one common point addressed by
-most research is the role of recommendation algorithms in serving users with
-radicalizing content.
+found evidences both for and against \citep{} the pipeline hypothesis and even
+proposed other means though which social media might help radicalize users (e.g.
+the supply and demand hypothesis \citep{}). Despite all disagreements, one
+common point addressed by most research is the role of recommendation algorithms
+in serving users with radicalizing content.
 
 Proponents of the pipeline hypothesis, for instance, argue that recommendation
 systems, aiming to maximize content consumption, suggest items that reinforce
-preconceived notions of the user and that play on fear and paranoia. Content
-that appears urgent and leaves the user fearful (for their live, their
+preconceived notions of the user and that play on fear and paranoia \citep{}.
+Content that appears urgent and leaves the user fearful (for their live, their
 community, or their identity) could be more engaging and, therefore, might be
 more susceptible to being considered as relevant by the algorithm.
 
@@ -234,23 +221,48 @@ Definitive evidence for one theory or another must, therefore, apply to
 recommender systems in general and be predictive of how they work both in
 controlled and real life scenarios.
 
-\section{Hypothesis}
-\label{sec:hypothesis}
+Closely related to user radicalization is the subject of algorithmic bias.
+YouTube, for example, has an explicit bias towards recency \citep{}, meaning
+that more recent videos get "boosted" by their recommendation algorithm. This is
+explicitly coded into the system, but there are also implicit biases, learned by
+watching user behavior.
+
+Stoica \citep{} studied Instagram profiles before and after the implementation
+of their recommendation engine. They discovered that male users had a slight
+predilection for following other men, while women displayed no such preference
+and, as soon as the recommender system was deployed, engagement with profiles of
+male users skyrocketed even though they were the minority on the platform. The
+algorithm recognized and leveraged this so called differentiated homophily
+effectively, but we might question whether or not this should be the desired
+outcome of a good recommender system.
+
+In social networks where recommendations are the source of most interations,
+such as YouTube \citep{}, the algorithm could go from being a mere reflection of
+user preferences to actively shaping user behavior. Hypothetically, a minoritary
+group of highly engaged users with strong self-reinforcing consumption habits
+could tip the scales of the algorithm and cause fringe content to be amplified;
+this is only one way through which a radicalization pipeline could spontaneously
+form in a social network.
+
+\section{Research Goals}
+\label{sec:research_goals}
 
 As explained in the previous sections, social networks' recommendation
-algorithms might play a significant role in radicalizing users. This could, at
-least in part, explain the recent surge in popularity that far-right ideologies
-have enjoyed over the last few years. If true, this is an existential threat to
-modern democracies that should be addressed as soon as possible.
+algorithms might play a significant role in radicalizing users. This could be,
+at least in part, be a result of implicit and explicit biases in recommender
+systems.
 
 This dissertation aims to explore the radicalization pipeline hypothesis and,
 more specifically, understand the mechanisms through which recommender systems
-can end up suggesting extreme content to regular users. The research developed
-here revolves around the dynamical properties of recommender systems (i.e. the
-sequence of items suggested to an arbitrary user over time) and how they might
-lead to ``fixed points'' in an algorithm's phase space.
+can end up learning or developing biases. The research developed here revolves
+around the dynamical properties of recommender systems (i.e., the sequence of
+items suggested to an arbitrary user over time) and how feedback loops can
+create ``amplification pipelines'' inside these engines.
 
-In short, the main goal is to test the pipeline hypothesis in a setting where
-recommendation algorithms are dynamically simulated. This will allow for a
-better understanding of how these systems behave in the wild, possibly taking
-the user in a radicalizing ``trip'' through the space of all possible items.
+In short, the main motivator of this research is to test the pipeline hypothesis
+in a setting where recommendation algorithms learn dynamically.
+
+\section{Outline}
+\label{sec:outline}
+
+...
