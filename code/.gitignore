@@ -40,3 +40,6 @@ vignettes/*.pdf
 
 # Large data
 data-raw/*
+
+# Old data
+old_recsys_data.zip
