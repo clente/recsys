@@ -19,6 +19,7 @@ ratings1 <- read_ratings("data-raw/ratings1.csv", movies)
 ratings2 <- read_ratings("data-raw/ratings2.csv", movies)
 ratings3 <- read_ratings("data-raw/ratings3.csv", movies)
 ratings4 <- read_ratings("data-raw/ratings4.csv", movies)
+
 # Create sequences (10 most recent movies watched per user)
 ratings_to_sequences <- function(ratings) {
   ratings |>
@@ -211,6 +212,8 @@ pop_all |>
 ratings_mean |>
   ggplot2::ggplot(ggplot2::aes(t, rating, group = movie_id)) +
   ggplot2::geom_line(size = 0.2, alpha = 0.2)
+
+# Fazer um gráfico só com os que mudaram
 
 ### Models ---------------------------------------------------------------------
 

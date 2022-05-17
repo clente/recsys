@@ -18,60 +18,57 @@
 % comando que já coloca essa barra e formata com "\cmd".
 % \newcommand{\ltxcmd}[1]{\cmd{\sla{}#1}}
 
-\chapter{Proposal and Preliminary Experiments}
-\label{cap:proposal}
+\chapter{Static Analysis}
+\label{cap:static}
 
 As discussed in the previous chapters, understanding how social networks
-recommend content to users is central to the debate around the recent waves of
-political polarization and radicalization that have been taking over many
-developing and developed countries alike. There are many ways of exploring
-recommender systems without examining their code, from simulating their behavior
+recommend content to users is central to the debate around political
+polarization and radicalization. There are many ways of exploring recommender
+systems without examining their code \citep{}, from simulating their behavior
 after careful observation to directly collecting recommendation data, but most
-of them allow us to examine only one perspective of the algorithm at work. This
-means that studying a social network's recommendation technique has inherent
-limitations.
+of them allow us to examine only one perspective of the algorithm at a time.
+This means that studying a social network's recommendation technique has
+inherent limitations.
 
 Most of the algorithms currently employed by social media companies are trade
-secrets. They are also subject to constant experimentation and tuning, which
-might render worthless any research performed before an update to the algorithm,
-no matter how carefull the design of the study was. YouTube, for example,
-currently has over 2 billion monthly logged-in users (which is more people than
-any country in the planet), but it makes no significant effort to clarify
-changes made to the algorithm or even whether they fulfill their promisses of
-reducing user exposure to radicalizing content. With more than 500 hours of
-content being uploaded every minute, if 1\% of all videos can be considered
-radicalizing and the algorithm can detect 99\% of them, that still leaves over
-25.000 hours of brand new extremist content free to spread on the platform every
-year. YouTube claims only a small fraction of its content is political in
-nature, but that doesn't mean it is not enough to spread across the internet and
-help radicalize users the world over. It is also worth noting that most of these
-platforms' efforts are concentrated in their parent countries (usually the
-United States), so, even if they actually try and remove extreme content, most
-of the non-English-speaking world would still not be impacted by their policy
-changes.
+secrets. They are also subject to constant experimentation and tuning \citep{},
+which might render worthless any research performed before an update to the
+algorithm, no matter how carefull the design of the study was. YouTube, for
+example, currently has over 2 billion monthly logged-in users \citep{}, but it
+makes no significant effort to clarify changes made to the algorithm or even
+whether they fulfill their promisses of reducing user exposure to radicalizing
+content. With more than 500 hours of content being uploaded every minute
+\citep{}, if 1\% of all videos can be considered radicalizing and the algorithm
+can detect 99\% of them, that still leaves over 25.000 hours of brand new
+extremist content free to spread on the platform every year. This goes to show
+that, in the scale that these companies operate, even a small fraction of
+content might still be enough to influence the overall recommendations made by
+the algorithm. It is also worth noting that most of these platforms' efforts are
+concentrated in their parent countries (usually the United States), so, even if
+they actually try and remove the offending content, most of the
+non-English-speaking world would still not be impacted by their policy changes.
 
-This leads right into the goal of the present report. The dissertation to be
-presented as a result of this program aims to make a tangible contribution to
-the field of recommender systems, specifically how their design might (or might
-not) foster confinement dynamics in the ``phase space'' of recommendations. If
-the main hypothesis is confirmed, this could mean that recommendation algorithms
-always create ``filter bubbles'', suggesting ever more engaging videos about a
-certain topic of interest to a user, and possibly sending them on a
-radicalization spiral if that topic is related to politics or other contentious
-subjects.
+This leads right into the goal of the present dissertation. With our experiments
+we aim to make a tangible contribution to the field of recommender systems,
+specifically how their design might (or might not) foster confinement dynamics
+in the ``phase space'' of recommendations. If the main hypothesis is confirmed,
+this could mean that even a relatively small fraction of the content can tip the
+algorithm in its favor, amplifying their message, creating ``filter bubbles'',
+and possibly sending users on a radicalization spiral if that topic is related
+to politics or other contentious subjects.
 
 \section{Datasets}
-\label{sec:datasets}
+\label{sec:datasets03}
 
 Before discussing any experiment, it is necessary to introduce the datasets used
-to train the models. The main dataset explored in this report is MovieLens
+to train the models. The main dataset explored in this dissertation is MovieLens
 \citep{harper_movielens_2015}, a well-known set of movie reviews that has been
-featured in many recommender system tutorials for the past few years. The full
-dataset, with 27,000,000 ratings applied to 58,000 movies, was enriched by
-\citet{banik_movies_2017} with information about the movies' credits, metadata,
-keywords, and links. In the end, because of technical limitations, the dataset
-used here was sampled until 30,689 movies were left; this allowed for faster
-experimentation and simpler plots.
+featured in many recommender system tutorials and papers for the past few years.
+The full dataset, with 27,000,000 ratings applied to 58,000 movies, was enriched
+by \citet{banik_movies_2017} with information about the movies' credits,
+metadata, keywords, and links. In the end, because of technical limitations, the
+dataset used in this chapter was sampled until 30,689 movies were left; this
+allowed for faster experimentation and simpler plots.
 
 The second dataset, used for validation purposes only, was the Book-Crossing
 Dataset \citep{ziegler_book-crossing_2004}. Just like the enriched MovieLens,
@@ -82,9 +79,9 @@ title, author, publisher, etc.
 \section{Experiments}
 \label{sec:experiments}
 
-Some preliminary experiments have already been conducted in order to gather some
-evidence in favor or against the main hypothesis being tested. In total, fifteen
-different recommendation models were trained and analyzed, with each plot below
+Some preliminary were conducted in order to gather some evidence in favor or
+against the main hypothesis being tested. In total, fifteen different
+recommendation models were trained and analyzed, with each plot below
 representing one of these models. For simplicity's sake, even though all models
 represented here are non-parametric, we still say they were ``trained'' because
 the datasets used to generate recommendations are different.
@@ -95,7 +92,7 @@ the items being recommended. More specifically, given an algorithm that cannot
 be influenced by users' personal preferences, would the resulting recommender
 system favor some kind of item? Excluding user information is important because,
 as demonstrated by \citet{stoica_algorithmic_2018}, users might have their own
-biases and these would get transferred on to the model; the objective here is
+biases and these could get transferred on to the model; the objective here is
 understanding the algorithm by itself without external influences.
 
 To evaluate the recommendation models, at least qualitatively, the authors
@@ -108,11 +105,11 @@ item showed up in the top-$n$ most similar items of the whole dataset.
 
 For example, a recommendation algorithm trained on the present version of the
 MovieLens dataset would generate a list of $n$ movies for each input, creating a
-list of $30,689 \times n$ movies. After this computationally intensive calculation,
-the occurrence of each ID would be counted and ranked accordingly to facilitate
-interpretation of results, that is, the movie ranked number 1 would be the movie
-featured the most times in the set of all recommendations, and so forth for
-every other rank. From now on, $n$ will be fixed to 10.
+list of $30,689 \times n$ movies. After this computationally intensive
+calculation, the occurrence of each ID would be counted and ranked accordingly
+to facilitate interpretation of results, that is, the movie ranked number 1
+would be the movie featured the most times in the set of all recommendations,
+and so forth for every other rank. From now on, $n$ will be fixed to 10.
 
 \begin{figure}
   \centering
@@ -184,8 +181,8 @@ differs immensely: the movie ranked number 1 appeared more than 2000 times in
 the full list of recommendations, with an almost exponential decrease in the
 number of appearances from then on. The log-log plots of both models
 (Figure~\ref{fig:fig1b} and Figure~\ref{fig:fig2b}, respectively), makes it
-clear that the vanilla model follows an exponential curve very closely, while
-its trivial counterpart deviated in a major way.
+clear that the vanilla model is close to exponential, while its trivial
+counterpart is (evidently) normal.
 
 \begin{figure}
   \centering
@@ -208,6 +205,11 @@ its trivial counterpart deviated in a major way.
     (c).\label{fig:fig3}}
 \end{figure}
 
+% Precisa, sem falta, colocar uma distribuição das notas dos filmes para mostrar
+% que, apesar de existirem filmes mais populares, eles não são exponencialmente
+% mais populares. Isso justifica procurar outra explicação para a diferença
+% entre o vanila e o trivial que não seja somente o rating dos filmes.
+
 A potential explanation for the difference between trivial and vanilla could
 reside in the least used terms in the metadata: movies whose metadata share rare
 words might have been recommended less frequently than movies whose metadata is
@@ -218,7 +220,7 @@ $k = {2, 5, 8}$, could be included in the vector representations. The results
 can be seen in Figure~\ref{fig:fig3} and, aside from variations in the
 $y$-intercept, all plots are qualitatively very similar to
 Figure~\ref{fig:fig2a}, indicating that rare words probably are not to blame for
-the exponential decay.
+the exponential-like decay.
 
 \begin{figure}
   \centering
@@ -245,20 +247,16 @@ The second validation experiment involved attempting to use other distance
 metrics instead of cosine similarity \citep{ricci_introduction_2011}, since that
 could also be a source of the strange behavior of the recommendation profile.
 The goal here was verifying whether other metrics could do a better job at not
-creating a subset of movies that ended up exponentially more recommended that
-the rest. As attested by Figure~\ref{fig:fig4}, this was not the case. No other
-similarity metrics were used because cosine seems to be the most popular one for
-simple recommender systems. More experiments will be conducted comparing what
-IDs belong to the group of top-recommended movies for each metric and if there
-is intersection between them.
+creating a subset of movies that ended up exponentially more recommended than
+the rest. As attested by Figure~\ref{fig:fig4}, this was not the case.
 
-At this point it is safe to say that the exponential decay in recommendation
-frequencies is not spurious and must have a clear cause. A hypothesis that is
-later mostly confirmed involves the average number of non-zero elements in the
-vector representation of the movies: the sparser the vectors, the higher the
-odds of the recommendation curve displaying a steep left-hand side. This would
-be almost equivalent to creating an ``inverse cutoff point'', removing common
-words from the vector representations.
+At this point it is safe to say that the type of decay seen in recommendation
+frequencies up until now is not spurious and must have a clear cause. A
+hypothesis that is later mostly confirmed involves the average number of
+non-zero elements in the vector representation of the movies: the sparser the
+vectors, the higher the odds of the recommendation curve displaying a steep
+left-hand side. This would be almost equivalent to creating an ``inverse cutoff
+point'', removing common words from the vector representations.
 
 \begin{figure}
   \centering
@@ -297,9 +295,10 @@ inverse cutoff points.
 Figure~\ref{fig:fig5} displays the recommendation profiles for each different
 $C$. Concretely, the figures are equivalent to creating random metadata for the
 movies where the probability of a word occurring was approximately
-$1.54 \times 10^{-4}$, $1.54 \times 10^{-3}$, and $1.54 \times 10^{-2}$ respectively and then
-training the recommendation models. The results do support the aforementioned
-hypothesis since less sparse vectors indeed generated less exponential decays.
+$1.54 \times 10^{-4}$, $1.54 \times 10^{-3}$, and $1.54 \times 10^{-2}$
+respectively and then training the recommendation models. The results do support
+the aforementioned hypothesis since less sparse vectors indeed generated less
+exponential decays.
 
 \begin{figure}
   \centering
@@ -321,11 +320,11 @@ After the previous experiments, sanity checks were needed in order to guarantee
 that the previous hypothesis was able generalize. The first check should verify
 whether an artificial movie created as a combination of the metadata from other
 movies favored by the recommendation algorithm would also be favored, while the
-second should check whether shorter vectors would change the exponential decay
-already observed despite being as sparse as their longer counterparts.
+second should check whether shorter vectors would change the decay already
+observed despite being as sparse as their longer counterparts.
 
-Figure~\ref{fig:fig6} showcases two sanity checks. Figure~\ref{fig:fig6a} was a
-model trained with the vanilla dataset with the addition of the movie
+Figure~\ref{fig:fig6} showcases the two sanity checks. Figure~\ref{fig:fig6a}
+was a model trained with the vanilla dataset with the addition of the movie
 highlighted in red. As expected, this movie also showed up in the
 top-recommended subset. Figure~\ref{fig:fig6b} comes from a model trained on
 randomly generated vector representations in a similar fashion to the ones in
@@ -349,9 +348,9 @@ persisted, meaning that the hypothesis still stood.
     vanilla (b).\label{fig:fig7}}
 \end{figure}
 
-The last two models were considered the confirmations of the hypothesis that
-(at least for this kind of recommendation systems) a subset of items was always
-exponentially more recommended than the rest as long as the data was sparse.
+The last two models were considered the confirmations of the hypothesis that (at
+least for this kind of recommendation systems) a subset of items was always much
+more recommended than the rest as long as the data was sparse.
 Figure~\ref{fig:fig7a} represents the same recommendation algorithm applied to
 another dataset, the Book-Crossing dataset. Figure~\ref{fig:fig7b} contains the
 results of the model applied to another set of random vector representations,
@@ -359,56 +358,14 @@ this time with the probability of each element being non-zero respecting the
 marginal distributions of the vanilla dataset. Again, the exponential decay
 pattern persisted, only slightly less pronounced in the Book-Crossing case.
 
-\section{Further Experiments and Schedule}
-\label{sec:schedule}
-
-As previously mentioned, more experiments are still necessary in order to
-identify exactly what is the nature of the bias detected in the MovieLens study.
-For example, it would be interesting to perform an analysis of what movies are
-the most recommended in each case and whether the subset of top-recommended
-movies is roughly consistent overall. Continuous study of the literature about
-recommender systems would also be of great help in searching for possible
-explanations to this phenomenon.
-
-The most important experiment that hasn't yet been conducted regards the dynamic
-nature of recommendation algorithms. Using Google's newly released TensorFlow
-Recommenders library \citep{noauthor_tensorflow_nodate} it might be possible to
-gather data about what happens to a system's recommendations as users follow (or
-don't follow) its suggestions, specially when talking about deep learning models
-used by social networks like YouTube. This is a significant departure from the
-content-based models presented here and, if a similar recommendation profile can
-also be detected for multi-criteria recommender systems on dynamic scenarios,
-then the hypothesis ventilated in the section above would become even more
-plausible.
-
-Showing that that these algorithms are suggesting a subset of items
-exponentially more than the rest could be one more piece evidence in favor of
-the pipeline theory of radicalization or, more simply, in favor of the theory
-that these social networks are creating filter bubbles that radicalize users.
-Literature about this topic is still scarce, but every day new papers about the
-effects that social media has on Democracy are being released, so following up
-on popular publications is of the utmost importance.
-
-\begin{figure}
-  \centering
-
-  \begin{ganttchart}{2021-2}{2021-12}
-    \gantttitlecalendar{year,month=shortname} \ganttnewline
-
-    \ganttbar[progress=0]{Literature review}{2021-2}{2021-8} \ganttnewline
-    \ganttbar[progress=0]{Algorithm implementation}{2021-3}{2021-6} \ganttnewline
-    \ganttbar[progress=0]{Tests and experiments}{2021-4}{2021-7} \ganttnewline
-    \ganttbar[progress=0]{Writing dissertation}{2021-5}{2021-9} \ganttnewline
-    \ganttbar[progress=0]{Proofreading}{2021-8}{2021-10} \ganttnewline
-
-    \ganttmilestone{Dissertation submission}{2021-10} \ganttnewline
-
-    \ganttbar[progress=0]{Writing conference paper}{2021-10}{2021-12}
-  \end{ganttchart}
-
-  \caption{Schedule.\label{fig:gantt}}
-\end{figure}
-
-These two main tasks, alongside writing the final dissertation, will be the
-focus of the coming semester. A full schedule can be seen in
-Figure~\ref{fig:gantt}.
+The analysis up until now has been static, that is, the recommendation model is
+trained and applyied to every movie in the dataset. There is no interaction with
+users and no opportunity to evolve over time. The next chapter adresses this
+point by using Google's newly released TensorFlow Recommenders library
+\citep{noauthor_tensorflow_nodate} to gather data about what happens to a
+system's recommendations as users follow its suggestions. Employing a deep
+learning model that is able to improve over time is a significant departure from
+the content-based models presented here and, if a similar recommendation profile
+can also be detected for multi-criteria recommender systems on dynamic
+scenarios, then the hypothesis ventilated in the section above would become even
+more plausible.
