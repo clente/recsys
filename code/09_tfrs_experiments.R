@@ -288,3 +288,68 @@ plot(DHARMa::simulateResiduals(mtnb2_tgr_1m))
 
 # Para critério de comparação, a dispersão desse era muito pior
 plot(DHARMa::simulateResiduals(nb_tr_tg))
+
+readr::write_rds(mtnb2_tgr_1m, "data/mtnb2_tgr_1m.rds")
+
+### Model analysis -------------------------------------------------------------
+
+mtnb2_tgr_1m <- readr::read_rds("data/mtnb2_tgr_1m.rds")
+
+model <- tibble::tibble(
+  name = rownames(summary(mtnb2_tgr_1m)$coefficients$cond),
+  coef = summary(mtnb2_tgr_1m)$coefficients$cond[,1]
+)
+
+genre <- "Adventure"
+
+model_factory <- function(genre) {
+  coefs <- model |>
+    dplyr::filter(
+      name %in% c("(Intercept)", "t", "rating", "t:rating") |
+      stringr::str_detect(name, genre)
+    ) |>
+    dplyr::mutate(
+      group = dplyr::case_when(
+        stringr::str_detect(name, "^t") & stringr::str_detect(name, "rating") ~ "t.R",
+        stringr::str_detect(name, "^t") ~ "t",
+        stringr::str_detect(name, "rating") ~ "R",
+        TRUE ~ "-"
+      )
+    ) |>
+    dplyr::group_by(group) |>
+    dplyr::summarise(coef = sum(coef))
+
+  function(t, R) {
+    exp(
+      dplyr::filter(coefs, group == "-")$coef +
+      dplyr::filter(coefs, group == "t")$coef * t +
+      dplyr::filter(coefs, group == "R")$coef * R +
+      dplyr::filter(coefs, group == "t.R")$coef * R * t
+    )
+  }
+}
+
+model_factory("Action")(0, 1)
+
+xings <- purrr::cross(list(
+  genre = model |>
+    dplyr::filter(stringr::str_starts(name, "genre"), !stringr::str_detect(name, ":")) |>
+    dplyr::pull(name) |>
+    stringr::str_remove("^genre"),
+  t = 0:4,
+  R = 1:5
+))
+
+xing <- xings[[1]]
+
+estimates <- round(purrr::map_dbl(
+  xings,
+  ~ purrr::invoke(purrr::invoke(model_factory, .x[1]), .x[2:3])
+))
+
+observed <- purrr::map_dbl(
+  xings,
+  ~ sum(features_$genre == .x$genre & features_$t == .x$t & round(features_$rating) == .x$R)
+)
+
+sd(estimates - observed)
