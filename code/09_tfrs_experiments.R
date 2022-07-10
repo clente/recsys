@@ -124,6 +124,15 @@ features <- pop_all |>
   dplyr::select(-movie_title, -genres) |>
   dplyr::left_join(ratings_mean, c("movie_id", "t"))
 
+# Tentativa de melhorar a convergência
+features_ <- features |>
+  dplyr::filter(genre %in% c(
+    "Adventure", "Animation", "Children's", "Comedy", "Crime", "Documentary",
+    "Drama", "Film-Noir", "Horror", "Musical", "Mystery", "Romance", "Sci-Fi",
+    "Thriller", "Western"
+  ))
+  # dplyr::filter(!genre %in% c("Fantasy", "War"))
+
 ### Popularity -----------------------------------------------------------------
 
 popularity_plot(pop0)
@@ -275,10 +284,6 @@ mtnb2_tgr_1m <- glmmTMB::glmmTMB(pop ~ t * genre * rating + (1|movie_id), data =
 summary(mtnb2_tgr_1m)
 plot(DHARMa::simulateResiduals(mtnb2_tgr_1m))
 
-# Tentativa de melhorar a convergência
-features_ <- features |>
-  dplyr::filter(!genre %in% c("Fantasy", "War"))
-
 # Todos os outros continuaram a mesma droga (mas começaram a convergir)
 
 # Ok
@@ -302,7 +307,7 @@ model <- tibble::tibble(
 
 genre <- "Adventure"
 
-model_factory <- function(genre) {
+model_factory <- function(genre, t, R) {
   coefs <- model |>
     dplyr::filter(
       name %in% c("(Intercept)", "t", "rating", "t:rating") |
@@ -319,37 +324,66 @@ model_factory <- function(genre) {
     dplyr::group_by(group) |>
     dplyr::summarise(coef = sum(coef))
 
-  function(t, R) {
-    exp(
-      dplyr::filter(coefs, group == "-")$coef +
-      dplyr::filter(coefs, group == "t")$coef * t +
-      dplyr::filter(coefs, group == "R")$coef * R +
-      dplyr::filter(coefs, group == "t.R")$coef * R * t
-    )
-  }
+  exp(
+    dplyr::filter(coefs, group == "-")$coef +
+    dplyr::filter(coefs, group == "t")$coef * t +
+    dplyr::filter(coefs, group == "R")$coef * R +
+    dplyr::filter(coefs, group == "t.R")$coef * t * R
+  )
 }
 
-model_factory("Action")(0, 1)
+model_factory("Adventure", 1, 1)
 
 xings <- purrr::cross(list(
   genre = model |>
     dplyr::filter(stringr::str_starts(name, "genre"), !stringr::str_detect(name, ":")) |>
     dplyr::pull(name) |>
-    stringr::str_remove("^genre"),
+    stringr::str_remove("^genre") |>
+    unique() |>
+    sort(),
   t = 0:4,
   R = 1:5
 ))
 
 xing <- xings[[1]]
 
-estimates <- round(purrr::map_dbl(
+estimates <- purrr::map_dbl(
   xings,
-  ~ purrr::invoke(purrr::invoke(model_factory, .x[1]), .x[2:3])
-))
+  ~ purrr::invoke(model_factory, .x)
+)
 
 observed <- purrr::map_dbl(
   xings,
-  ~ sum(features_$genre == .x$genre & features_$t == .x$t & round(features_$rating) == .x$R)
+  ~ features_ |>
+      dplyr::filter(genre == .x$genre, t == .x$t, round(rating) == .x$R) |>
+      dplyr::summarise(pop = mean(pop)) |>
+      dplyr::pull(pop)
 )
 
+xings[[169]]
+features_ |>
+  dplyr::filter(genre == "Comedy", t == 1, round(rating) == 3) |>
+  dplyr::pull(pop) |>
+  mean()
+model_factory(genre = "Comedy", t = 1, R = 3)
+
+observed[is.nan(observed)] <- 0
+
+round(estimates)
+round(observed)
+
 sd(estimates - observed)
+mean(estimates - observed)
+sum((estimates - observed)**2)/length(estimates)
+
+summary(mtnb2_tgr_1m)
+
+# ---
+
+y_hat <- round(predict(mtnb2_tgr_1m, newdata = features_))
+sum((y_hat - features_$pop)**2)/length(y_hat)
+
+mean(y_hat - features_$pop)
+sd(y_hat - features_$pop)
+
+mean((y_hat - features_$pop)**2)
