@@ -12,10 +12,45 @@ potentially lead to a better understanding of how these systems favor certain
 kinds of content.
 
 In order for this analysis to be more true to reality, we implemented a simple
-recommendation algorithm using TensorFlow Recommenders, a library for machine
-learning developed by Google for use with its TensorFlow framework. This means
-that, even though our model is deliberately bare-bones, it conforms to
-industry-standard technology and practices.
+recommendation algorithm using TensorFlow Recommenders \citep{}, a library for
+machine learning developed by Google for use with its TensorFlow \citep{}
+framework. This means that, even though our model is deliberately bare-bones, it
+conforms to industry-standard technology and practices.
+
+The choice to use a simple recommendation algorithm instead of a more complex
+one was twofold: first, we didn't want to use a model that could introduce many
+confounding parameters to the analysis (e.g. hyperparameters, hardware
+requirements, etc.), and second, we wanted to study a baseline that could, in
+the future, be used as a comparison point for more complex algorithms.
+
+The goal of this analysis is to gather data on how the recommendation system
+behaves over time. As will be explained in the next sections, is to understand
+what happens to the recommendation profile of the algorithm as it interacts with
+itself via users that follow the generated suggestions.
+
+The expectation is that the recommendation profile will grow ever more steep,
+which is a reasonable guess; if the users reinforce the beliefs of the
+algorithm, then is stands to reason that it will recommend popular movies with
+more and more frequently, to more and more users. How much more frequently,
+however, is the true question.
+
+For the sake of clarity, let's imagine two users with very distinct preferences:
+Alice, who enjoys adventure movies, and Bob, who enjoys horror movies. In
+principle, the algorithm should have very different recommendations for both of
+them and, were they to follow them, their custom suggestions should grow
+increasingly different. At the end of this experiment, users like Alice would
+all be recommended the same movies, and users like Bob would have their own set
+of very popular films; we should expect, therefore, a multimodal distribution of
+the recommendation frequencies, with "typical" adventure movies and "typical"
+horror movies being much more popular than comedy, for example.
+
+However, if the final recommendation profile looked like what was showcased in
+the previous chapter, i.e. a very small subset of movies being recommended to
+most users, then we could infer that the system devolved into a degenerate
+feedback loop, ignoring personal preferences and distinctions between films.
+
+\section{Datasets}
+\label{sec:datasets04}
 
 We used the same Movielens dataset as before and trained the recommender engine
 with all available data. This is what we called the ``zeroth'' iteration. With the
@@ -138,6 +173,3 @@ Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 % Escrever o que eu fiz, sem preocupação com a formalidade. Mandar isso para o
 % Patriota para ele lembrar do que a gente fez e marcar uma conversa para
 % discutir se faz sentido e por onde a gente pode ir.
-
-\section{Datasets}
-\label{sec:datasets04}

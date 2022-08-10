@@ -201,10 +201,14 @@ pop_all |>
   ggplot2::ggplot(ggplot2::aes(t, pop, group = movie_id)) +
   ggplot2::geom_line(size = 0.2)
 
+# São só 13
+pop_all |>
+  dplyr::filter(t == 4, pop > 500)
+
 # Acho que não precisa desse gráfico, é meio repetitivo
 pop_all |>
   tidyr::pivot_wider(names_from = t, values_from = pop) |>
-  dplyr::mutate(high = ifelse(log(`4`) > 5, "tomato", "black")) |>
+  dplyr::mutate(high = ifelse(log(`4`) > 5, "high", "low")) |>
   tidyr::pivot_longer(`0`:`4`, "t", values_to = "pop") |>
   dplyr::filter(pop > 1) |>
   dplyr::mutate(
@@ -387,3 +391,61 @@ mean(y_hat - features_$pop)
 sd(y_hat - features_$pop)
 
 mean((y_hat - features_$pop)**2)
+
+# tem que manter os zeros! ver se eu estou
+# tirando sem querer
+
+# # não estou
+# features_ |>
+#   dplyr::group_by(movie_id) |>
+#   dplyr::summarise(n = dplyr::n()) |>
+#   dplyr::count(n)
+
+# tentar com zero inflated
+
+# # Tentei, não mudou
+# mtnb2z_tgr_1m <- glmmTMB::glmmTMB(
+#   pop ~ t * genre * rating + (1|movie_id),
+#   data = features_,
+#   family = glmmTMB::nbinom2(),
+#   ziformula = ~ .
+# )
+# summary(mtnb2z_tgr_1m)
+# plot(DHARMa::simulateResiduals(mtnb2z_tgr_1m))
+
+# qual é a probabilidade de um vídeo no
+# ranking x ir para o ranking y em t
+# unidades de tempo
+
+# variável binária view > 500
+
+# # Deu muito ruim
+# features_ |>
+#   dplyr::mutate(pop = as.numeric(pop > 100)) |>
+# #   glm(pop ~ t * genre * rating, family = "binomial", data = _) |>
+#   # glmmTMB::glmmTMB(pop ~ t * genre * rating + (1|movie_id), data = _, family = glmmTMB::nbinom2("logit")) |>
+#   summary()
+
+# P(y_t4 > 1000 | y_t0 = 50, genre = aventura, rating = 2)
+
+bd <- features_
+
+aux0 <- bd$movie_id[bd$t == 0 & bd$rating > 4.5 & bd$rating < 5]
+aux <- bd$movie_id %in% aux0
+
+par(mfrow = c(1, 3))
+plot(bd$n[aux] ~ bd$t[aux], type = "l")
+plot(bd$pop[aux] ~ bd$t[aux], type = "l")
+plot(bd$rating[aux] ~ bd$t[aux], type = "l")
+length(table(bd[aux, ]$movie_id))
+
+aux0 <- bd$movie_id[bd$t == 4 & bd$pop < 800 & bd$rating < 5]
+aux <- bd$movie_id %in% aux0
+
+par(mfrow = c(1, 3))
+plot(bd$n[aux] ~ bd$t[aux], type = "l")
+plot(bd$pop[aux] ~ bd$t[aux], type = "l")
+plot(bd$rating[aux] ~ bd$t[aux], type = "l")
+length(table(bd[aux, ]$movie_id))
+
+# Substituir isso por um gráfico de fluxo
