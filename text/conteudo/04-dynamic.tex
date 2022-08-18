@@ -52,7 +52,82 @@ feedback loop, ignoring personal preferences and distinctions between films.
 \section{Datasets}
 \label{sec:datasets04}
 
-We used the same Movielens dataset as before and trained the recommender engine
+For the dynamic experiments, we kept using the Movielens dataset \citep{}. This
+time, however, we used the full ``1M'' dataset instead of sampling movies from
+the larger ``25M'' version. Given that we wanted our dynamic analysis to be
+conducted in a realistic scenario, we decided that it would be better not to
+change the data. This whole experiment will, therefore, use a version of the
+dataset commonly used for machine learning benchmarks with no alteration
+whatsoever.
+
+The ``1M'' dataset contains 1,000,209 ratings of almost 4000 movies made by over
+6000 anonymous MovieLens users who joined the platform in 2000. In this
+particular version, each user has made at least 20 ratings. There are 4 columns
+available:
+
+\begin{itemize}
+  \item \verb|UserID|: Unique user identifier, ranging from 1 to 6040.
+  \item \verb|MovieID|: Unique movie identifier, ranging from 1 to 3952.
+  \item \verb|Rating|: Movie rating according to user, from 0 to 5 stars.
+  \item \verb|Timestamp|: When the user made the rating, in seconds since the
+  epoch.
+\end{itemize}
+
+A second, auxiliary, dataset was also used to enrich the main one. ``Movies''
+contains extra information about the movies in ``1M'', which allowed us to add
+more variables to the recommendation system. This new dataset has 3 columns:
+
+\begin{itemize}
+  \item \verb|MovieID|: Unique user identifier, ranging from 1 to 6040.
+  \item \verb|Title|: Title of the movie, as provided by IMDB.
+  \item \verb|Genres|: Pipe-separated string with all applicable genres.
+\end{itemize}
+
+The other accompanying dataset, ``Users'', has not been used for the purposes of
+this analysis. The reasoning behind this decision will be explained in greater
+detail in the next section.
+
+\section{Experiments}
+\label{sec:experiments04}
+
+The dynamic experiment starts in a manner much similar to the static experiment.
+The full MovieLens dataset is fed as training data to a recommendation system in
+order to get it ready for giving suggestions to users. As explained in the
+opening section of this chapter, we chose a simple algorithm in order to reduce
+the number of possible interferences architecture could have on our analysis.
+
+The chosen recommendation algorithm was a basic ranking model described in
+\citet{} using TensorFlow Recommenders \citep{}. It is composed of multiple
+stacked dense layers and uses mean squared error as its loss function. The main
+class in the model is reproduced below, and the full algorithm is listed in
+Appendix~\ref{}.
+
+\begin{verbatim}
+class MovielensModel(tfrs.models.Model):
+
+  def __init__(self):
+    super().__init__()
+    self.ranking_model: tf.keras.Model = RankingModel()
+    self.task: tf.keras.layers.Layer = tfrs.tasks.Ranking(
+      loss = tf.keras.losses.MeanSquaredError(),
+      metrics=[tf.keras.metrics.RootMeanSquaredError()]
+    )
+
+  def call(self, features: Dict[str, tf.Tensor]) -> tf.Tensor:
+    return self.ranking_model(
+        (features["user_id"], features["movie_title"]))
+
+  def compute_loss(self, features: Dict[Text, tf.Tensor],
+                   training=False) -> tf.Tensor:
+    labels = features.pop("user_rating")
+
+    rating_predictions = self(features)
+
+    # The task computes the loss and the metrics.
+    return self.task(labels=labels, predictions=rating_predictions)
+\end{verbatim}
+
+as before and trained the recommender engine
 with all available data. This is what we called the ``zeroth'' iteration. With the
 resulting model, we generated a movie recommendation for each user in the
 dataset and appended these into the original data as if users had actually
