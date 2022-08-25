@@ -60,7 +60,7 @@ change the data. This whole experiment will, therefore, use a version of the
 dataset commonly used for machine learning benchmarks with no alteration
 whatsoever.
 
-The ``1M'' dataset contains 1,000,209 ratings of almost 4000 movies made by over
+The 1M dataset contains 1,000,209 ratings of almost 4000 movies made by over
 6000 anonymous MovieLens users who joined the platform in 2000. In this
 particular version, each user has made at least 20 ratings. There are 4 columns
 available:
@@ -74,8 +74,8 @@ available:
 \end{itemize}
 
 A second, auxiliary, dataset was also used to enrich the main one. ``Movies''
-contains extra information about the movies in ``1M'', which allowed us to add
-more variables to the recommendation system. This new dataset has 3 columns:
+contains extra information about the movies in 1M, which allowed us to add more
+variables to the recommendation system. This new dataset has 3 columns:
 
 \begin{itemize}
   \item \verb|MovieID|: Unique user identifier, ranging from 1 to 6040.
@@ -102,6 +102,8 @@ stacked dense layers and uses mean squared error as its loss function. The main
 class in the model is reproduced below, and the full algorithm is listed in
 Appendix~\ref{}.
 
+%% Deixar o código em pseudo-código para ficar mais claro
+
 \begin{verbatim}
 class MovielensModel(tfrs.models.Model):
 
@@ -118,7 +120,7 @@ class MovielensModel(tfrs.models.Model):
         (features["user_id"], features["movie_title"]))
 
   def compute_loss(self, features: Dict[Text, tf.Tensor],
-                   training=False) -> tf.Tensor:
+                    training=False) -> tf.Tensor:
     labels = features.pop("user_rating")
 
     rating_predictions = self(features)
@@ -127,21 +129,62 @@ class MovielensModel(tfrs.models.Model):
     return self.task(labels=labels, predictions=rating_predictions)
 \end{verbatim}
 
-as before and trained the recommender engine
-with all available data. This is what we called the ``zeroth'' iteration. With the
-resulting model, we generated a movie recommendation for each user in the
-dataset and appended these into the original data as if users had actually
-watched the movies we recommended. We repreated the training process, creating
-what we called the ``first'' iteration, that is, the model that was generated
-after \emph{one} round of recommendations.
+In the first step of the experiment, we trained the recommendation model using
+Movielens' 1M ratings dataset, which we will refer to as \verb|ratings0| from
+now on. All available data was used and, in the end, we achieved a root mean
+squared error (RMSE) of 0.92; this result is similar to TFRS' deep \& cross
+network \citep{} results when trained on the same data. Once \verb|model0| was
+ready for making recommendations, we applied it to every possible user-movie
+pairing, generating a complete matrix of predicted ratings called
+\verb|predictions0|.
 
-This procedure was repeated two more times, resulting in a second and third
-iterations. Since we generated one set recommendations with each model, this
-means that, by the end, we had four sets, all of which were appended into the
-one before, creating five total datasets: the original Movielens
-(\verb|ratings0|), \verb|ratings0| with the recommendations from the zeroth
-model appended (\verb|ratings1|), \verb|ratings1| with the recommendations from
-the first model appended (\verb|ratings2|), and so on until \verb|ratings4|.
+In an environment like YouTube's recommendations sidebar, the user is presented
+with a few items that the algorithm thinks they would like, and then they can
+either ignore the sidebar or select one of the options to watch. Since our goal
+was to explore what would happen when the recommendation system entered a
+feedback loop, we picked one movie at random from each user's 10 best-ranked
+entries.
+
+This set of well-ranked movies was our way of simulating thousands of users
+simultaneously approving of the algorithms recommendations and selecting one
+option from their sidebars. The last step involved removing the oldest rating of
+each each user from \verb|ratings0| and appending these these selections to the
+dataset in order to create \verb|ratings1|. The full data flow is illustrated
+in Figure~\ref{fig:fig04_01}
+
+\begin{figure}
+  \centering
+  \includegraphics[width=\textwidth]{04_dynamic_diagram}
+  \caption{Data flow diagram.\label{fig:fig04_01}}
+\end{figure}
+
+A feedback loop, however, can't be created from a single iteration. For this
+reason, the process just described was classified as the ``zeroth'' iteration in
+the process (as it involved \verb|ratings0|). The ``first'' iteration began with
+\verb|ratings1|, trained \verb|model1|, generated \verb|predictions1|, and ended
+with \verb|ratings2|. We repeated this process until we got to \verb|ratings4|,
+totaling 5 ratings datasets (one original and 4 derived through ranking models).
+
+A simplified version of the R code that created \verb|ratingsN+1| from
+\verb|ratingsN| can be found below. The omitted functions served mostly
+auxiliary purposes which made the datasets conform to TensorFlow's format
+expectations.
+
+\begin{verbatim}
+predictions |>
+  group_by(user_id) |>
+  slice_max(prediction, n = 10) |>
+  slice_sample(n = 1) |>
+  ungroup() |>
+  bind_rows(old_ratings) |>
+  group_by(user_id) |>
+  slice_max(timestamp, n = -1, with_ties = FALSE) |>
+  ungroup()
+\end{verbatim}
+
+With these new datasets we were able to analyze the differences between distinct
+generations of models and understand exactly how the positive feedback loop
+influenced the last iteration.
 
 A series of analysis were conducted using these datasets as sources. We found
 that, with each iteration, the recommendation profile got steeper and steeper,
