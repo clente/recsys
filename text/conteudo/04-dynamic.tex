@@ -150,13 +150,15 @@ simultaneously approving of the algorithms recommendations and selecting one
 option from their sidebars. The last step involved removing the oldest rating of
 each each user from \verb|ratings0| and appending these these selections to the
 dataset in order to create \verb|ratings1|. The full data flow is illustrated
-in Figure~\ref{fig:fig04_01}
+in Figure~\ref{fig:fig04_dynamic_diagram}
 
 \begin{figure}
   \centering
   \includegraphics[width=\textwidth]{04_dynamic_diagram}
-  \caption{Data flow diagram.\label{fig:fig04_01}}
+  \caption{Data flow diagram.\label{fig:fig04_dynamic_diagram}}
 \end{figure}
+
+% Explicar o que são os formatos no caption da figura.
 
 A feedback loop, however, can't be created from a single iteration. For this
 reason, the process just described was classified as the ``zeroth'' iteration in
@@ -168,7 +170,7 @@ totaling 5 ratings datasets (one original and 4 derived through ranking models).
 A simplified version of the R code that created \verb|ratingsN+1| from
 \verb|ratingsN| can be found below. The omitted functions served mostly
 auxiliary purposes which made the datasets conform to TensorFlow's format
-expectations.
+expectations. The full code is listed in Appendix~\ref{}.
 
 \begin{verbatim}
 predictions |>
@@ -192,6 +194,48 @@ that is, a few popular items got more recommended while the rest fell into
 disfavor; this was predictably more noticeable in movies with higher average
 ratings. In fact, a small set of around 20 movies were the only ones that
 consistently rose in popularity with new iterations.
+
+\begin{figure}
+  \centering
+  \includegraphics[width=\textwidth]{04_profile_grouped}
+  \caption{Recommendation profile of every generation. Colors indicate average
+  movie rating, which is a strong predictor of popularity over time.
+  \label{fig:fig04_profile_grouped}}
+\end{figure}
+
+\begin{figure}
+  \centering
+  \begin{subfigure}{0.45\textwidth}
+    \centering
+    \includegraphics[width=\textwidth]{04_entropy}
+  \end{subfigure}
+  \caption{Recommendation entropy as a percentage of ratings0s entropy.
+  \label{fig:fig04_entropy}}
+\end{figure}
+
+\begin{figure}
+  \centering
+  \begin{subfigure}{0.45\textwidth}
+    \centering
+    \includegraphics[width=\textwidth]{04_popularity_time}
+    \caption{Movie popularity over time.\label{fig:fig04_popularity_time}}
+  \end{subfigure}
+  \begin{subfigure}{0.45\textwidth}
+    \centering
+    \includegraphics[width=\textwidth]{04_log_popularity_time}
+    \caption{Movie log-popularity over time.\label{fig:fig04_log_popularity_time}}
+  \end{subfigure}
+  \caption{Popularity of every movie from ratings0 to ratings4.\label{fig:fig04_popularity_time_both}}
+\end{figure}
+
+% explicar que, nos gráficos, popularidade significa número de recs para t = 1..4
+
+\begin{figure}
+  \centering
+  \includegraphics[width=\textwidth]{04_residual_analysis}
+  \caption{Residual analysis for glmmTMB model.\label{fig:fig04_residual_analysis}}
+\end{figure}
+
 
 In order to understand how this ``feedback loop'' was developing, we fit
 multiple regression models on our generated data. In the expression below,

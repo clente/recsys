@@ -88,7 +88,10 @@ popularity_plot_grouped <- function(popularity_grouped) {
     y = popularity_grouped$pop,
     color = as.factor(popularity_grouped$rating),
     geom = "point"
-  )
+  ) +
+  ggplot2::labs(y = "Recommendations", x = "Ranking", color = "Rating") +
+  ggplot2::theme_minimal() +
+  ggplot2::theme(legend.position = "bottom")
 }
 
 sequences_to_entropy <- function(sequences) {
@@ -167,6 +170,25 @@ ratings4 |>
   ratings_to_popularity_grouped() |>
   popularity_plot_grouped()
 
+# Grid with all plots above
+ratings0 |>
+  list(ratings1, ratings2, ratings3, ratings4) |>
+  purrr::set_names(paste0("ratings", 0:4)) |>
+  purrr::map(ratings_to_popularity_grouped) |>
+  dplyr::bind_rows(.id = "generation") |>
+  dplyr::mutate(rating = as.factor(rating)) |>
+  ggplot2::ggplot(ggplot2::aes(rank, pop, color = rating)) +
+  ggplot2::geom_point() +
+  ggplot2::facet_wrap(~generation, ncol = 2) +
+  ggplot2::labs(x = "Ranking", y = "Popularity", color = "Average rating") +
+  ggplot2::theme_minimal() +
+  ggplot2::theme(legend.position = "bottom")
+
+ggplot2::ggsave(
+  "../text/figuras/04_profile_grouped.png",
+  width = 20, height = 30, units = "cm"
+)
+
 ### Entropy --------------------------------------------------------------------
 
 ratings0 |>
@@ -189,17 +211,50 @@ ratings4 |>
   ratings_to_sequences() |>
   sequences_to_entropy()
 
+# Generate a progression plot
+ratings0 |>
+  list(ratings1, ratings2, ratings3, ratings4) |>
+  purrr::map(ratings_to_sequences) |>
+  purrr::map(sequences_to_entropy) |>
+  purrr::flatten_dbl() |>
+  {\(v) v / v[1]}() |>
+  tibble::tibble(entropy = _) |>
+  dplyr::mutate(generation = paste0("ratings", 0:4)) |>
+  ggplot2::ggplot(ggplot2::aes(generation, entropy)) +
+  ggplot2::geom_bar(stat = "identity") +
+  ggplot2::labs(y = "Entropy (%)", x = "Generation") +
+  ggplot2::theme_minimal()
+
+ggplot2::ggsave(
+  "../text/figuras/04_entropy.png",
+  width = 9, height = 9, units = "cm"
+)
+
 ### Popularity over time -------------------------------------------------------
 
 pop_all |>
   ggplot2::ggplot(ggplot2::aes(t, pop, group = movie_id)) +
-  ggplot2::geom_line(size = 0.2)
+  ggplot2::geom_line(size = 0.2) +
+  ggplot2::labs(x = "Generation", y = "Popularity") +
+  ggplot2::theme_minimal()
+
+ggplot2::ggsave(
+  "../text/figuras/04_popularity_time.png",
+  width = 9, height = 9, units = "cm"
+)
 
 pop_all |>
   dplyr::filter(pop > 1) |>
   dplyr::mutate(pop = log(pop)) |>
   ggplot2::ggplot(ggplot2::aes(t, pop, group = movie_id)) +
-  ggplot2::geom_line(size = 0.2)
+  ggplot2::geom_line(size = 0.2) +
+  ggplot2::labs(x = "Generation", y = "Popularity") +
+  ggplot2::theme_minimal()
+
+ggplot2::ggsave(
+  "../text/figuras/04_log_popularity_time.png",
+  width = 9, height = 9, units = "cm"
+)
 
 # São só 13
 pop_all |>
@@ -294,6 +349,11 @@ plot(DHARMa::simulateResiduals(mtnb2_tgr_1m))
 mtnb2_tgr_1m <- glmmTMB::glmmTMB(pop ~ t * genre * rating + (1|movie_id), data = features_, family = glmmTMB::nbinom2())
 summary(mtnb2_tgr_1m)
 plot(DHARMa::simulateResiduals(mtnb2_tgr_1m))
+
+ggplot2::ggsave(
+  "../text/figuras/04_residual_analysis.png",
+  width = 20, height = 10, units = "cm"
+)
 
 # Para critério de comparação, a dispersão desse era muito pior
 plot(DHARMa::simulateResiduals(nb_tr_tg))

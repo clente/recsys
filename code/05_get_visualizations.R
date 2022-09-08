@@ -6,34 +6,34 @@ save_plot <- function(df, out, ylim = NULL, hl = NULL, log = FALSE) {
     dplyr::arrange(-n) %>%
     dplyr::select(y = n) %>%
     tibble::rowid_to_column("t")
-  
+
   p <- ggplot2::qplot(
     d$t, d$y, xlab = "Ranking",
     ylab = "Recommendations" #, main = txt
   ) +
     ggplot2::theme_minimal()
-  
+
   if (!is.null(ylim)) {
     p <- p + ggplot2::ylim(c(0, ylim))
   }
   if (!is.null(hl)) {
-    
+
     df_hl <- df %>%
       readr::read_rds() %>%
       dplyr::arrange(-n) %>%
       dplyr::select(id, y = n) %>%
       tibble::rowid_to_column("t") %>%
       dplyr::filter(id == hl)
-    
+
     p <- p + ggplot2::geom_point(data = df_hl, ggplot2::aes(x = t, y = y), color = "red")
   }
   if (log) {
     p <- p + ggplot2::scale_y_log10() + ggplot2::scale_x_log10()
     p <- p + ggplot2::xlab("Log Ranking") + ggplot2::ylab("Log Recommendations")
   }
-  
+
   ggplot2::ggsave(out, p, width = 9, height = 9, units = "cm")
-  
+
   p
 }
 
