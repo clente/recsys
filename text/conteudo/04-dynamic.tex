@@ -90,6 +90,8 @@ detail in the next section.
 \section{Experiments}
 \label{sec:experiments04}
 
+% Explicar aqui no começo o que é um modelo estatístico, talvez fazer um capítulo
+
 The dynamic experiment starts in a manner much similar to the static experiment.
 The full MovieLens dataset is fed as training data to a recommendation system in
 order to get it ready for giving suggestions to users. As explained in the
@@ -195,6 +197,24 @@ disfavor; this was predictably more noticeable in movies with higher average
 ratings. In fact, a small set of around 20 movies were the only ones that
 consistently rose in popularity with new iterations.
 
+Figure~\ref{fig:fig04_profile_grouped} has five subplots which represent each
+iteration of the recommendation system. For \verb|ratings0|, it's possible to
+see that a number of well-rated movies were more popular, i.e., were rated by
+more people. Once we generate the first batch of recommendations, we add up the
+number of users each movie was recommended to; this is seen in the second plot,
+\verb|ratings1|. We can clearly see that a small subset of movies strayed from
+the pack and to more people that had watched them previously.
+
+This process repeats itself until, in \verb|ratings4|, the most popular movie is
+recommended more than 2000 times, while the most popular movie in
+\verb|ratings0| was watched a little over 500 times.
+
+As explained before, we expected that movies which where already popular would
+be recommended more times, but these plots indicate a powerful feedback loop.
+Examining the data, we saw that the algorithm was consistently recommending
+movies which the users had already watched and this process only became more
+accentuated with each subsequent iteration.
+
 \begin{figure}
   \centering
   \includegraphics[width=\textwidth]{04_profile_grouped}
@@ -202,6 +222,13 @@ consistently rose in popularity with new iterations.
   movie rating, which is a strong predictor of popularity over time.
   \label{fig:fig04_profile_grouped}}
 \end{figure}
+
+A good way to measure how diverse were the recommendations made by the algorithm
+is to calculate the entropy \citep{} of each set. In the extreme, if the same
+movie is recommended to every user, than the entropy of the recommendations will
+tend to zero. In absolute terms, the entropy of \verb|ratings0| was 7.42, and
+the entropy of \verb|ratings4| was 6.08 (82\% lower). A comparison in relative
+terms is displayed in Figure~\ref{fig:fig04_entropy}.
 
 \begin{figure}
   \centering
@@ -212,6 +239,24 @@ consistently rose in popularity with new iterations.
   \caption{Recommendation entropy as a percentage of ratings0s entropy.
   \label{fig:fig04_entropy}}
 \end{figure}
+
+We can also observe this reduction of variety in an even more visual way. In
+Figure~\ref{fig:fig04_popularity_time_both} we plotted movie popularity over
+time; each line represents a movie and each step in the x-axis is a new
+generation of the model. Figure~\ref{fig:fig04_popularity_time} makes it very
+clear that no more than 15 movies rose in popularity over the four generations
+of the recommendation system, becoming orders of magnitude more popular than the
+rest. We also scaled the y-axis by taking the its log in
+Figure~\ref{fig:fig04_log_popularity_time}, and we can see that, in fact, no
+other movie rose in popularity besides the ones that stick out after
+\verb|model2|.
+
+It is also of note that the few movies that rise in popularity are not the most
+popular ones from \verb|ratings0|, even though genre was the only metadata we
+fed into the system. This uncovers a significant feature of the feedback loop we
+observed in Figure~\ref{fig:fig04_profile_grouped}: the items that the algorithm
+amplifies don't necessarily have to be the most mainstream, or in other words,
+recommendation systems are able to boost content artificially.
 
 \begin{figure}
   \centering
