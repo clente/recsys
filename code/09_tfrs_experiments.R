@@ -286,74 +286,64 @@ ratings_mean |>
 ### Models ---------------------------------------------------------------------
 
 # Muito ruim
-pois_tg <- glm(pop ~ t * genre, family = "poisson", data = features)
+pois_tg <- glm(pop ~ t * genre, family = "poisson", data = features_)
 summary(pois_tg)
 hnp::hnp(pois_tg, halfnormal = FALSE)
 
 # Muito ruim
-pois_tgr <- glm(pop ~ t * genre * rating, family = "poisson", data = features)
+pois_tgr <- glm(pop ~ t * genre * rating, family = "poisson", data = features_)
 summary(pois_tgr)
 hnp::hnp(pois_tgr, halfnormal = FALSE)
 
 # Ruim
-nb_tg <- MASS::glm.nb(pop ~ t * genre, data = features)
+nb_tg <- MASS::glm.nb(pop ~ t * genre, data = features_)
 summary(nb_tg)
 hnp::hnp(nb_tg, halfnormal = FALSE)
 
 # Ruim
-nb_tr_g <- MASS::glm.nb(pop ~ t * rating + genre, data = features)
+nb_tr_g <- MASS::glm.nb(pop ~ t * rating + genre, data = features_)
 summary(nb_tr_g)
 hnp::hnp(nb_tr_g, halfnormal = FALSE)
 
 # Ruim
-nb_tr_tg <- MASS::glm.nb(pop ~ t * rating + t * genre, data = features)
+nb_tr_tg <- MASS::glm.nb(pop ~ t * rating + t * genre, data = features_)
 summary(nb_tr_tg)
 hnp::hnp(nb_tr_tg, halfnormal = FALSE)
 
 # # Calcular init.theta with gamlss
 # library(gamlss)
-# summary(gamlss(pop ~ rating * genre * t, data = features, family = NBI))
+# summary(gamlss(pop ~ rating * genre * t, data = features_, family = NBI))
 # init.theta = 1/exp(0.05123)
 
 # Ruim
-nb_tgr <- MASS::glm.nb(pop ~ t * genre * rating, data = features, init.theta = 0.95)
+nb_tgr <- MASS::glm.nb(pop ~ t * genre * rating, data = features_, init.theta = 0.95)
 summary(nb_tgr)
 hnp::hnp(nb_tgr, halfnormal = FALSE)
 
 # Não converge
-mpois_tgr_1m <- lme4::glmer(pop ~ t * genre * rating + (1|movie_id), data = features, family = "poisson")
+mpois_tgr_1m <- lme4::glmer(pop ~ t * genre * rating + (1|movie_id), data = features_, family = "poisson")
 summary(mpois_tgr_1m)
 
 # Não converge
-mnb_tgr_1m <- lme4::glmer.nb(pop ~ t * genre * rating + (1|movie_id), data = features)
+mnb_tgr_1m <- lme4::glmer.nb(pop ~ t * genre * rating + (1|movie_id), data = features_)
 summary(mnb_tgr_1m)
 
-# Ruim (não converge)
-mtpois_tgr_1m <- glmmTMB::glmmTMB(pop ~ t * genre * rating + (1|movie_id), data = features, family = "poisson")
+# Ok
+mtpois_tgr_1m <- glmmTMB::glmmTMB(pop ~ t * genre * rating + (1|movie_id), data = features_, family = "poisson")
 summary(mtpois_tgr_1m)
 plot(DHARMa::simulateResiduals(mtpois_tgr_1m))
 
-# Ruim (não converge)
-mtnb1_tgr_1m <- glmmTMB::glmmTMB(pop ~ t * genre * rating + (1|movie_id), data = features, family = glmmTMB::nbinom1())
+# Ok
+mtnb1_tgr_1m <- glmmTMB::glmmTMB(pop ~ t * genre * rating + (1|movie_id), data = features_, family = glmmTMB::nbinom1())
 summary(mtnb1_tgr_1m)
 plot(DHARMa::simulateResiduals(mtnb1_tgr_1m))
-
-# Ruim (não converge)
-mtnb2_tgr_1m <- glmmTMB::glmmTMB(pop ~ t * genre * rating + (1|movie_id), data = features, family = glmmTMB::nbinom2())
-summary(mtnb2_tgr_1m)
-plot(DHARMa::simulateResiduals(mtnb2_tgr_1m))
-
-# Todos os outros continuaram a mesma droga (mas começaram a convergir)
 
 # Ok
 mtnb2_tgr_1m <- glmmTMB::glmmTMB(pop ~ t * genre * rating + (1|movie_id), data = features_, family = glmmTMB::nbinom2())
 summary(mtnb2_tgr_1m)
 plot(DHARMa::simulateResiduals(mtnb2_tgr_1m))
 
-ggplot2::ggsave(
-  "../text/figuras/04_residual_analysis.png",
-  width = 20, height = 10, units = "cm"
-)
+# Todos os outros continuaram a mesma droga (mas começaram a convergir)
 
 # Para critério de comparação, a dispersão desse era muito pior
 plot(DHARMa::simulateResiduals(nb_tr_tg))
