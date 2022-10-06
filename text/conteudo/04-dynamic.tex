@@ -294,18 +294,20 @@ not able to capture such a degenerate distribution.
 The first model we attempted to use was a simple Poisson regression \citep{}.
 Since the recommendation profiles displayed a strong positive skew and an
 exponential-like decay, a log-linear model seemed like a good starting point.
-For this kind of model \citep{}, we take a set of $\mathbf{x} \in
-\mathbb{R}^{n}$ and fit a regression of the form
+For this kind of model \citep{}, we fit a regression of the form
+
+% https://statisticalhorizons.com/wp-content/uploads/Allison.Waterman.pdf
 
 $$
-\log(\operatorname{E} (Y \mid \mathbf{x})) = \alpha + \mathbf{\beta}'\mathbf{x},
+\log(\lambda) = \beta_0 + \beta_1 x_1 + \dots + \beta_k x_k
 $$
 
-where $\alpha \in \mathbb{R}$ and $\mathbf{\beta} \in \mathbb{R}^{n}$. More
-concretely, we used R's \verb|glm()| \citep{} function with the following
-formula: \verb|pop ~ t * genre * rating|. In this expression, \verb|pop|
-represents the popularity of a movie, \verb|t| represents the generation i.e.
-the iteration from 0 to 4, and \verb|genre| represents the genre.
+where $\lambda$ is the Poisson parameter, $x_i$ are the regressor variable, and
+$\beta_i$ are the regression coefficient. More concretely, we used R's
+\verb|glm()| \citep{} function with the following formula: \verb|pop ~ t * genre * rating|.
+In this expression, \verb|pop| represents the popularity of a movie,
+\verb|t| represents the generation i.e. the iteration from 0 to 4, and
+\verb|genre| represents the genre.
 
 As the reader might be able to see, we used the genre variable in our regression
 model even though we didn't feed it to the recommendation system. As explained
@@ -440,6 +442,31 @@ isn't able to properly capture the variability of the data.
   \caption{Residual analysis via simulated envelope for the Poisson regression.\label{fig:fig04_residual_poisson}}
 \end{figure}
 
+Our next attempt involved a generalization of the previous regression. In a
+Poisson model, both mean and variance are assumed to be the same; this could be
+limiting our previous attempt, since it cannot capture overdispersed data
+\citep{}. The negative binomial distribution is a generalization of the Poisson
+distribution \citep{} that is able to better model data under these new
+assumptions. For this kind of model, we fit a regression of the form:
+
+% https://statisticalhorizons.com/wp-content/uploads/Allison.Waterman.pdf
+
+$$
+\log(\lambda_i) = \beta_0 + \beta_1 x_{i1} + \dots + \beta_k x_{ik}
+$$
+
+where $\lambda_i$ depends on covariates. More concretely, we used MASS's \citep{}
+\verb|glm.nb()| function with the same formula as last time.
+
+Again, the isolated results of the regression analysis seemed good at first, but
+a new simulated envelope made it clear that this model, while better than the
+last, still was not adequately capturing the data's variability:
+
+\begin{figure}
+  \centering
+  \includegraphics[width=\textwidth]{04_residual_nb}
+  \caption{Residual analysis via simulated envelope for the negative binomial regression.\label{fig:fig04_residual_nb}}
+\end{figure}
 
 
 
@@ -540,3 +567,5 @@ Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
   \includegraphics[width=\textwidth]{04_residual_mmnb2}
   \caption{Residual analysis for glmmTMB model.\label{fig:fig04_residual_mmnb2}}
 \end{figure}
+
+% mudar a estrutura e colocar os conceitos em um capítulo anterior
