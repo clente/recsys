@@ -393,7 +393,7 @@ t:genreSci-Fi:rating       6.707e-01  2.195e-02  30.551  < 2e-16 ***
 t:genreThriller:rating    -1.870e-02  2.252e-02  -0.830 0.406351
 t:genreWestern:rating     -1.209e-02  5.768e-02  -0.210 0.834031
 ---
-Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 
 (Dispersion parameter for poisson family taken to be 1)
 
@@ -468,12 +468,56 @@ last, still was not adequately capturing the data's variability:
   \caption{Residual analysis via simulated envelope for the negative binomial regression.\label{fig:fig04_residual_nb}}
 \end{figure}
 
+Since both previous models failed to accurately capture the algorithm's
+recommendation profile, we moved on to mixed-effects models \citep{} given their
+usefulness in longitudinal studies \citep{}. % Gomes, Dylan G.E. (20 January 2022). "Should I use fixed effects or random effects when I have fewer than five levels of a grouping factor in a mixed-effects model?". PeerJ
+The Poisson mixed-effects model can be generalized from the standard model by
+adding normally distributed random-effects to the usual fixed-effects already
+described:
 
+% file:///Users/clente/Downloads/Applied%20Regression%20Analysis%20and%20Generalized%20Linear%20Models%20(John%20Fox)%20(z-lib.org).pdf
 
-..., and \verb|movie_id| is the ID of a movie. Note
-that the genre was not used when training the recommendation models described
-above, but it turned out that this feature could explain a lot of the models'
-outputs.
+$$
+\log(\lambda) = \beta_0 + \delta_0 + \beta_1 x_1 + \delta_1 z_1 + \dots + \beta_k x_k + \delta_k z_k,
+$$
+
+where $\delta \sim \mathcal{N}(0,\psi)$ allows us to better model longitudinal
+observations within the same individual (which are not independent of each
+other) and serially correlated errors. In our regression, we added mixed-effects
+to the \verb|movie_id| variable, resulting in the \verb|glmmTMB::glmmTMB()|
+\citep{} formula \verb=pop ~ t * genre * rating + (1|movie_id)=.
+
+As with our previous regressions, we evaluate the fit of the model not only
+through the significancy of the coefficients (which were on par with the other
+models), but also through the simulated envelope. Since we used a different R
+package to run the mixed-effects models, we also had to resort to another
+simulation package: \verb|DHARMa| \citep{}; this means that the new plots in
+Figure~\ref{fig:fig04_residual_mmpois} follow a different aesthetic convention
+and displays more information by default.
+
+\begin{figure}
+  \centering
+  \includegraphics[width=\textwidth]{04_residual_mmpois}
+  \caption{Residual analysis via simulated envelope for the mixed-effects Poisson regression.\label{fig:fig04_residual_mmpois}}
+\end{figure}
+
+Note how the fit is much better than the fixed-effects models, but the outliers
+on the left and right sides of the distribution are still present as attested by
+the outlier deviation test.
+
+Our last attempt at capturing the recommendation profile of the recommender
+system involved using a negative binomial mixed-model regression in order to
+help with the overdispersion seen above. Similar to the Poisson mixed-effects
+model, this regression also extends the default formula of its fixed-effects
+counterpart:
+
+$$
+\log(\lambda_i) = \beta_0 + \delta_0 + \beta_1 x_{i1} + \delta_1 z_{i1} + \dots + \beta_{ik} x_{ik} + \delta_{ik} z_{ik}.
+$$
+
+In the table below, the reader can see the full summary of the negative binomial
+mixed model. Figure~\ref{fig:fig04_residual_mmnb2} showcases the simulated
+envelope for the same model.
 
 \begin{verbatim}
   Family: nbinom2  ( log )
@@ -565,7 +609,21 @@ Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 \begin{figure}
   \centering
   \includegraphics[width=\textwidth]{04_residual_mmnb2}
-  \caption{Residual analysis for glmmTMB model.\label{fig:fig04_residual_mmnb2}}
+  \caption{Residual analysis via simulated envelope for the mixed-effects negative binomial regression.\label{fig:fig04_residual_mmnb2}}
 \end{figure}
 
+In comparison to the Poisson mixed model, the negative binomial mixed model is
+2.5 times less dispersed and the outlier deviation is 4 times lower. Still, this
+was not enough to capture accurately the recommendation profile of our system
+for the more popular movies (left tail of the rightmost plot).
+
+At this point, it is safe to assume that this distribution tends towards
+degeneracy, meaning it approaches a situation \citep{} where only one movie is
+recommended every single time and all others are never recommended.
+
 % mudar a estrutura e colocar os conceitos em um capítulo anterior
+
+% ..., and \verb|movie_id| is the ID of a movie. Note
+% that the genre was not used when training the recommendation models described
+% above, but it turned out that this feature could explain a lot of the models'
+% outputs.
