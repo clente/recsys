@@ -5,11 +5,12 @@
 \chapter{Dynamic Analysis}
 \label{cap:dynamic}
 
-Following the static analysis, it became clear that a dynamic analysis would be
-of the utmost importance. Understanding how the recommendation model responds to
-users reinforcing its internal biases, like the ones already detected, could
-potentially lead to a better understanding of how these systems favor certain
-kinds of content.
+Following the static analysis, we moved on to the dynamic analysis.
+Understanding how the recommendation model responds to users reinforcing its
+internal biases, like the ones already detected, could potentially lead to a
+better understanding of how these systems favor certain kinds of content. We
+also were not able to find any published dataset that fit our experimental
+design.
 
 In order for this analysis to be more true to reality, we implemented a simple
 recommendation algorithm using TensorFlow Recommenders \citep{}, a library for
@@ -18,31 +19,33 @@ framework. This means that, even though our model is deliberately bare-bones, it
 conforms to industry-standard technology and practices.
 
 The choice to use a simple recommendation algorithm instead of a more complex
-one was twofold: first, we didn't want to use a model that could introduce many
+one was twofold: first, we did not want to use a model that could introduce many
 confounding parameters to the analysis (e.g. hyperparameters, hardware
 requirements, etc.), and second, we wanted to study a baseline that could, in
-the future, be used as a comparison point for more complex algorithms.
+the future, be used as a comparison point for more complex algorithms. Our
+algorithm is, therefore, a straightforward neural network made up of linear
+stacks of layers.
 
-The goal of this analysis is to gather data on how the recommendation system
-behaves over time. As will be explained in the next sections, is to understand
-what happens to the recommendation profile of the algorithm as it interacts with
+The goal of this step is to gather data on how the recommendation system behaves
+over time. As will be explained in the next sections, we aim to understand what
+happens to the recommendation profile of the algorithm as it interacts with
 itself via users that follow the generated suggestions.
 
-The expectation is that the recommendation profile will grow ever more steep,
-which is a reasonable guess; if the users reinforce the beliefs of the
-algorithm, then is stands to reason that it will recommend popular movies with
-more and more frequently, to more and more users. How much more frequently,
-however, is the true question.
+The hypothesis is that the recommendation profile will grow ever more steep,
+which is a reasonable idea; if the users reinforce the beliefs of the algorithm,
+then is stands to reason that it will recommend popular movies with more and
+more frequently, to more and more users. How much more frequently, however, is
+the true question.
 
-For the sake of clarity, let's imagine two users with very distinct preferences:
-Alice, who enjoys adventure movies, and Bob, who enjoys horror movies. In
-principle, the algorithm should have very different recommendations for both of
-them and, were they to follow them, their custom suggestions should grow
-increasingly different. At the end of this experiment, users like Alice would
-all be recommended the same movies, and users like Bob would have their own set
-of very popular films; we should expect, therefore, a multimodal distribution of
-the recommendation frequencies, with "typical" adventure movies and "typical"
-horror movies being much more popular than comedy, for example.
+For the sake of clarity, let us imagine two users with very distinct
+preferences: Alice, who enjoys adventure movies, and Bob, who enjoys horror
+movies. In principle, the algorithm should have very different recommendations
+for both of them and, were they to follow them, their custom suggestions should
+grow increasingly different. At the end of this experiment, users like Alice
+would all be recommended the same movies, and users like Bob would have their
+own set of very popular films; we should expect, therefore, a multimodal
+distribution of the recommendation frequencies, with "typical" adventure movies
+and "typical" horror movies being much more popular than comedy, for example.
 
 However, if the final recommendation profile looked like what was showcased in
 the previous chapter, i.e. a very small subset of movies being recommended to
@@ -60,10 +63,9 @@ change the data. This whole experiment will, therefore, use a version of the
 dataset commonly used for machine learning benchmarks with no alteration
 whatsoever.
 
-The 1M dataset contains 1,000,209 ratings of almost 4000 movies made by over
-6000 anonymous MovieLens users who joined the platform in 2000. In this
-particular version, each user has made at least 20 ratings. There are 4 columns
-available:
+The 1M dataset contains 1000209 ratings of almost 4000 movies made by over 6000
+anonymous MovieLens users who joined the platform in 2000. In this particular
+version, each user has made at least 20 ratings. There are 4 columns available:
 
 \begin{itemize}
   \item \verb|UserID|: Unique user identifier, ranging from 1 to 6040.
@@ -93,8 +95,9 @@ detail in the next section.
 The dynamic experiment starts in a manner much similar to the static experiment.
 The full MovieLens dataset is fed as training data to a recommendation system in
 order to get it ready for giving suggestions to users. As explained in the
-opening section of this chapter, we chose a simple algorithm in order to reduce
-the number of possible interferences architecture could have on our analysis.
+opening section of this chapter, we chose a simple algorithm, (i.e., without
+rich features or complex layer arrangements) in order to reduce the number of
+possible interferences architecture could have on our analysis.
 
 The chosen recommendation algorithm was a basic ranking model described in
 \citet{} using TensorFlow Recommenders \citep{}. It is composed of multiple
@@ -131,12 +134,13 @@ class MovielensModel(tfrs.models.Model):
 
 In the first step of the experiment, we trained the recommendation model using
 Movielens' 1M ratings dataset, which we will refer to as \verb|ratings0| from
-now on. All available data was used and, in the end, we achieved a root mean
-squared error (RMSE) of 0.92; this result is similar to TFRS' deep \& cross
+now on. Evaluating our model, called \verb|model0|, on test data yielded a root
+mean squared error (RMSE) of 0.92; this result is similar to TFRS' deep \& cross
 network \citep{} results when trained on the same data. Once \verb|model0| was
 ready for making recommendations, we applied it to every possible user-movie
 pairing, generating a complete matrix of predicted ratings called
-\verb|predictions0|.
+\verb|predictions0|. This process corresponds to the top half of
+Figure~\ref{fig:fig04_dynamic_diagram}.
 
 In an environment like YouTube's recommendations sidebar, the user is presented
 with a few items that the algorithm thinks they would like, and then they can
@@ -150,7 +154,7 @@ simultaneously approving of the algorithms recommendations and selecting one
 option from their sidebars. The last step involved removing the oldest rating of
 each each user from \verb|ratings0| and appending these these selections to the
 dataset in order to create \verb|ratings1|. The full data flow is illustrated
-in Figure~\ref{fig:fig04_dynamic_diagram}
+in Figure~\ref{fig:fig04_dynamic_diagram}.
 
 \begin{figure}
   \centering
@@ -162,56 +166,196 @@ in Figure~\ref{fig:fig04_dynamic_diagram}
 
 A feedback loop, however, can't be created from a single iteration. For this
 reason, the process just described was classified as the ``zeroth'' iteration in
-the process (as it involved \verb|ratings0|). The ``first'' iteration began with
-\verb|ratings1|, trained \verb|model1|, generated \verb|predictions1|, and ended
-with \verb|ratings2|. We repeated this process until we got to \verb|ratings4|,
-totaling 5 ratings datasets (one original and 4 derived through ranking models).
-
-A simplified version of the R code that created \verb|ratingsN+1| from
-\verb|ratingsN| can be found below. The omitted functions served mostly
-auxiliary purposes which made the datasets conform to TensorFlow's format
-expectations. The full code is listed in Appendix~\ref{}.
-
-\begin{verbatim}
-predictions |>
-  group_by(user_id) |>
-  slice_max(prediction, n = 10) |>
-  slice_sample(n = 1) |>
-  ungroup() |>
-  bind_rows(old_ratings) |>
-  group_by(user_id) |>
-  slice_max(timestamp, n = -1, with_ties = FALSE) |>
-  ungroup()
-\end{verbatim}
+the process (as it involved \verb|ratings0|). The ``Nth'' iteration began with
+\verb|ratingsN|, trained \verb|modelN|, generated \verb|predictionsN|, and ended
+with \verb|ratingsN+1|. We repeated this process until we got to
+\verb|ratings4|, totaling 5 ratings datasets (one original and 4 derived through
+ranking models). The full code for this data flow is listed in Appendix~\ref{}.
 
 With these new datasets we were able to analyze the differences between distinct
 generations of models and understand exactly how the positive feedback loop
 influenced the last iteration.
 
-A series of analysis were conducted using these datasets as sources. We found
-that, with each iteration, the recommendation profile got steeper and steeper,
-that is, a few popular items got more recommended while the rest fell into
-disfavor; this was predictably more noticeable in movies with higher average
-ratings. In fact, a small set of around 20 movies were the only ones that
-consistently rose in popularity with new iterations.
+Using these datasets as sources, we found that, with each iteration, the
+recommendation profile got steeper and steeper, that is, a few popular items got
+more recommended while the rest fell into disfavor; this was predictably more
+noticeable in movies with higher average ratings. In fact, a small set of around
+20 movies were the only ones that consistently rose in popularity with new
+iterations.
 
-Figure~\ref{fig:fig04_profile_grouped} has five subplots which represent each
-iteration of the recommendation system. For \verb|ratings0|, it's possible to
-see that a number of well-rated movies were more popular, i.e., were rated by
-more people. Once we generate the first batch of recommendations, we add up the
-number of users each movie was recommended to; this is seen in the second plot,
-\verb|ratings1|. We can clearly see that a small subset of movies strayed from
-the pack and to more people that had watched them previously.
+Figure~\ref{fig:fig04_profile_grouped} has five subplots which represent the
+recommendation profile of each iteration of the recommendation system. For
+\verb|ratings0|, it's possible to see that a number of well-rated movies were
+more popular, i.e., were rated by more people. Once we generate the first batch
+of recommendations, we add up the number of users each movie was recommended to;
+this is seen in the second plot, \verb|ratings1|. The outlier points to the left
+clearly indicate that a small subset of movies strayed from the pack and were
+recommended to more people than had watched them previously.
 
 This process repeats itself until, in \verb|ratings4|, the most popular movie is
 recommended more than 2000 times, while the most popular movie in
 \verb|ratings0| was watched a little over 500 times.
 
+
+%\caption{10 most popular movies at each generation of the recommender system.\label{tab:tab04_top10}}\\
+\begin{longtable}{ |l|r| }
+  \hline
+
+  \multicolumn{2}{ |c| }{Original data} \\
+  \hline
+  \multicolumn{2}{c}{} \\ [-0.9ex]
+  \hline
+  Title & Popularity\\
+  \hline
+  Sixth Sense, The (1999) & 256\\
+  \hline
+  Who Framed Roger Rabbit? (1988) & 244\\
+  \hline
+  X-Men (2000) & 210\\
+  \hline
+  Gladiator (2000) & 208\\
+  \hline
+  Shakespeare in Love (1998) & 202\\
+  \hline
+  American Beauty (1999) & 198\\
+  \hline
+  Talented Mr. Ripley, The (1999) & 197\\
+  \hline
+  Fargo (1996) & 175\\
+  \hline
+  Men in Black (1997) & 174\\
+  \hline
+  Star Wars: Episode I - The Phantom Menace (1999) & 165\\
+  \hline
+  \multicolumn{2}{c}{} \\ [-0.9ex]
+  \hline
+
+  \multicolumn{2}{ |c| }{Generation 1} \\
+  \hline
+  \multicolumn{2}{c}{} \\ [-0.9ex]
+  \hline
+  Title & Popularity\\
+  \hline
+  Usual Suspects, The (1995) & 715\\
+  \hline
+  Shawshank Redemption, The (1994) & 705\\
+  \hline
+  Godfather, The (1972) & 669\\
+  \hline
+  Close Shave, A (1995) & 664\\
+  \hline
+  Schindler's List (1993) & 663\\
+  \hline
+  Seven Samurai (The Magnificent Seven) (Shichinin no samurai) (1954) & 652\\
+  \hline
+  Rear Window (1954) & 644\\
+  \hline
+  Wrong Trousers, The (1993) & 629\\
+  \hline
+  Sunset Blvd. (a.k.a. Sunset Boulevard) (1950) & 601\\
+  \hline
+  Raiders of the Lost Ark (1981) & 520\\
+  \hline
+  \multicolumn{2}{c}{} \\ [-0.9ex]
+  \hline
+
+  \multicolumn{2}{ |c| }{Generation 2} \\
+  \hline
+  \multicolumn{2}{c}{} \\ [-0.9ex]
+  \hline
+  Title & Popularity\\
+  \hline
+  Shawshank Redemption, The (1994) & 1296\\
+  \hline
+  Usual Suspects, The (1995) & 1292\\
+  \hline
+  Seven Samurai (The Magnificent Seven) (Shichinin no samurai) (1954) & 1276\\
+  \hline
+  Godfather, The (1972) & 1261\\
+  \hline
+  Close Shave, A (1995) & 1252\\
+  \hline
+  Rear Window (1954) & 1252\\
+  \hline
+  Wrong Trousers, The (1993) & 1217\\
+  \hline
+  Sunset Blvd. (a.k.a. Sunset Boulevard) (1950) & 1191\\
+  \hline
+  Star Wars: Episode IV - A New Hope (1977) & 772\\
+  \hline
+  Schindler's List (1993) & 657\\
+  \hline
+  \multicolumn{2}{c}{} \\ [-0.9ex]
+  \hline
+
+  \multicolumn{2}{ |c| }{Generation 3} \\
+  \hline
+  \multicolumn{2}{c}{} \\ [-0.9ex]
+  \hline
+  Title & Popularity\\
+  \hline
+  Shawshank Redemption, The (1994) & 1908\\
+  \hline
+  Usual Suspects, The (1995) & 1898\\
+  \hline
+  Seven Samurai (The Magnificent Seven) (Shichinin no samurai) (1954) & 1881\\
+  \hline
+  Godfather, The (1972) & 1861\\
+  \hline
+  Close Shave, A (1995) & 1810\\
+  \hline
+  Wrong Trousers, The (1993) & 1808\\
+  \hline
+  Sunset Blvd. (a.k.a. Sunset Boulevard) (1950) & 1786\\
+  \hline
+  Schindler's List (1993) & 1256\\
+  \hline
+  Rear Window (1954) & 1243\\
+  \hline
+  Third Man, The (1949) & 1172\\
+  \hline
+  \multicolumn{2}{c}{} \\ [-0.9ex]
+  \hline
+
+  \multicolumn{2}{ |c| }{Generation 4} \\
+  \hline
+  \multicolumn{2}{c}{} \\ [-0.9ex]
+  \hline
+  Title & Popularity\\
+  \hline
+  Seven Samurai (The Magnificent Seven) (Shichinin no samurai) (1954) & 2496\\
+  \hline
+  Shawshank Redemption, The (1994) & 2468\\
+  \hline
+  Close Shave, A (1995) & 2436\\
+  \hline
+  Wrong Trousers, The (1993) & 2432\\
+  \hline
+  Godfather, The (1972) & 2422\\
+  \hline
+  Sunset Blvd. (a.k.a. Sunset Boulevard) (1950) & 2385\\
+  \hline
+  Usual Suspects, The (1995) & 1888\\
+  \hline
+  Schindler's List (1993) & 1822\\
+  \hline
+  Rear Window (1954) & 1814\\
+  \hline
+  Raiders of the Lost Ark (1981) & 1718\\
+  \hline
+  \multicolumn{2}{c}{} \\ [-0.9ex]
+
+  \caption{Top 10 most popular movies at each generation of the algorithm.}
+  \label{tab:tab04_top10}
+\end{longtable}
+
 As explained before, we expected that movies which where already popular would
 be recommended more times, but these plots indicate a powerful feedback loop.
 Examining the data, we saw that the algorithm was consistently recommending
 movies which the users had already watched and this process only became more
-accentuated with each subsequent iteration.
+accentuated with each subsequent iteration. This is in line with recommendations
+from large social networks like YouTube, which do recommend videos that were
+already watched by the user.
 
 \begin{figure}
   \centering
@@ -223,12 +367,20 @@ accentuated with each subsequent iteration.
 
 % explicar que, nos gráficos, popularidade significa número de recs para t = 1..4
 
-A good way to measure how diverse were the recommendations made by the algorithm
-is to calculate the entropy \citep{} of each set. In the extreme, if the same
-movie is recommended to every user, than the entropy of the recommendations will
-tend to zero. In absolute terms, the entropy of \verb|ratings0| was 7.42, and
-the entropy of \verb|ratings4| was 6.08 (82\% lower). A comparison in relative
-terms is displayed in Figure~\ref{fig:fig04_entropy}.
+A good way to measure how diverse were the recommendations made by the
+algorithm is to calculate the entropy \citep{} of each set. This metric is
+defined for a discrete random variable $X$, which can assume values form the
+alphabet $\chi$, through the formula:
+
+$$
+H(X) = - \sum_{x \in \chi} p(x) \log p(x).
+$$
+
+In the extreme, if the same movie is recommended to every user, than the entropy
+of the recommendations will tend to zero. In absolute terms, the entropy of
+\verb|ratings0| was 7.42, and the entropy of \verb|ratings4| was 6.08 (82\%
+lower). A comparison in relative terms is displayed in
+Figure~\ref{fig:fig04_entropy}.
 
 \begin{figure}
   \centering
@@ -244,9 +396,9 @@ We can also observe this reduction of variety in an even more visual way. In
 Figure~\ref{fig:fig04_popularity_time_both} we plotted movie popularity over
 time; each line represents a movie and each step in the x-axis is a new
 generation of the model. Figure~\ref{fig:fig04_popularity_time} makes it very
-clear that no more than 15 movies rose in popularity over the four generations
-of the recommendation system, becoming orders of magnitude more popular than the
-rest. We also scaled the y-axis by taking the its log in
+clear that only 13 movies rose in popularity over the four generations of the
+recommendation system, becoming orders of magnitude more popular than the rest.
+We also scaled the y-axis by taking the its log in
 Figure~\ref{fig:fig04_log_popularity_time}, and we can see that, in fact, no
 other movie rose in popularity besides the ones that stick out after
 \verb|model2|.
@@ -276,10 +428,19 @@ recommendation systems are able to boost content artificially.
 \section{Modeling}
 \label{sec:modeling04}
 
-Having identified a feedback loop in the recommendation system, we decided to
-fit a regression model on our generated data. The goal of this step is
-essentially explainability \citep{}: to help better understand the algorithms
-decisions.
+Deep learning models are extremely powerful and versatile; they are not,
+however, very explainable \citep{}. Recommendation algorithms are often
+described as black boxes \citep{} because of the seemingly inscrutable impact
+that different inputs have on the output. The term "neural hallucination"
+\citep{} has even been coined to explain the process by which neural networks
+infer missing information form incomplete data.
+
+Since we did identify a feedback loop in the recommendation system, our next
+goal was to fit a regression model on the generated data. This could help
+clarify how the algorithm had made it's recommendations; if we were able to
+create a regression model that replicated the behavior of the system, then we
+could make inferences about the algorithm based on the characteristics of said
+model.
 
 % Computational Statistics do James E. Gentle
 
@@ -291,9 +452,13 @@ see later, even after feeding all of the the available data (and some extra
 metadata that the recommender algorithm didn't have access to), our models were
 not able to capture such a degenerate distribution.
 
-The first model we attempted to use was a simple Poisson regression \citep{}.
-Since the recommendation profiles displayed a strong positive skew and an
-exponential-like decay, a log-linear model seemed like a good starting point.
+\subsection{Poisson Regression}
+\label{subsec:poisson04}
+
+From the quasi-exponential decay observed in
+Figure~\ref{fig:fig04_profile_grouped}, we hypothesized that the logarithm of
+popularity was a function of the linear combination of genre, generation and
+rating. Our first attempt was, therefore, a simple Poisson regression \citep{}.
 For this kind of model \citep{}, we fit a regression of the form
 
 % https://statisticalhorizons.com/wp-content/uploads/Allison.Waterman.pdf
@@ -302,12 +467,11 @@ $$
 \log(\lambda) = \beta_0 + \beta_1 x_1 + \dots + \beta_k x_k
 $$
 
-where $\lambda$ is the Poisson parameter, $x_i$ are the regressor variable, and
-$\beta_i$ are the regression coefficient. More concretely, we used R's
-\verb|glm()| \citep{} function with the following formula: \verb|pop ~ t * genre * rating|.
-In this expression, \verb|pop| represents the popularity of a movie,
-\verb|t| represents the generation i.e. the iteration from 0 to 4, and
-\verb|genre| represents the genre.
+\noindent where $\lambda$ is the Poisson parameter, $x_i$ is the regressor
+variable, and $\beta_i$ is the regression coefficient. To implement the
+regression, we used R's \verb|glm()| \citep{} function with popularity being
+modeled by the factor crossing of generation (i.e., the iteration from 0 to 4),
+genre and average rating.
 
 As the reader might be able to see, we used the genre variable in our regression
 model even though we didn't feed it to the recommendation system. As explained
@@ -317,10 +481,34 @@ other variables; since a machine learning system is much more flexible than a
 regression model, we opted to explicitly feed the genre into the Poisson model
 and all others that followed.
 
-For illustrative purposes, we will present the full output of this model below.
-It is notable how many coefficients are considered highly significant, meaning
-that, individually, they were able to capture the feedback loop generated by
-the recommendation system.
+% Atkinson (1985)
+\verb|glm()| and all other regression functions return the coefficients of the
+regression alongside their calculated significance. However, analyzing the
+coefficients by themselves is only one part of the full picture. \citet{}
+proposed the usage of simulated envelopes, alongside coefficient significance,
+to assess global goodness-of-fit.
+
+This method is such that, under the correct model, the plot for the observed
+data is likely to fall within the envelope. The objective is not to provide a
+region of acceptance, but some sort of guidance to what kind of shape to expect.
+
+Obtaining the simulated envelope consists of fitting a model; extracting model
+diagnostics and calculating sorted absolute values; simulating the desired
+number of response variables using the same model matrix, error distribution and
+fitted parameters; fitting the same model to each simulated response variable
+and obtaining the same model diagnostics, again sorted absolute values; and
+computing the desired percentiles (in this case, 2.5\% and 97.5\%) at each value
+of the expected order statistic to form the envelope. In our case, the expected
+order statistic was obtained through the following normal distribution:
+
+$$
+\Phi^{-1}(\frac{i+3/8}{n+1/4})
+$$
+
+For illustrative purposes, we will present the full output of the Poisson model
+below. It is notable how many coefficients are considered highly significant,
+meaning that, individually, they were able to capture the feedback loop
+generated by the recommendation system.
 
 \begin{verbatim}
 Call:
@@ -335,7 +523,7 @@ Coefficients:
 (Intercept)                9.210e-02  9.514e-02   0.968 0.333031
 t                         -6.844e-02  4.200e-02  -1.629 0.103208
 genreAnimation            -2.276e+00  1.475e-01 -15.430  < 2e-16 ***
-genreChildren's            1.489e-02  1.754e-01   0.085 0.932347
+genrechildren's            1.489e-02  1.754e-01   0.085 0.932347
 genreComedy               -1.904e-01  1.041e-01  -1.828 0.067539 .
 genreCrime                -4.898e+00  1.858e-01 -26.364  < 2e-16 ***
 genreDocumentary          -1.801e+00  4.491e-01  -4.010 6.07e-05 ***
@@ -350,7 +538,7 @@ genreThriller              3.854e-01  1.791e-01   2.152 0.031394 *
 genreWestern              -4.253e+00  5.017e-01  -8.476  < 2e-16 ***
 rating                     8.877e-01  2.740e-02  32.395  < 2e-16 ***
 t:genreAnimation          -3.139e+00  6.223e-02 -50.435  < 2e-16 ***
-t:genreChildren's         -5.212e-04  7.760e-02  -0.007 0.994641
+t:genrechildren's         -5.212e-04  7.760e-02  -0.007 0.994641
 t:genreComedy             -2.235e-02  4.602e-02  -0.486 0.627215
 t:genreCrime              -3.561e+00  8.570e-02 -41.557  < 2e-16 ***
 t:genreDocumentary         2.463e-01  1.933e-01   1.274 0.202583
@@ -365,7 +553,7 @@ t:genreThriller            6.362e-02  7.894e-02   0.806 0.420240
 t:genreWestern             5.290e-02  2.211e-01   0.239 0.810874
 t:rating                  -1.584e-02  1.212e-02  -1.307 0.191193
 genreAnimation:rating      7.049e-01  3.938e-02  17.900  < 2e-16 ***
-genreChildren's:rating    -4.814e-02  5.303e-02  -0.908 0.364006
+genrechildren's:rating    -4.814e-02  5.303e-02  -0.908 0.364006
 genreComedy:rating         1.711e-02  2.989e-02   0.572 0.567055
 genreCrime:rating          1.261e+00  4.818e-02  26.161  < 2e-16 ***
 genreDocumentary:rating    5.638e-02  1.160e-01   0.486 0.626776
@@ -379,7 +567,7 @@ genreSci-Fi:rating        -5.037e-01  5.457e-02  -9.230  < 2e-16 ***
 genreThriller:rating      -1.952e-01  5.094e-02  -3.833 0.000127 ***
 genreWestern:rating        9.773e-01  1.309e-01   7.467 8.19e-14 ***
 t:genreAnimation:rating    8.263e-01  1.631e-02  50.671  < 2e-16 ***
-t:genreChildren's:rating  -1.370e-03  2.350e-02  -0.058 0.953503
+t:genrechildren's:rating  -1.370e-03  2.350e-02  -0.058 0.953503
 t:genreComedy:rating       6.194e-03  1.323e-02   0.468 0.639610
 t:genreCrime:rating        9.129e-01  2.163e-02  42.204  < 2e-16 ***
 t:genreDocumentary:rating -5.843e-02  5.002e-02  -1.168 0.242813
@@ -404,37 +592,11 @@ AIC: 318813
 Number of Fisher Scoring iterations: 6
 \end{verbatim}
 
-However, analyzing the coefficients by themselves is only one part of the full
-picture. We used a simulation envelope \citep{} to assess global
-goodness-of-fit, which is obtained by plotting the ordered absolute values of a
-model diagnostic versus the expected order statistic of a normal distribution
-\citep{}:
-
-$$
-\Phi^{-1}(\frac{i+3/8}{n+1/4})
-$$
-
-% Reescrever os 2 parágrafos abaixo. Eles foram tirados direto dos docs da
-% hnp::hnp()
-
-% Atkinson (1985)
-\citet{} proposed the addition of a simulated envelope, which is such that under
-the correct model the plot for the observed data is likely to fall within the
-envelope. The objective is not to provide a region of acceptance, but some sort
-of guidance to what kind of shape to expect.
-
-Obtaining the simulated envelope is simple and consists of (1) fitting a model;
-(2) extracting model diagnostics and calculating sorted absolute values; (3)
-simulating 99 (or more) response variables using the same model matrix, error
-distribution and fitted parameters; (4) fitting the same model to each simulated
-response variable and obtaining the same model diagnostics, again sorted
-absolute values; (5) computing the desired percentiles (e.g., 2.5 and 97.5) at
-each value of the expected order statistic to form the envelope.
-
-The resulting simulated envelope was generated with the \verb|hnp| \citep{} R
-package and can be seen in Figure~\ref{fig:fig04_residual_poisson}. It is plain
+When we look at the simulated envelope of this regression, however, it is plain
 to see that the model does not conform to the delimited region and, therefore,
-isn't able to properly capture the variability of the data.
+isn't able to properly capture the variability of the data. The plot generated
+with the \verb|hnp| \citep{} R package can be seen in
+Figure~\ref{fig:fig04_residual_poisson}.
 
 \begin{figure}
   \centering
@@ -442,25 +604,31 @@ isn't able to properly capture the variability of the data.
   \caption{Residual analysis via simulated envelope for the Poisson regression.\label{fig:fig04_residual_poisson}}
 \end{figure}
 
+\subsection{Negative Binomial Regression}
+\label{subsec:negbin04}
+
 Our next attempt involved a generalization of the previous regression. In a
 Poisson model, both mean and variance are assumed to be the same; this could be
 limiting our previous attempt, since it cannot capture overdispersed data
 \citep{}. The negative binomial distribution is a generalization of the Poisson
 distribution \citep{} that is able to better model data under these new
-assumptions. For this kind of model, we fit a regression of the form:
+assumptions. For this kind of model, we fit a regression of the form
 
 % https://statisticalhorizons.com/wp-content/uploads/Allison.Waterman.pdf
 
 $$
-\log(\lambda_i) = \beta_0 + \beta_1 x_{i1} + \dots + \beta_k x_{ik}
+\log(\lambda_i) = \beta_0 + \beta_1 x_{i1} + \dots + \beta_k x_{ik},
 $$
 
-where $\lambda_i$ depends on covariates. More concretely, we used MASS's \citep{}
-\verb|glm.nb()| function with the same formula as last time.
+\noindent where $\lambda_i$ depends on covariates, as does $x_{ik}$. More
+concretely, we used MASS's \citep{} \verb|glm.nb()| function with the same
+formula as last time.
 
-Again, the isolated results of the regression analysis seemed good at first, but
-a new simulated envelope made it clear that this model, while better than the
-last, still was not adequately capturing the data's variability:
+In this instance, the significancy of the coefficients of the regression
+(omitted) was even higher than of the Poisson model. However, upon calculating
+the simulated envelope, as seen in Figure~\ref{fig:fig04_residual_nb}, it became
+clear that  this model, while better than the last, still was not adequately
+capturing the data's variability.
 
 \begin{figure}
   \centering
@@ -468,9 +636,15 @@ last, still was not adequately capturing the data's variability:
   \caption{Residual analysis via simulated envelope for the negative binomial regression.\label{fig:fig04_residual_nb}}
 \end{figure}
 
+\subsection{Mixed-effects Poisson Regression}
+\label{subsec:mmpoisson04}
+
 Since both previous models failed to accurately capture the algorithm's
 recommendation profile, we moved on to mixed-effects models \citep{} given their
 usefulness in longitudinal studies \citep{}. % Gomes, Dylan G.E. (20 January 2022). "Should I use fixed effects or random effects when I have fewer than five levels of a grouping factor in a mixed-effects model?". PeerJ
+With this kind of model we would be able to vary the coefficients from movie to
+movie, allowing some movies to have steeper recommendation profiles than others.
+
 The Poisson mixed-effects model can be generalized from the standard model by
 adding normally distributed random-effects to the usual fixed-effects already
 described:
@@ -481,11 +655,11 @@ $$
 \log(\lambda) = \beta_0 + \delta_0 + \beta_1 x_1 + \delta_1 z_1 + \dots + \beta_k x_k + \delta_k z_k,
 $$
 
-where $\delta \sim \mathcal{N}(0,\psi)$ allows us to better model longitudinal
-observations within the same individual (which are not independent of each
-other) and serially correlated errors. In our regression, we added mixed-effects
-to the \verb|movie_id| variable, resulting in the \verb|glmmTMB::glmmTMB()|
-\citep{} formula \verb=pop ~ t * genre * rating + (1|movie_id)=.
+\noindent where $\delta \sim \mathcal{N}(0,\psi)$ allows us to better model
+longitudinal observations within the same individual (which are not independent
+of each other) and serially correlated errors. In our regression, we added
+mixed-effects to the \verb|movie_id| variable using the \verb|glmmTMB| \citep{}
+R package.
 
 As with our previous regressions, we evaluate the fit of the model not only
 through the significancy of the coefficients (which were on par with the other
@@ -504,6 +678,9 @@ and displays more information by default.
 Note how the fit is much better than the fixed-effects models, but the outliers
 on the left and right sides of the distribution are still present as attested by
 the outlier deviation test.
+
+\subsection{Mixed-effects Negative Binomial Regression}
+\label{subsec:mmnegbin04}
 
 Our last attempt at capturing the recommendation profile of the recommender
 system involved using a negative binomial mixed-model regression in order to
@@ -524,14 +701,14 @@ envelope for the same model.
 Formula:          pop ~ t * genre * rating + (1 | movie_id)
 Data: features
 
-     AIC      BIC   logLik deviance df.resid
- 83863.8  84370.3 -41865.9  83731.8    15844
+    AIC      BIC   logLik deviance df.resid
+83863.8  84370.3 -41865.9  83731.8    15844
 
 Random effects:
 
 Conditional model:
- Groups   Name        Variance Std.Dev.
- movie_id (Intercept) 1.364    1.168
+Groups   Name        Variance Std.Dev.
+movie_id (Intercept) 1.364    1.168
 Number of obs: 15910, groups:  movie_id, 3182
 
 Dispersion parameter for nbinom2 family ():   49
@@ -542,7 +719,7 @@ Conditional model:
 t                          -0.210272   0.021153  -9.941  < 2e-16 ***
 genreAdventure              0.112129   0.574197   0.195 0.845174
 genreAnimation             -2.286362   0.773873  -2.954 0.003132 **
-genreChildren's             0.855196   0.755919   1.131 0.257915
+genrechildren's             0.855196   0.755919   1.131 0.257915
 genreComedy                -0.108159   0.352431  -0.307 0.758925
 genreCrime                 -3.590470   0.850227  -4.223 2.41e-05 ***
 genreDocumentary           -1.659325   1.508329  -1.100 0.271285
@@ -558,7 +735,7 @@ genreWestern               -3.766758   2.108848  -1.786 0.074072 .
 rating                      0.957533   0.085468  11.203  < 2e-16 ***
 t:genreAdventure            0.161327   0.053403   3.021 0.002520 **
 t:genreAnimation           -0.392012   0.067698  -5.791 7.01e-09 ***
-t:genreChildren's           0.116028   0.066946   1.733 0.083068 .
+t:genrechildren's           0.116028   0.066946   1.733 0.083068 .
 t:genreComedy               0.119502   0.030504   3.918 8.94e-05 ***
 t:genreCrime               -0.146821   0.085503  -1.717 0.085952 .
 t:genreDocumentary          0.329357   0.195776   1.682 0.092507 .
@@ -574,7 +751,7 @@ t:genreWestern              0.184582   0.216581   0.852 0.394073
 t:rating                    0.029594   0.006273   4.717 2.39e-06 ***
 genreAdventure:rating      -0.209253   0.179840  -1.164 0.244606
 genreAnimation:rating       0.594327   0.226301   2.626 0.008633 **
-genreChildren's:rating     -0.473591   0.247951  -1.910 0.056131 .
+genrechildren's:rating     -0.473591   0.247951  -1.910 0.056131 .
 genreComedy:rating         -0.194909   0.109223  -1.785 0.074341 .
 genreCrime:rating           0.736375   0.243050   3.030 0.002448 **
 genreDocumentary:rating    -0.113489   0.399299  -0.284 0.776242
@@ -589,7 +766,7 @@ genreThriller:rating       -0.729129   0.256016  -2.848 0.004400 **
 genreWestern:rating         0.725673   0.578412   1.255 0.209625
 t:genreAdventure:rating    -0.053250   0.015828  -3.364 0.000768 ***
 t:genreAnimation:rating     0.110189   0.018603   5.923 3.16e-09 ***
-t:genreChildren's:rating   -0.039499   0.020922  -1.888 0.059031 .
+t:genrechildren's:rating   -0.039499   0.020922  -1.888 0.059031 .
 t:genreComedy:rating       -0.039790   0.008913  -4.464 8.04e-06 ***
 t:genreCrime:rating         0.038460   0.022654   1.698 0.089557 .
 t:genreDocumentary:rating  -0.088874   0.050610  -1.756 0.079076 .
@@ -622,8 +799,3 @@ degeneracy, meaning it approaches a situation \citep{} where only one movie is
 recommended every single time and all others are never recommended.
 
 % mudar a estrutura e colocar os conceitos em um capítulo anterior
-
-% ..., and \verb|movie_id| is the ID of a movie. Note
-% that the genre was not used when training the recommendation models described
-% above, but it turned out that this feature could explain a lot of the models'
-% outputs.

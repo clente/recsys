@@ -148,6 +148,38 @@ popularity_plot(pop3)
 
 popularity_plot(pop4)
 
+### Top-10 tables --------------------------------------------------------------
+
+pop0 |>
+  dplyr::slice_head(n = 10) |>
+  dplyr::left_join(movies, "movie_id") |>
+  dplyr::select(Title = movie_title, Popularity = pop) |>
+  knitr::kable(format = "latex")
+
+pop1 |>
+  dplyr::slice_head(n = 10) |>
+  dplyr::left_join(movies, "movie_id") |>
+  dplyr::select(Title = movie_title, Popularity = pop) |>
+  knitr::kable(format = "latex")
+
+pop2 |>
+  dplyr::slice_head(n = 10) |>
+  dplyr::left_join(movies, "movie_id") |>
+  dplyr::select(Title = movie_title, Popularity = pop) |>
+  knitr::kable(format = "latex")
+
+pop3 |>
+  dplyr::slice_head(n = 10) |>
+  dplyr::left_join(movies, "movie_id") |>
+  dplyr::select(Title = movie_title, Popularity = pop) |>
+  knitr::kable(format = "latex")
+
+pop4 |>
+  dplyr::slice_head(n = 10) |>
+  dplyr::left_join(movies, "movie_id") |>
+  dplyr::select(Title = movie_title, Popularity = pop) |>
+  knitr::kable(format = "latex")
+
 ### Popularity by ratings ------------------------------------------------------
 
 ratings0 |>
