@@ -85,9 +85,27 @@ variables to the recommendation system. This new dataset has 3 columns:
   \item \verb|Genres|: Pipe-separated string with all applicable genres.
 \end{itemize}
 
-The other accompanying dataset, ``Users'', has not been used for the purposes of
-this analysis. The reasoning behind this decision will be explained in greater
-detail in the next section.
+Figure~\ref{fig:fig04_dist_ratings} showcases the distribution of ratings from
+the ``1M'' dataset and Figure~\ref{fig:fig04_dist_genres} showcases the
+distribution of genres from the ``Movies'' dataset. Note that, for both this
+visualization and the rest of the chapter, the genre of each movie is taken to
+be the first one listed on the \verb|Genres| column.
+
+\begin{figure}
+  \centering
+  \begin{subfigure}{0.45\textwidth}
+    \centering
+    \includegraphics[width=\textwidth]{04_dist_ratings}
+    \caption{Rating distribution.\label{fig:fig04_dist_ratings}}
+  \end{subfigure}
+  \begin{subfigure}{0.45\textwidth}
+    \centering
+    \includegraphics[width=\textwidth]{04_dist_genres}
+    \caption{Genre distribution.\label{fig:fig04_dist_genres}}
+  \end{subfigure}
+  \caption{Distributions of ratings (a) and genres
+  (b).\label{fig:fig04_dist_both}}
+\end{figure}
 
 \section{Experiments}
 \label{sec:experiments04}
@@ -162,8 +180,6 @@ in Figure~\ref{fig:fig04_dynamic_diagram}.
   \caption{Data flow diagram.\label{fig:fig04_dynamic_diagram}}
 \end{figure}
 
-% Explicar o que são os formatos no caption da figura.
-
 A feedback loop, however, can't be created from a single iteration. For this
 reason, the process just described was classified as the ``zeroth'' iteration in
 the process (as it involved \verb|ratings0|). The ``Nth'' iteration began with
@@ -196,8 +212,28 @@ This process repeats itself until, in \verb|ratings4|, the most popular movie is
 recommended more than 2000 times, while the most popular movie in
 \verb|ratings0| was watched a little over 500 times.
 
+\begin{figure}
+  \centering
+  \includegraphics[width=\textwidth]{04_profile_grouped}
+  \caption{Recommendation profile of every generation. Colors indicate average
+  movie rating, which is a strong predictor of popularity over time.
+  \label{fig:fig04_profile_grouped}}
+\end{figure}
 
-%\caption{10 most popular movies at each generation of the recommender system.\label{tab:tab04_top10}}\\
+As explained before, we expected that movies which where already popular would
+be recommended more times, but these plots indicate a powerful feedback loop.
+Examining the data, we saw that the algorithm was consistently recommending
+movies which the users had already watched and this process only became more
+accentuated with each subsequent iteration. This is in line with recommendations
+from large social networks like YouTube, which do recommend videos that were
+already watched by the user.
+
+Table~\ref{tab:tab04_top10} contains the most popular movies on each generation
+of the experiment. Just as in Chapter~\ref{cap:static}, the popularity of the
+movies in generation 0 (i.e. the original dataset) is taken to be the number of
+reviews each movie received. It is remarkable that the most recommended movies
+in generation 4 were neither the most popular nor the highest rated.
+
 \begin{longtable}{ |l|r| }
   \hline
 
@@ -348,24 +384,6 @@ recommended more than 2000 times, while the most popular movie in
   \caption{Top 10 most popular movies at each generation of the algorithm.}
   \label{tab:tab04_top10}
 \end{longtable}
-
-As explained before, we expected that movies which where already popular would
-be recommended more times, but these plots indicate a powerful feedback loop.
-Examining the data, we saw that the algorithm was consistently recommending
-movies which the users had already watched and this process only became more
-accentuated with each subsequent iteration. This is in line with recommendations
-from large social networks like YouTube, which do recommend videos that were
-already watched by the user.
-
-\begin{figure}
-  \centering
-  \includegraphics[width=\textwidth]{04_profile_grouped}
-  \caption{Recommendation profile of every generation. Colors indicate average
-  movie rating, which is a strong predictor of popularity over time.
-  \label{fig:fig04_profile_grouped}}
-\end{figure}
-
-% explicar que, nos gráficos, popularidade significa número de recs para t = 1..4
 
 A good way to measure how diverse were the recommendations made by the
 algorithm is to calculate the entropy \citep{} of each set. This metric is
@@ -797,5 +815,3 @@ for the more popular movies (left tail of the rightmost plot).
 At this point, it is safe to assume that this distribution tends towards
 degeneracy, meaning it approaches a situation \citep{} where only one movie is
 recommended every single time and all others are never recommended.
-
-% mudar a estrutura e colocar os conceitos em um capítulo anterior

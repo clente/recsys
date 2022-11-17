@@ -56,10 +56,35 @@ in the models. The main dataset explored in this dissertation is MovieLens
 featured in many recommender system tutorials and papers for the past few years.
 The full dataset, with 27,000,000 ratings applied to 58,000 movies, was enriched
 by \citet{banik_movies_2017} with information about the movies' credits,
-metadata, keywords, and links. In the end, because of technical limitations, the
-dataset used in this chapter was sampled until 30,689 movies were left; this was
-the largest dataset that could be processed in less than one hour by the
-hardware we had access to.
+metadata, keywords, and links. The first five rows of the dataset are reproduced
+in Table~\ref{tab:tab03_head}.
+
+\begin{table}[h]
+  \begin{tabular}{ |r|r|r|r| }
+    \hline
+    user\_id & movie\_id & rating & timestamp\\
+    \hline
+    1 & 1193 & 5 & 978300760\\
+    \hline
+    1 & 661 & 3 & 978302109\\
+    \hline
+    1 & 914 & 3 & 978301968\\
+    \hline
+    1 & 3408 & 4 & 978300275\\
+    \hline
+    1 & 2355 & 5 & 978824291\\
+    \hline
+    1 & 1197 & 3 & 978302268\\
+    \hline
+  \end{tabular}
+
+  \caption{First five rows of the MovieLens dataset.}
+  \label{tab:tab03_head}
+\end{table}
+
+In the end, because of technical limitations, the dataset used in this chapter
+was sampled until 30,689 movies were left; this was the largest dataset that
+could be processed in less than one hour by the hardware we had access to.
 
 The second dataset, used for validation purposes only, was the Book-Crossing
 Dataset \citep{ziegler_book-crossing_2004}. Just like the enriched MovieLens,
@@ -81,13 +106,6 @@ item? Excluding user information is important because, as demonstrated by
 could get transferred on to the model; the objective here is understanding the
 algorithm by itself without external influences.
 
-% Some preliminary experiments were conducted in order to gather some evidence in
-% favor or against the main hypothesis being tested. In total, fifteen different
-% recommendation models were trained and analyzed, with each plot below
-% representing one of these models. For simplicity's sake, even though all models
-% represented here are non-parametric, we still say they were ``trained'' because
-% the datasets used to generate recommendations are different.
-
 To evaluate the recommendation models, at least qualitatively, we can compare
 their ``recommendation profiles'': a summary of how many times every item is
 recommended overall. To create this profile, the model is asked to return the
@@ -107,6 +125,36 @@ would be the movie featured the most times in the set of all recommendations,
 and so forth for every other rank. From now on $n$ will be fixed to 10, which
 is, on average, roughly how many videos YouTube shows on its recommendation
 sidebar.
+
+% https://foundation.mozilla.org/en/research/library/user-controls/report/
+
+The baseline for these visualizations is MovieLens' original review
+distribution. Figure~\ref{fig:fig03_review_profile} ranks every movie in the
+original dataset by their review count, i.e., the number of users that reviewed
+each movie. It is important to note that we're not taking user ratings into
+account for these profiles and this is deliberate: social networks like YouTube
+seem to mostly ignore explicit user feedback when making recommendations. Our
+models will, therefore, use ratings internally, but we will evaluate them based
+on impressions alone.
+
+\begin{figure}
+  \centering
+  \begin{subfigure}{0.45\textwidth}
+    \centering
+    \includegraphics[width=\textwidth]{03_review_profile}
+    \caption{Review profile.\label{fig:fig03_review_profile}}
+  \end{subfigure}
+  \begin{subfigure}{0.45\textwidth}
+    \centering
+    \includegraphics[width=\textwidth]{03_log_review_profile}
+    \caption{Log-log plot.\label{fig:fig03_log_review_profile}}
+  \end{subfigure}
+  \caption{Review profile for the full dataset (a) and log-log
+  plot.\label{fig:fig03_review_profile_both}}
+\end{figure}
+
+\subsection{Trivial Model}
+\label{subsec:trivial}
 
 The first model examined is the ``trivial model'', which is a simple sampler
 that returns $n$ movies at random when asked for a recommendation. Its
@@ -133,6 +181,9 @@ recommendation profile.
   \caption{Recommendation profile for the trivial model (a) and log-log plot
     (b).\label{fig:fig1}}
 \end{figure}
+
+\subsection{Vanilla Model}
+\label{subsec:vanilla}
 
 Besides the trivial model, the simplest model that excludes user information is
 the content-based recommender. In the real world this is an algorithm that is
@@ -178,10 +229,8 @@ the trivial model discussed above.
     (b).\label{fig:fig2}}
 \end{figure}
 
-% Precisa, sem falta, colocar uma distribuição das notas dos filmes para mostrar
-% que, apesar de existirem filmes mais populares, eles não são exponencialmente
-% mais populares. Isso justifica procurar outra explicação para a diferença
-% entre o vanila e o trivial que não seja somente o rating dos filmes.
+\subsection{Cutoff Models}
+\label{subsec:cutoff}
 
 A potential explanation for the difference between trivial and vanilla could
 reside in the least used terms in the metadata: movies whose metadata share rare
@@ -189,7 +238,7 @@ words might have been recommended less frequently than movies whose metadata are
 not so unique. To test this hypothesis, a cutoff point was created for words to
 be included in the vector representation of the movies. Three cutoff points were
 tested and only words with an absolute frequency larger than or equal to $k$, $k
-= {2, 5, 8}$, could be included in the vector representations. The results can
+= \{2, 5, 8\}$, could be included in the vector representations. The results can
 be seen in Figure~\ref{fig:fig3} and, aside from variations in the
 $y$-intercept, all plots are qualitatively very similar to
 Figure~\ref{fig:fig2a}, indicating that rare words probably are not to blame for
@@ -216,6 +265,9 @@ the exponential-like decay.
     (c).\label{fig:fig3}}
 \end{figure}
 
+\subsection{Similarity Models}
+\label{subsec:similarity}
+
 The second validation experiment involved attempting to use other distance
 metrics instead of cosine similarity \citep{ricci_introduction_2011}, since that
 could also be a source of the strange behavior of the recommendation profile.
@@ -232,7 +284,7 @@ differences between the recommendation profiles generated by each metric.
   \begin{subfigure}{0.3\textwidth}
     \centering
     \includegraphics[width=\textwidth]{4a_cosine}
-    \caption{Cosine distance.\label{fig:fig4a}}
+    \caption{Cosine distance (vanilla).\label{fig:fig4a}}
   \end{subfigure}
   \begin{subfigure}{0.3\textwidth}
     \centering
@@ -247,6 +299,9 @@ differences between the recommendation profiles generated by each metric.
   \caption{Recommendation profile for cosine (a), euclidean (b), and manhattan
     (c) distances.\label{fig:fig4}}
 \end{figure}
+
+\subsection{Vanilla Model with Synthetic Metadata}
+\label{subsec:synthetic}
 
 At this point it is safe to say that the type of decay seen in recommendation
 frequencies up until now is not spurious and must have a clear cause. To better
@@ -266,12 +321,13 @@ $\overline{P(w)}$, and another where each word was 100 times more likely. All
 three constructed datasets can be concisely described through the expression
 $P(w_i) = C \times \overline{P(w)}, C = \{1, 10, 100\}$.
 
-Figure~\ref{fig:fig5} displays the recommendation profiles for each different
-$C$. Concretely, the figures are equivalent to creating random metadata for the
-movies where the probability of any single word being selected was approximately
-$1.54 \times 10^{-4}$, $1.54 \times 10^{-3}$, and $1.54 \times 10^{-2}$
-respectively. The results do support the aforementioned hypothesis since less
-sparse vectors indeed generated less exponential decays.
+Figure~\ref{fig:fig5} displays the recommendation profiles for the vanilla model
+applied to datasets with each distinct value of $C$. Concretely, the figures are
+equivalent to creating random metadata for the movies where the probability of
+any single word being selected was approximately $1.54 \times 10^{-4}$, $1.54
+\times 10^{-3}$, and $1.54 \times 10^{-2}$ respectively. The results do support
+the aforementioned hypothesis since less sparse vectors indeed generated less
+exponential decays.
 
 \begin{figure}
   \centering
