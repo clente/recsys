@@ -5,4 +5,48 @@
 \chapter{Conclusion}
 \label{cap:conclusion}
 
-\section{Temp}
+In this work, we studied recommender system bias. As detailed in
+Chapter~\ref{cap:introduction}, these algorithms are pervasive in modern live
+and have significant impact on our information diet; however, a growing body of
+evidence indicates that these systems, specially when deployed in large social
+networks, can display significant biases in their recommendations. Researchers
+and activists alike worry that these bises might create echo chambers and
+radicalization pipelines by amplifying extremist content. In broad terms, our
+goal was to study one way through which these algorithms might be boosting
+fringe viewpoints and radicalizing users: degenerate feedback loops.
+
+Degeneracy in recommender systems has been explored before by
+\citet{nguyen_exploring_2014} and \citet{jiang_degenerate_2019}. They concluded
+that these algorithms show a tendency to reduce the diversity of recommended
+content over time because of the feedback loop that occurs when the system must
+learn from the its own outputs. Our main research objective was to further
+characterize and model this behavior using both qualitative and quantitative
+methods.
+
+In Chapter~\ref{cap:review}, we reviewed the scientific literature that deals
+with this topic and presented a few different viewpoints on the matter. Works by
+\citet{hosseinmardi_evaluating_2020}, \citet{huszar_algorithmic_2021}, and
+others suggest that social networks tend to amplify far-right views, while
+\citet{munger_right-wing_2020} and \citet{ledwich_algorithmic_2019} posit that
+this is not the case. \citet{ribeiro_auditing_2020} found evidence that, in
+general, YouTube users tend to migrate from "lighter" content towards more
+extreme videos, and \citet{stoica_algorithmic_2018} coined the term
+``algorithmic glass ceiling'' to describe recommender system's propensity to
+reinforce homophilic behavior.
+
+We also drew attention to non-scientific endeavors that attempt to better
+understand filter bubbles, echo chambers, and their impacts on the public. While
+this issue is being debated in academia, journalists and whistleblowers like
+\citet{ribeiro_como_2021} or \citet{wong_how_2021} hold social media companies
+accountable by gathering anecdotal evidence and personal accounts about
+algorithmic bias.
+
+Our main contributions come in Chapters~\ref{cap:static} and \ref{cap:dynamic},
+where we describe and conduct multiple experiments run on recommender
+algorithms.
+
+\section{Static Analysis}
+\label{sec:static}
+
+\section{Dynamic Analysis}
+\label{sec:dynamic}

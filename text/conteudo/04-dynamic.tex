@@ -13,10 +13,11 @@ also were not able to find any published dataset that fit our experimental
 design.
 
 In order for this analysis to be more true to reality, we implemented a simple
-recommendation algorithm using TensorFlow Recommenders \citep{}, a library for
-machine learning developed by Google for use with its TensorFlow \citep{}
-framework. This means that, even though our model is deliberately bare-bones, it
-conforms to industry-standard technology and practices.
+recommendation algorithm using TensorFlow Recommenders
+\citep{noauthor_tensorflow_nodate}, a library for machine learning developed by
+Google for use with its TensorFlow \citep{} framework. This means that, even % TensorFlow: A System for Large-Scale Machine Learning | USENIX
+though our model is deliberately bare-bones, it conforms to industry-standard
+technology and practices.
 
 The choice to use a simple recommendation algorithm instead of a more complex
 one was twofold: first, we did not want to use a model that could introduce many
@@ -55,13 +56,13 @@ feedback loop, ignoring personal preferences and distinctions between films.
 \section{Datasets}
 \label{sec:datasets04}
 
-For the dynamic experiments, we kept using the Movielens dataset \citep{}. This
-time, however, we used the full ``1M'' dataset instead of sampling movies from
-the larger ``25M'' version. Given that we wanted our dynamic analysis to be
-conducted in a realistic scenario, we decided that it would be better not to
-change the data. This whole experiment will, therefore, use a version of the
-dataset commonly used for machine learning benchmarks with no alteration
-whatsoever.
+For the dynamic experiments, we kept using the Movielens dataset
+\citep{harper_movielens_2015}. This time, however, we used the full ``1M''
+dataset instead of sampling movies from the larger ``25M'' version. Given that
+we wanted our dynamic analysis to be conducted in a realistic scenario, we
+decided that it would be better not to change the data. This whole experiment
+will, therefore, use a version of the dataset commonly used for machine learning
+benchmarks with no alteration whatsoever.
 
 The 1M dataset contains 1000209 ratings of almost 4000 movies made by over 6000
 anonymous MovieLens users who joined the platform in 2000. In this particular
@@ -118,10 +119,10 @@ rich features or complex layer arrangements) in order to reduce the number of
 possible interferences architecture could have on our analysis.
 
 The chosen recommendation algorithm was a basic ranking model described in
-\citet{} using TensorFlow Recommenders \citep{}. It is composed of multiple
-stacked dense layers and uses mean squared error as its loss function. The main
-class in the model is reproduced below, and the full algorithm is listed in
-Appendix~\ref{}.
+\citet{} using TensorFlow Recommenders \citep{noauthor_tensorflow_nodate}. It is % Recommending movies: ranking | TensorFlow Recommenders
+composed of multiple stacked dense layers and uses mean squared error as its
+loss function. The main class in the model is reproduced below, and the full
+algorithm is listed in Appendix~\ref{}.
 
 %% Deixar o código em pseudo-código para ficar mais claro
 
@@ -154,7 +155,7 @@ In the first step of the experiment, we trained the recommendation model using
 Movielens' 1M ratings dataset, which we will refer to as \verb|ratings0| from
 now on. Evaluating our model, called \verb|model0|, on test data yielded a root
 mean squared error (RMSE) of 0.92; this result is similar to TFRS' deep \& cross
-network \citep{} results when trained on the same data. Once \verb|model0| was
+network \citep{} results when trained on the same data. Once \verb|model0| was % Deep & Cross Network for Ad Click Predictions
 ready for making recommendations, we applied it to every possible user-movie
 pairing, generating a complete matrix of predicted ratings called
 \verb|predictions0|. This process corresponds to the top half of
@@ -386,7 +387,7 @@ in generation 4 were neither the most popular nor the highest rated.
 \end{longtable}
 
 A good way to measure how diverse were the recommendations made by the
-algorithm is to calculate the entropy \citep{} of each set. This metric is
+algorithm is to calculate the entropy \citep{} of each set. This metric is % Fundamentals in Information Theory and Coding
 defined for a discrete random variable $X$, which can assume values form the
 alphabet $\chi$, through the formula:
 
@@ -447,11 +448,11 @@ recommendation systems are able to boost content artificially.
 \label{sec:modeling04}
 
 Deep learning models are extremely powerful and versatile; they are not,
-however, very explainable \citep{}. Recommendation algorithms are often
-described as black boxes \citep{} because of the seemingly inscrutable impact
-that different inputs have on the output. The term "neural hallucination"
-\citep{} has even been coined to explain the process by which neural networks
-infer missing information form incomplete data.
+however, very explainable \citep{}. Recommendation algorithms are often % Explainable Machine Learning for Scientific Insights and Discoveries
+described as black boxes because of the seemingly inscrutable impact that
+different inputs have on the output. The term "neural hallucination" \citep{} % The Curious Case of Hallucinations in Neural Machine Translation
+has even been coined to explain the process by which neural networks infer
+missing information form incomplete data.
 
 Since we did identify a feedback loop in the recommendation system, our next
 goal was to fit a regression model on the generated data. This could help
@@ -460,9 +461,7 @@ create a regression model that replicated the behavior of the system, then we
 could make inferences about the algorithm based on the characteristics of said
 model.
 
-% Computational Statistics do James E. Gentle
-
-As is common in computational inference \citep{}, our process involved multiple
+As is common in computational inference \citep{}, our process involved multiple % Computational Statistics do James E. Gentle
 rounds of modeling. We started with a very simple model and, according to
 goodness-of-fit measurements, made it more and more complex in order to achieve
 a better representation of the behavior of the recommendation system. As we will
@@ -476,10 +475,8 @@ not able to capture such a degenerate distribution.
 From the quasi-exponential decay observed in
 Figure~\ref{fig:fig04_profile_grouped}, we hypothesized that the logarithm of
 popularity was a function of the linear combination of genre, generation and
-rating. Our first attempt was, therefore, a simple Poisson regression \citep{}.
-For this kind of model \citep{}, we fit a regression of the form
-
-% https://statisticalhorizons.com/wp-content/uploads/Allison.Waterman.pdf
+rating. Our first attempt was, therefore, a simple Poisson regression \citep{}. % https://statisticalhorizons.com/wp-content/uploads/Allison.Waterman.pdf
+For this kind of model, we fit a regression of the form
 
 $$
 \log(\lambda) = \beta_0 + \beta_1 x_1 + \dots + \beta_k x_k
@@ -499,10 +496,9 @@ other variables; since a machine learning system is much more flexible than a
 regression model, we opted to explicitly feed the genre into the Poisson model
 and all others that followed.
 
-% Atkinson (1985)
 \verb|glm()| and all other regression functions return the coefficients of the
 regression alongside their calculated significance. However, analyzing the
-coefficients by themselves is only one part of the full picture. \citet{}
+coefficients by themselves is only one part of the full picture. \citet{} % Atkinson (1985)
 proposed the usage of simulated envelopes, alongside coefficient significance,
 to assess global goodness-of-fit.
 
@@ -627,12 +623,10 @@ Figure~\ref{fig:fig04_residual_poisson}.
 
 Our next attempt involved a generalization of the previous regression. In a
 Poisson model, both mean and variance are assumed to be the same; this could be
-limiting our previous attempt, since it cannot capture overdispersed data
-\citep{}. The negative binomial distribution is a generalization of the Poisson
-distribution \citep{} that is able to better model data under these new
-assumptions. For this kind of model, we fit a regression of the form
-
-% https://statisticalhorizons.com/wp-content/uploads/Allison.Waterman.pdf
+limiting our previous attempt, since it cannot capture overdispersed data. The
+negative binomial distribution is a generalization of the Poisson distribution
+\citep{} that is able to better model data under these new assumptions. For this % https://statisticalhorizons.com/wp-content/uploads/Allison.Waterman.pdf
+kind of model, we fit a regression of the form
 
 $$
 \log(\lambda_i) = \beta_0 + \beta_1 x_{i1} + \dots + \beta_k x_{ik},
@@ -658,7 +652,7 @@ capturing the data's variability.
 \label{subsec:mmpoisson04}
 
 Since both previous models failed to accurately capture the algorithm's
-recommendation profile, we moved on to mixed-effects models \citep{} given their
+recommendation profile, we moved on to mixed-effects models given their
 usefulness in longitudinal studies \citep{}. % Gomes, Dylan G.E. (20 January 2022). "Should I use fixed effects or random effects when I have fewer than five levels of a grouping factor in a mixed-effects model?". PeerJ
 With this kind of model we would be able to vary the coefficients from movie to
 movie, allowing some movies to have steeper recommendation profiles than others.
@@ -813,5 +807,5 @@ was not enough to capture accurately the recommendation profile of our system
 for the more popular movies (left tail of the rightmost plot).
 
 At this point, it is safe to assume that this distribution tends towards
-degeneracy, meaning it approaches a situation \citep{} where only one movie is
+degeneracy, meaning it approaches a situation \citep{} where only one movie is % Degenerate
 recommended every single time and all others are never recommended.
