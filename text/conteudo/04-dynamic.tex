@@ -120,9 +120,9 @@ possible interferences architecture could have on our analysis.
 
 The chosen recommendation algorithm was a basic ranking model described in
 \citet{} using TensorFlow Recommenders \citep{noauthor_tensorflow_nodate}. It is % Recommending movies: ranking | TensorFlow Recommenders
-composed of multiple stacked dense layers and uses mean squared error as its
-loss function. The main class in the model is reproduced below, and the full
-algorithm is listed in Appendix~\ref{}.
+composed of multiple stacked dense layers and uses regularized mean squared
+error as its loss function in order to avoid overfitting. The main class in the
+model is reproduced below, and the full algorithm is listed in Appendix~\ref{}.
 
 %% Deixar o código em pseudo-código para ficar mais claro
 
@@ -163,10 +163,10 @@ Figure~\ref{fig:fig04_dynamic_diagram}.
 
 In an environment like YouTube's recommendations sidebar, the user is presented
 with a few items that the algorithm thinks they would like, and then they can
-either ignore the sidebar or select one of the options to watch. Since our goal
-was to explore what would happen when the recommendation system entered a
-feedback loop, we picked one movie at random from each user's 10 best-ranked
-entries.
+either ignore the sidebar or select one of the options to watch. In this work,
+we assume that the user never ignores their recommendations because it would
+increase the complexity of the simulation exponentially; we, therefore, always
+picked one movie at random from each user's 10 best-ranked entries.
 
 This set of well-ranked movies was our way of simulating thousands of users
 simultaneously approving of the algorithms recommendations and selecting one
@@ -469,6 +469,11 @@ see later, even after feeding all of the the available data (and some extra
 metadata that the recommender algorithm didn't have access to), our models were
 not able to capture such a degenerate distribution.
 
+For every model described below, the response variable $Y$ is the number of
+recommendations a movie received at a specific moment in time, while $\lambda$
+is the average recommendation rate (conditioned to a movie's genre and rating)
+at a specific moment in time.
+
 \subsection{Poisson Regression}
 \label{subsec:poisson04}
 
@@ -479,10 +484,10 @@ rating. Our first attempt was, therefore, a simple Poisson regression \citep{}. 
 For this kind of model, we fit a regression of the form
 
 $$
-\log(\lambda) = \beta_0 + \beta_1 x_1 + \dots + \beta_k x_k
+\log(\lambda_i) = \beta_0 + \beta_1 x_{i1} + \dots + \beta_k x_{ik},
 $$
 
-\noindent where $\lambda$ is the Poisson parameter, $x_i$ is the regressor
+\noindent where $\lambda_i$ is the Poisson parameter, $x_{ik}$ is the regressor
 variable, and $\beta_i$ is the regression coefficient. To implement the
 regression, we used R's \verb|glm()| \citep{} function with popularity being
 modeled by the factor crossing of generation (i.e., the iteration from 0 to 4),
@@ -664,7 +669,7 @@ described:
 % file:///Users/clente/Downloads/Applied%20Regression%20Analysis%20and%20Generalized%20Linear%20Models%20(John%20Fox)%20(z-lib.org).pdf
 
 $$
-\log(\lambda) = \beta_0 + \delta_0 + \beta_1 x_1 + \delta_1 z_1 + \dots + \beta_k x_k + \delta_k z_k,
+\log(\lambda_i) = \delta + \beta_0 + \beta_1 x_{i1} + \dots + \beta_k x_{ik},
 $$
 
 \noindent where $\delta \sim \mathcal{N}(0,\psi)$ allows us to better model
@@ -701,7 +706,7 @@ model, this regression also extends the default formula of its fixed-effects
 counterpart:
 
 $$
-\log(\lambda_i) = \beta_0 + \delta_0 + \beta_1 x_{i1} + \delta_1 z_{i1} + \dots + \beta_{ik} x_{ik} + \delta_{ik} z_{ik}.
+\log(\lambda_i) = \delta + \beta_0 + \beta_1 x_{i1} + \dots + \beta_k x_{ik}.
 $$
 
 In the table below, the reader can see the full summary of the negative binomial

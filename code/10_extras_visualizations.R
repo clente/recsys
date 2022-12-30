@@ -8,12 +8,13 @@
 p <- "data-raw/ratings0.csv" |>
   readr::read_csv() |>
   dplyr::count(rating) |>
+  dplyr::mutate(n = n / sum(n)) |>
   dplyr::arrange(rating) |>
   ggplot2::ggplot() +
   ggplot2::geom_col(ggplot2::aes(x = rating, y = n)) +
   ggplot2::theme_minimal() +
   ggplot2::xlab("Rating") +
-  ggplot2::ylab("Count")
+  ggplot2::ylab("Frequency (%)")
 
 ggplot2::ggsave("../text/figuras/04_dist_ratings.png", p, width = 9, height = 9, units = "cm")
 
@@ -24,10 +25,11 @@ p <- "data-raw/movies.csv" |>
     genre = forcats::fct_lump_prop(genre, 0.02)
   ) |>
   dplyr::count(genre, sort = TRUE) |>
+  dplyr::mutate(n = n / sum(n)) |>
   ggplot2::ggplot() +
   ggplot2::geom_col(ggplot2::aes(x = n, y = genre)) +
   ggplot2::theme_minimal() +
-  ggplot2::xlab("Count") +
+  ggplot2::xlab("Frequency (%)") +
   ggplot2::ylab("Genre")
 
 ggplot2::ggsave("../text/figuras/04_dist_genres.png", p, width = 9, height = 9, units = "cm")

@@ -159,13 +159,13 @@ on impressions alone.
 
 The first model examined is the ``trivial model'', which is a simple sampler
 that returns $n$ movies at random when asked for a recommendation. Its
-recommendation profile can be seen in Figure~\ref{fig:fig1} and, logically, the
-number of times each movie is recommended approaches a normal distribution and,
-therefore, the recommendation profile also approaches the cumulative
-distribution function (CDF) of said distribution. The most recommended movie
-appeared 25 times in the final list, while the least recommended movie did not
-appear at all. Figure~\ref{fig:fig1b} shows the log-log plot of the
-recommendation profile.
+recommendation profile can be seen in Figure~\ref{fig:fig1} and, since it is the
+sum of many uniform samples, the number of times each movie is recommended
+approaches a normal distribution and, therefore, the recommendation profile also
+approaches the cumulative distribution function (CDF) of said distribution. The
+most recommended movie appeared 25 times in the final list, while the least
+recommended movie did not appear at all. Figure~\ref{fig:fig1b} shows the
+log-log plot of the recommendation profile.
 
 \begin{figure}
   \centering
