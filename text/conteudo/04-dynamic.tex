@@ -123,9 +123,7 @@ The chosen recommendation algorithm was a basic ranking model described in
 \citep{noauthor_tensorflow_nodate}. It is composed of multiple stacked dense
 layers and uses regularized mean squared error as its loss function in order to
 avoid overfitting. The main class in the model is reproduced below, and the full
-algorithm is listed in Appendix~\ref{}.
-
-%% Deixar o código em pseudo-código para ficar mais claro
+algorithm is listed in Appendix~\ref{apx:model}.
 
 \begin{verbatim}
 class MovielensModel(tfrs.models.Model):
@@ -188,7 +186,7 @@ the process (as it involved \verb|ratings0|). The ``Nth'' iteration began with
 \verb|ratingsN|, trained \verb|modelN|, generated \verb|predictionsN|, and ended
 with \verb|ratingsN+1|. We repeated this process until we got to
 \verb|ratings4|, totaling 5 ratings datasets (one original and 4 derived through
-ranking models). The full code for this data flow is listed in Appendix~\ref{}.
+ranking models).
 
 With these new datasets we were able to analyze the differences between distinct
 generations of models and understand exactly how the positive feedback loop
