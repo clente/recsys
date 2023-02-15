@@ -44,8 +44,6 @@ algorithmic bias.
 Our main contributions come in Chapters~\ref{cap:static} and \ref{cap:dynamic},
 where we describe and conduct multiple experiments on recommender algorithms.
 
-% Ver o que foi escrito em 2022 e colocar aqui para não ser pego de surpresa
-
 \section{Static Analysis}
 \label{sec:static}
 
@@ -158,13 +156,13 @@ mixed-effects to these models and were better able to capture the variance of
 the phenomenon, but a simulated envelope analysis revealed that our attempts
 were still falling short.
 
-As with the numbers obtained by \citet{} in a different scenario, the % Degenerate feedback loops in recommender systems
-recommendation profiles of our model were tending quickly towards a degenerate
-distribution. We believe that this is yet another piece of evidence that
-suggests that recommender systems, if left unchecked, tent towards a confinement
-dynamic where users' feeds devolve into filter bubbles and where the points of
-view of highly-engaged minorities are amplified by a system that has to learn
-from itself.
+As with the numbers obtained by \citet{jiang_degenerate_2019} in a different
+scenario, the recommendation profiles of our model were tending quickly towards
+a degenerate distribution. We believe that this is yet another piece of evidence
+that suggests that recommender systems, if left unchecked, tent towards a
+confinement dynamic where users' feeds devolve into filter bubbles and where the
+points of view of highly-engaged minorities are amplified by a system that has
+to learn from itself.
 
 \section{Recent Developments}
 \label{sec:developments}
@@ -175,35 +173,27 @@ remarks, we present some of the research relevant to the subject but that wasn't
 included in Chapter~\ref{cap:review}.
 
 First and foremost, many surveys were published regarding both recommender
-systems in general and specifically fair recommendation algorithms. \citet{} % Reinforcement Learning based Recommender Systems: A Survey
-and \citet{} both present up-to-date overviews about the field, while  % A Survey of Recommendation Systems: Recommendation Models, Techniques, and Application Fields
-\citet{}, \citet{}, and \citet{} focus on explainable recommenders and fairness
-metrics.
-% Fairness in Recommender Systems: Research Landscape and Future Directions
-% A Survey on the Fairness of Recommender Systems
-% Fairness in Recommendation: A Survey
+systems in general and specifically fair recommendation algorithms.
+\citet{afsar_reinforcement_2022} and \citet{ko_survey_2022} both present
+up-to-date overviews about the field, while \citet{deldjoo_fairness_2022},
+\citet{wang_survey_2023}, and \citet{li_fairness_2022} focus on explainable
+recommenders and fairness metrics.
 
 Many novel algorithms were also developed during the elaboration of this work.
-\citet{}, \citet{}, \citet{}, \citet{}, \citet{}, \citet{}, \citet{}, and
-\citet{} all present either new fairer recommender systems or new metrics that
-can be used to rank existing algorithms on their bias.
-% CPFair: Personalized Consumer and Producer Fairness Re-ranking for Recommender Systems
-% RGRecSys: A Toolkit for Robustness Evaluation of Recommender Systems
-% FAIR: Fairness-aware information retrieval evaluation
-% Fair ranking: a critical review, challenges, and future directions
-% Explainable Fairness in Recommendation
-% Self-Supervised Learning for Recommender Systems: A Survey
-% Dual constraints and adversarial learning for fair recommenders
-% Trustworthy Recommender Systems
+\citet{naghiaei_cpfair_2022}, \citet{ovaisi_rgrecsys_2022},
+\citet{gao_fair_2022}, \citet{patro_fair_2022}, \citet{ge_explainable_2022},
+\citet{yu_self-supervised_2022}, \citet{liu_dual_2022}, and
+\citet{wang_trustworthy_2022} all present either new fairer recommender systems
+or new metrics that can be used to rank existing algorithms on their bias.
 
 Furthermore, some researchers have found evidence of other possible mechanisms
-through which users can become radicalized. \citet{} flips our hypothesis on its % Sharing of misinformation is habitual, not just lazy or biased
-head, arguing that recommendation systems encourage content creators (not
-consumers) to make ever more extreme content in order to attract more attention
-that their competitors. \citet{} goes one step further and finds that some users % Do Humans Prefer Debiased AI Algorithms? A Case Study in Career Recommendation
-might actually prefer biased algorithms. Finally, \citet{} removes the % The Small but Mighty Danger of Echo Chamber Extremism
-algorithmic component almost entirely, claiming that real-world engagement is
-the biggest radicalizer of all.
+through which users can become radicalized. \citet{ceylan_sharing_2023} flips
+our hypothesis on its head, arguing that recommendation systems encourage
+content creators (not consumers) to make ever more extreme content in order to
+attract more attention that their competitors. \citet{wang_humans_2022} goes one
+step further and finds that some users might actually prefer biased algorithms.
+Finally, \citet{benson_small_nodate} removes the algorithmic component almost
+entirely, claiming that real-world engagement is the biggest radicalizer of all.
 
 \section{Final Remarks}
 \label{sec:remarks}
@@ -221,4 +211,6 @@ step would involve applying the methods discussed in this work to more complex
 recommendation systems and to larger real-world datasets. Another possible
 improvement would be to simulate users that ignore their recommendations.
 
+% Citações dos pacotes
+% Outline chap 1
 % Apêndices!

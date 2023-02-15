@@ -15,9 +15,9 @@ design.
 In order for this analysis to be more true to reality, we implemented a simple
 recommendation algorithm using TensorFlow Recommenders
 \citep{noauthor_tensorflow_nodate}, a library for machine learning developed by
-Google for use with its TensorFlow \citep{} framework. This means that, even % TensorFlow: A System for Large-Scale Machine Learning | USENIX
-though our model is deliberately bare-bones, it conforms to industry-standard
-technology and practices.
+Google for use with its TensorFlow \citep{noauthor_tensorflow_nodate-1}
+framework. This means that, even though our model is deliberately bare-bones, it
+conforms to industry-standard technology and practices.
 
 The choice to use a simple recommendation algorithm instead of a more complex
 one was twofold: first, we did not want to use a model that could introduce many
@@ -119,10 +119,11 @@ rich features or complex layer arrangements) in order to reduce the number of
 possible interferences architecture could have on our analysis.
 
 The chosen recommendation algorithm was a basic ranking model described in
-\citet{} using TensorFlow Recommenders \citep{noauthor_tensorflow_nodate}. It is % Recommending movies: ranking | TensorFlow Recommenders
-composed of multiple stacked dense layers and uses regularized mean squared
-error as its loss function in order to avoid overfitting. The main class in the
-model is reproduced below, and the full algorithm is listed in Appendix~\ref{}.
+\citet{noauthor_recommending_nodate} using TensorFlow Recommenders
+\citep{noauthor_tensorflow_nodate}. It is composed of multiple stacked dense
+layers and uses regularized mean squared error as its loss function in order to
+avoid overfitting. The main class in the model is reproduced below, and the full
+algorithm is listed in Appendix~\ref{}.
 
 %% Deixar o código em pseudo-código para ficar mais claro
 
@@ -155,10 +156,10 @@ In the first step of the experiment, we trained the recommendation model using
 Movielens' 1M ratings dataset, which we will refer to as \verb|ratings0| from
 now on. Evaluating our model, called \verb|model0|, on test data yielded a root
 mean squared error (RMSE) of 0.92; this result is similar to TFRS' deep \& cross
-network \citep{} results when trained on the same data. Once \verb|model0| was % Deep & Cross Network for Ad Click Predictions
-ready for making recommendations, we applied it to every possible user-movie
-pairing, generating a complete matrix of predicted ratings called
-\verb|predictions0|. This process corresponds to the top half of
+network \citep{wang_deep_2017} results when trained on the same data. Once
+\verb|model0| was ready for making recommendations, we applied it to every
+possible user-movie pairing, generating a complete matrix of predicted ratings
+called \verb|predictions0|. This process corresponds to the top half of
 Figure~\ref{fig:fig04_dynamic_diagram}.
 
 In an environment like YouTube's recommendations sidebar, the user is presented
@@ -386,10 +387,10 @@ in generation 4 were neither the most popular nor the highest rated.
   \label{tab:tab04_top10}
 \end{longtable}
 
-A good way to measure how diverse were the recommendations made by the
-algorithm is to calculate the entropy \citep{} of each set. This metric is % Fundamentals in Information Theory and Coding
-defined for a discrete random variable $X$, which can assume values form the
-alphabet $\chi$, through the formula:
+A good way to measure how diverse were the recommendations made by the algorithm
+is to calculate the entropy \citep{borda_fundamentals_2011} of each set. This
+metric is defined for a discrete random variable $X$, which can assume values
+form the alphabet $\chi$, through the formula:
 
 $$
 H(X) = - \sum_{x \in \chi} p(x) \log p(x).
@@ -448,11 +449,11 @@ recommendation systems are able to boost content artificially.
 \label{sec:modeling04}
 
 Deep learning models are extremely powerful and versatile; they are not,
-however, very explainable \citep{}. Recommendation algorithms are often % Explainable Machine Learning for Scientific Insights and Discoveries
-described as black boxes because of the seemingly inscrutable impact that
-different inputs have on the output. The term "neural hallucination" \citep{} % The Curious Case of Hallucinations in Neural Machine Translation
-has even been coined to explain the process by which neural networks infer
-missing information form incomplete data.
+however, very explainable \citep{roscher_explainable_2020}. Recommendation
+algorithms are often described as black boxes because of the seemingly
+inscrutable impact that different inputs have on the output. The term "neural
+hallucination" \citep{raunak_curious_2021} has even been coined to explain the
+process by which neural networks infer missing information form incomplete data.
 
 Since we did identify a feedback loop in the recommendation system, our next
 goal was to fit a regression model on the generated data. This could help
@@ -461,13 +462,13 @@ create a regression model that replicated the behavior of the system, then we
 could make inferences about the algorithm based on the characteristics of said
 model.
 
-As is common in computational inference \citep{}, our process involved multiple % Computational Statistics do James E. Gentle
-rounds of modeling. We started with a very simple model and, according to
-goodness-of-fit measurements, made it more and more complex in order to achieve
-a better representation of the behavior of the recommendation system. As we will
-see later, even after feeding all of the the available data (and some extra
-metadata that the recommender algorithm didn't have access to), our models were
-not able to capture such a degenerate distribution.
+As is common in computational inference \citep{robert_james_2011}, our process
+involved multiple rounds of modeling. We started with a very simple model and,
+according to goodness-of-fit measurements, made it more and more complex in
+order to achieve a better representation of the behavior of the recommendation
+system. As we will see later, even after feeding all of the the available data
+(and some extra metadata that the recommender algorithm didn't have access to),
+our models were not able to capture such a degenerate distribution.
 
 For every model described below, the response variable $Y$ is the number of
 recommendations a movie received at a specific moment in time, while $\lambda$
@@ -480,8 +481,9 @@ at a specific moment in time.
 From the quasi-exponential decay observed in
 Figure~\ref{fig:fig04_profile_grouped}, we hypothesized that the logarithm of
 popularity was a function of the linear combination of genre, generation and
-rating. Our first attempt was, therefore, a simple Poisson regression \citep{}. % https://statisticalhorizons.com/wp-content/uploads/Allison.Waterman.pdf
-For this kind of model, we fit a regression of the form
+rating. Our first attempt was, therefore, a simple Poisson regression
+\citep{allison_fixed-effects_2002}. For this kind of model, we fit a regression
+of the form
 
 $$
 \log(\lambda_i) = \beta_0 + \beta_1 x_{i1} + \dots + \beta_k x_{ik},
@@ -489,9 +491,9 @@ $$
 
 \noindent where $\lambda_i$ is the Poisson parameter, $x_{ik}$ is the regressor
 variable, and $\beta_i$ is the regression coefficient. To implement the
-regression, we used R's \verb|glm()| \citep{} function with popularity being
-modeled by the factor crossing of generation (i.e., the iteration from 0 to 4),
-genre and average rating.
+regression, we used R's \verb|glm()| \citep{rcore_stats_2022} function with
+popularity being modeled by the factor crossing of generation (i.e., the
+iteration from 0 to 4), genre and average rating.
 
 As the reader might be able to see, we used the genre variable in our regression
 model even though we didn't feed it to the recommendation system. As explained
@@ -503,9 +505,9 @@ and all others that followed.
 
 \verb|glm()| and all other regression functions return the coefficients of the
 regression alongside their calculated significance. However, analyzing the
-coefficients by themselves is only one part of the full picture. \citet{} % Atkinson (1985)
-proposed the usage of simulated envelopes, alongside coefficient significance,
-to assess global goodness-of-fit.
+coefficients by themselves is only one part of the full picture.
+\citet{atkinson_plots_1987} proposed the usage of simulated envelopes, alongside
+coefficient significance, to assess global goodness-of-fit.
 
 This method is such that, under the correct model, the plot for the observed
 data is likely to fall within the envelope. The objective is not to provide a
@@ -614,7 +616,7 @@ Number of Fisher Scoring iterations: 6
 When we look at the simulated envelope of this regression, however, it is plain
 to see that the model does not conform to the delimited region and, therefore,
 isn't able to properly capture the variability of the data. The plot generated
-with the \verb|hnp| \citep{} R package can be seen in
+with the \verb|hnp| \citep{moral_half-normal_2017} R package can be seen in
 Figure~\ref{fig:fig04_residual_poisson}.
 
 \begin{figure}
@@ -630,16 +632,16 @@ Our next attempt involved a generalization of the previous regression. In a
 Poisson model, both mean and variance are assumed to be the same; this could be
 limiting our previous attempt, since it cannot capture overdispersed data. The
 negative binomial distribution is a generalization of the Poisson distribution
-\citep{} that is able to better model data under these new assumptions. For this % https://statisticalhorizons.com/wp-content/uploads/Allison.Waterman.pdf
-kind of model, we fit a regression of the form
+\citep{allison_fixed-effects_2002} that is able to better model data under these
+new assumptions. For this kind of model, we fit a regression of the form
 
 $$
 \log(\lambda_i) = \beta_0 + \beta_1 x_{i1} + \dots + \beta_k x_{ik},
 $$
 
 \noindent where $\lambda_i$ depends on covariates, as does $x_{ik}$. More
-concretely, we used MASS's \citep{} \verb|glm.nb()| function with the same
-formula as last time.
+concretely, we used MASS's \citep{venables_modern_2002} \verb|glm.nb()| function
+with the same formula as last time.
 
 In this instance, the significancy of the coefficients of the regression
 (omitted) was even higher than of the Poisson model. However, upon calculating
@@ -658,15 +660,13 @@ capturing the data's variability.
 
 Since both previous models failed to accurately capture the algorithm's
 recommendation profile, we moved on to mixed-effects models given their
-usefulness in longitudinal studies \citep{}. % Gomes, Dylan G.E. (20 January 2022). "Should I use fixed effects or random effects when I have fewer than five levels of a grouping factor in a mixed-effects model?". PeerJ
-With this kind of model we would be able to vary the coefficients from movie to
-movie, allowing some movies to have steeper recommendation profiles than others.
+usefulness in longitudinal studies \citep{gomes_should_2022}. With this kind of
+model we would be able to vary the coefficients from movie to movie, allowing
+some movies to have steeper recommendation profiles than others.
 
-The Poisson mixed-effects model can be generalized from the standard model by
-adding normally distributed random-effects to the usual fixed-effects already
-described:
-
-% file:///Users/clente/Downloads/Applied%20Regression%20Analysis%20and%20Generalized%20Linear%20Models%20(John%20Fox)%20(z-lib.org).pdf
+The Poisson mixed-effects model can be generalized \citep{noauthor_applied_2023}
+from the standard model by adding normally distributed random-effects to the
+usual fixed-effects already described:
 
 $$
 \log(\lambda_i) = \delta + \beta_0 + \beta_1 x_{i1} + \dots + \beta_k x_{ik},
@@ -675,16 +675,16 @@ $$
 \noindent where $\delta \sim \mathcal{N}(0,\psi)$ allows us to better model
 longitudinal observations within the same individual (which are not independent
 of each other) and serially correlated errors. In our regression, we added
-mixed-effects to the \verb|movie_id| variable using the \verb|glmmTMB| \citep{}
-R package.
+mixed-effects to the \verb|movie_id| variable using the \verb|glmmTMB|
+\citep{brooks_glmmtmb_2017} R package.
 
 As with our previous regressions, we evaluate the fit of the model not only
 through the significancy of the coefficients (which were on par with the other
 models), but also through the simulated envelope. Since we used a different R
 package to run the mixed-effects models, we also had to resort to another
-simulation package: \verb|DHARMa| \citep{}; this means that the new plots in
-Figure~\ref{fig:fig04_residual_mmpois} follow a different aesthetic convention
-and displays more information by default.
+simulation package: \verb|DHARMa| \citep{florian_dharma_2022}; this means that
+the new plots in Figure~\ref{fig:fig04_residual_mmpois} follow a different
+aesthetic convention and displays more information by default.
 
 \begin{figure}
   \centering
@@ -812,5 +812,6 @@ was not enough to capture accurately the recommendation profile of our system
 for the more popular movies (left tail of the rightmost plot).
 
 At this point, it is safe to assume that this distribution tends towards
-degeneracy, meaning it approaches a situation \citep{} where only one movie is % Degenerate
-recommended every single time and all others are never recommended.
+degeneracy, meaning it approaches a situation
+\citep{weisstein_degenerate_nodate} where only one movie is recommended every
+single time and all others are never recommended.
