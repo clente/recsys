@@ -38,11 +38,11 @@ the study was.
 
 With our experiments we aim to make a tangible contribution to the field of
 recommender systems, specifically how their design might (or might not) foster
-confinement dynamics and create degenerate ``feedback loops''. If the main
-hypothesis is confirmed, this could mean that even a relatively small fraction
-of the content can tip the algorithm in its favor, amplifying their message,
-creating filter bubbles, and possibly sending users on a radicalization spiral
-if that topic is related to politics or other contentious subjects.
+confinement dynamics and create degenerate feedback loops. If it does, this
+could mean that even a relatively small fraction of the content can tip the
+algorithm in its favor, amplifying their message, creating filter bubbles, and
+possibly sending users on a radicalization spiral if that topic is related to
+politics or other contentious subjects.
 
 In this chapter we will analyze a recommendation system statically, that is,
 without taking into account its evolution after multiple rounds of training and
@@ -92,50 +92,136 @@ The second dataset, used for validation purposes only, was the Book-Crossing
 Dataset \citep{ziegler_book-crossing_2004}. Just like the enriched MovieLens,
 this dataset contained entries for ratings (1,149,780) applied by users
 (278,858) to items (271,379 books), and information about these items like
-title, author, publisher, etc.
+title, author, publisher, etc. Since this dataset has was fewer ratings, there
+was no need to sample it before running any experiment.
+
+\section{Models}
+\label{sec:models}
+
+The goal of the static analysis is to test the hypothesis that even a simple
+recommendation algorithm can demonstrate some sort of bias towards a subset of
+of items. More specifically, given an algorithm that is user agnostic, i.e.,
+that cannot be influenced by users' personal preferences, would the resulting
+recommender system still favor any items? Excluding user information is
+important because, as demonstrated by \citet{stoica_algorithmic_2018}, users
+might have their own biases and these could get transferred on to the model; the
+objective here is to understand the algorithm by itself without external
+influences.
+
+We developed five different models for this purpose, which are described below.
+All of them follow the same basic behavior: after the model is trained on the
+relevant dataset, it is able to take an item $i$ as input and return the $n$
+items most similar to it, i.e., $n$ recommendations. For example, a
+recommendation algorithm applied the present version of the MovieLens dataset
+would generate a list of $30,689 \times n$ items.
+
+This mimics YouTube's sidebar, which suggests videos similar to the one
+currently being watched, with the exception that our models do not take a user's
+watch history into account.
+
+\subsection{Trivial Model}
+\label{subsec:trivial}
+
+The first model we developed is the trivial model, which is a sampler that
+returns $n$ movies at random when asked for a recommendation. It is the simplest
+model against which we can compare all others, since it has no mechanism to
+favor one item over the next.
+
+\subsection{Vanilla Model}
+\label{subsec:vanilla}
+
+Besides the trivial model, the simplest model that excludes user information is
+the content-based recommender. In the real world this is an algorithm that is
+able to identify similar items based on their metadata (description, tags, etc.)
+and suggest the closest items to the one being used as input. A straightforward
+way of building such an algorithm is creating a vector representation of each
+item and then using a similarity metric to recommend the items most similar to
+the one in question. The chosen similarity metric was cosine similarity because
+of its simplicity, robustness, and ubiquity \citep{sarwar_item-based_2001}.
+
+The main non-trivial model used in this study was the one that simply generated
+vector representations for the full MovieLens dataset, without any modifications
+(which is why it will henceforth be referred to as the vanilla model). The
+metadata for each movie was made up of its keywords, main cast, director, and
+genres. The vector transformation was very simple, with each position
+representing one of the words of the corpus, and each element indicating how
+many times that word appeared in the metadata for that movie. When the
+recommendation for a movie was requested, the algorithm measured the cosine
+similarity between it and every other movie, returning the IDs belonging to the
+top $n$ most similar vectors.
+
+\subsection{Cutoff Models}
+\label{subsec:cutoff}
+
+The vanilla model is at risk of being impacted by word frequency: for example,
+movies whose metadata share rare words might be recommended less frequently than
+movies whose metadata are not so unique. To mitigate this, we developed a model
+with a cutoff point after which words would not be included in the vector
+representation of the items anymore. Because of this feature, we called this
+algorithm the cutoff model.
+
+Three cutoff points were tested and only words with an absolute frequency larger
+than or equal to $k$, $k = \{2, 5, 8\}$, could be included in the vector
+representations.
+
+\subsection{Similarity Models}
+\label{subsec:similarity}
+
+The next model we tested was intended to validate our choice of distance metric
+for the vanilla model. In what we called similarity models, we used other
+distance metrics besides cosine similarity \citep{ricci_introduction_2011}:
+cosine distance, Euclidean distance and Manhattan distance. The goal here was to
+verify whether other metrics could do a better (or worse) job at not creating a
+subset of movies that ended up more recommended than the rest.
+
+\subsection{Vanilla Model with Synthetic Metadata}
+\label{subsec:synthetic}
+
+The last model we developed was actually the vanilla model trained on a
+variation of the original dataset. This validation step was necessary in order
+to guarantee that the intrinsic properties of our data were not having an effect
+on the recommendation profiles of our previous models.
+
+The new dataset had synthetic (i.e., randomly generated) metadata: the metadata
+text for each item was comprised of random words sampled uniformly from the full
+metadata corpus. In the case of the MovieLens dataset, the baseline probability
+of any given word $w_i$ being added to the metadata of a movie was equal to
+$\overline{P(w)}$, the average probability over every word in the original
+corpus.
+
+In addition to this baseline probability, two extra sets of metadata were
+constructed: one where each word was 10 times more likely to be selected than
+$\overline{P(w)}$, and another where each word was 100 times more likely. All
+three constructed datasets can be concisely described through the expression
+$P(w_i) = C \times \overline{P(w)}, C = \{1, 10, 100\}$.
 
 \section{Experiments}
 \label{sec:experiments}
 
-The static analysis involved crafting many different models and analyzing their
-recommendations as a whole. The goal of these experiments was to test the
-hypothesis that even a simple recommendation algorithm could demonstrate some
-sort of bias towards a subset of the items being recommended. More specifically,
-given an algorithm that is user agnostic, i.e., that cannot be influenced by
-users' personal preferences, would the resulting recommender system favor some
-item? Excluding user information is important because, as demonstrated by
-\citet{stoica_algorithmic_2018}, users might have their own biases and these
-could get transferred on to the model; the objective here is understanding the
-algorithm by itself without external influences.
+In order to evaluate these recommendation systems, at least qualitatively, we
+can compare their recommendation profiles: a summary of how many times each item
+is recommended overall by the model. To create this profile, the model is asked
+to return $n = 10$ recommendations for each item in the dataset according to its
+internal similarity metric.
 
-To evaluate the recommendation models, at least qualitatively, we can compare
-their ``recommendation profiles'': a summary of how many times every item is
-recommended overall. To create this profile, the model is asked to return the
-top-$n$ most similar items to the input according to its internal similarity
-metric, and this process is repeated for every item in the dataset. The
-recommendation profile of the model is the number of times each item showed up
-in the top-$n$ most similar items of the whole dataset.
-
-For example, a recommendation algorithm applied the present version of the
-MovieLens dataset would generate a list of $n$ movies for each input, creating a
-list of $30,689 \times n$ movies. This operation is very costly, approaching
-$O(MN)$ complexity, where $M$ is the number of users in the dataset and $N$ is
-the total number of available numbers. After this computationally intensive
+The recommendation profile of the model is the number of times each item showed
+up in the full set of recommendations arranged by ranking (i.e., from most
+recommended to least recommended). After this computationally intensive
 calculation, the occurrence of each ID would be counted and ranked accordingly
 to facilitate interpretation of results, that is, the movie ranked number 1
 would be the movie featured the most times in the set of all recommendations,
-and so forth for every other rank. From now on $n$ will be fixed to 10, which
-is, on average, roughly how many videos YouTube shows on its recommendation
-sidebar.
+and so forth for every other rank.
 
-The baseline for these visualizations is MovieLens' original review
-distribution. Figure~\ref{fig:fig03_review_profile} ranks every movie in the
-original dataset by their review count, i.e., the number of users that reviewed
-each movie. It is important to note that we're not taking user ratings into
-account for these profiles and this is deliberate: social networks like YouTube
-seem to mostly ignore explicit user feedback when making recommendations. Our
-models will, therefore, use ratings internally, but we will evaluate them based
-on impressions alone.
+This operation is very costly, approaching $O(MN)$ complexity, where $M$ is the
+number of users in the dataset and $N$ is the number of distinct movies.
+
+The baseline for the visualizations presented in this section is MovieLens'
+original review distribution. Figure~\ref{fig:fig03_review_profile} ranks every
+movie in the original dataset by their review count, i.e., the number of users
+that reviewed each movie. It is important to note that we are not taking user
+ratings into account for these profiles and this is deliberate: social networks
+like YouTube seem to mostly ignore explicit user feedback when making
+recommendations \citep{noauthor_mozilla_nodate}.
 
 \begin{figure}
   \centering
@@ -156,10 +242,8 @@ on impressions alone.
 \subsection{Trivial Model}
 \label{subsec:trivial}
 
-The first model examined is the ``trivial model'', which is a simple sampler
-that returns $n$ movies at random when asked for a recommendation. Its
-recommendation profile can be seen in Figure~\ref{fig:fig1} and, since it is the
-sum of many uniform samples, the number of times each movie is recommended
+Its recommendation profile can be seen in Figure~\ref{fig:fig1} and, since it is
+the sum of many uniform samples, the number of times each movie is recommended
 approaches a normal distribution and, therefore, the recommendation profile also
 approaches the cumulative distribution function (CDF) of said distribution. The
 most recommended movie appeared 25 times in the final list, while the least
@@ -184,27 +268,6 @@ log-log plot of the recommendation profile.
 
 \subsection{Vanilla Model}
 \label{subsec:vanilla}
-
-Besides the trivial model, the simplest model that excludes user information is
-the content-based recommender. In the real world this is an algorithm that is
-able to identify similar items based on their metadata (description, tags, etc.)
-and suggest the closest items to the one being purchased or viewed. A
-straightforward way of building such an algorithm is creating a vector
-representation of each item and then using a similarity metric to recommend the
-items most similar to the one in question. The chosen similarity metric was
-cosine similarity because of its simplicity, robustness, and ubiquity
-\citep{sarwar_item-based_2001}.
-
-The main non-trivial model used in this study was the one that simply generated
-vector representations for the full MovieLens dataset, without any modifications
-(which is why it will henceforth be referred to as the ``vanilla model''). The
-metadata for each movie was made up of its keywords, main cast, director, and
-genres. The vector transformation was very simple, with each position
-representing one of the words of the corpus, and each element indicating how
-many times that word appeared in the metadata for that movie. When the
-recommendation for a movie was requested, the algorithm measured the cosine
-similarity between it and every other movie, returning the IDs belonging to
-the top $n = 10$ most similar vectors.
 
 The recommendation profile for the vanilla model can be seen in
 Figure~\ref{fig:fig2a}. Here, the movie ranked number 1 appeared more than 2000
@@ -233,14 +296,9 @@ the trivial model discussed above.
 \label{subsec:cutoff}
 
 A potential explanation for the difference between trivial and vanilla could
-reside in the least used terms in the metadata: movies whose metadata share rare
-words might have been recommended less frequently than movies whose metadata are
-not so unique. To test this hypothesis, a cutoff point was created for words to
-be included in the vector representation of the movies. Three cutoff points were
-tested and only words with an absolute frequency larger than or equal to $k$, $k
-= \{2, 5, 8\}$, could be included in the vector representations. The results can
-be seen in Figure~\ref{fig:fig3} and, aside from variations in the
-$y$-intercept, all plots are qualitatively very similar to
+reside in the least used terms in the metadata and that is why we developed the
+cutoff model. The results can be seen in Figure~\ref{fig:fig3} and, aside from
+variations in the $y$-intercept, all plots are qualitatively very similar to
 Figure~\ref{fig:fig2a}, indicating that rare words probably are not to blame for
 the exponential-like decay.
 
@@ -268,16 +326,12 @@ the exponential-like decay.
 \subsection{Similarity Models}
 \label{subsec:similarity}
 
-The second validation experiment involved attempting to use other distance
-metrics instead of cosine similarity \citep{ricci_introduction_2011}, since that
-could also be a source of the strange behavior of the recommendation profile.
-The goal here was to verify whether other metrics could do a better job at not
-creating a subset of movies that ended up exponentially more recommended than
-the rest.
-
-Figure~\ref{fig:fig4} showcases a comparison between cosine distance, euclidean
-distance and manhattan distance. It is clear that there are no meaningful
-differences between the recommendation profiles generated by each metric.
+Since the similarity metric could also be a source of the strange behavior of
+the recommendation profile, we conceived the three similarity models described
+in the last section. Figure~\ref{fig:fig4} showcases a comparison between cosine
+distance, euclidean distance and manhattan distance. It is clear that there are
+no meaningful differences between the recommendation profiles generated by each
+metric.
 
 \begin{figure}
   \centering
@@ -309,20 +363,8 @@ investigate whether word frequency had an impact on the recommendation profiles
 another hypothesis was taken into consideration: do sparser metadata cause the
 recommendation curves to display a steep left-hand side?
 
-For the next experiment, each movie was assigned randomly generated metadata,
-i.e., each text was comprised of random words sampled uniformly from the full
-metadata corpus. The baseline probability of any given word $w_i$ being added to
-the metadata of a movie was equal to $\overline{P(w)}$, the average probability
-over every word in the original corpus.
-
-In addition to this baseline probability, two extra sets of metadata were
-constructed: one where each word was 10 times more likely to be selected than
-$\overline{P(w)}$, and another where each word was 100 times more likely. All
-three constructed datasets can be concisely described through the expression
-$P(w_i) = C \times \overline{P(w)}, C = \{1, 10, 100\}$.
-
 Figure~\ref{fig:fig5} displays the recommendation profiles for the vanilla model
-applied to datasets with each distinct value of $C$. Concretely, the figures are
+applied to datasets with synthetic metadata. Concretely, the figures are
 equivalent to creating random metadata for the movies where the probability of
 any single word being selected was approximately $1.54 \times 10^{-4}$, $1.54
 \times 10^{-3}$, and $1.54 \times 10^{-2}$ respectively. The results do support
@@ -359,7 +401,9 @@ that the previous hypothesis was generalizable. The first check should verify
 whether an artificial movie created as a combination of the metadata from other
 movies favored by the recommendation algorithm would also be favored, while the
 second should check whether shorter vectors would change the decay already
-observed despite being as sparse as their longer counterparts.
+observed despite being as sparse as their longer counterparts. We repeated these
+tests thousands of times and the results presented below are typical of what we
+found.
 
 Figure~\ref{fig:fig6} showcases the two sanity checks. Figure~\ref{fig:fig6a}
 was a model applied to the vanilla dataset with the addition of the movie
