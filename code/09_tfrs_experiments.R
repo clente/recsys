@@ -150,34 +150,60 @@ popularity_plot(pop4)
 
 ### Top-10 tables --------------------------------------------------------------
 
+dplyr::bind_rows(
+  dplyr::slice_head(pop0, n = 10),
+  dplyr::slice_head(pop1, n = 10),
+  dplyr::slice_head(pop2, n = 10),
+  dplyr::slice_head(pop3, n = 10),
+  dplyr::slice_head(pop4, n = 10)
+) |>
+  dplyr::distinct(movie_id) |>
+  dplyr::left_join(pop0, "movie_id") |>
+  dplyr::select(-rank) |>
+  dplyr::rename(pop0 = pop) |>
+  dplyr::left_join(pop1, "movie_id") |>
+  dplyr::select(-rank) |>
+  dplyr::rename(pop1 = pop) |>
+  dplyr::left_join(pop2, "movie_id") |>
+  dplyr::select(-rank) |>
+  dplyr::rename(pop2 = pop) |>
+  dplyr::left_join(pop3, "movie_id") |>
+  dplyr::select(-rank) |>
+  dplyr::rename(pop3 = pop) |>
+  dplyr::left_join(pop4, "movie_id") |>
+  dplyr::select(-rank) |>
+  dplyr::rename(pop4 = pop) |>
+  dplyr::arrange(movie_id) |>
+  knitr::kable(format = "latex")
+
 pop0 |>
   dplyr::slice_head(n = 10) |>
   dplyr::left_join(movies, "movie_id") |>
-  dplyr::select(Title = movie_title, Popularity = pop) |>
+  dplyr::select(ID = movie_id, Title = movie_title, Popularity = pop) |>
   knitr::kable(format = "latex")
 
 pop1 |>
   dplyr::slice_head(n = 10) |>
   dplyr::left_join(movies, "movie_id") |>
-  dplyr::select(Title = movie_title, Popularity = pop) |>
+  dplyr::select(ID = movie_id, Title = movie_title, Popularity = pop) |>
   knitr::kable(format = "latex")
 
 pop2 |>
   dplyr::slice_head(n = 10) |>
   dplyr::left_join(movies, "movie_id") |>
-  dplyr::select(Title = movie_title, Popularity = pop) |>
+  dplyr::select(ID = movie_id, Title = movie_title, Popularity = pop) |>
   knitr::kable(format = "latex")
 
 pop3 |>
   dplyr::slice_head(n = 10) |>
   dplyr::left_join(movies, "movie_id") |>
-  dplyr::select(Title = movie_title, Popularity = pop) |>
+  dplyr::select(ID = movie_id, Title = movie_title, Popularity = pop) |>
   knitr::kable(format = "latex")
 
 pop4 |>
   dplyr::slice_head(n = 10) |>
   dplyr::left_join(movies, "movie_id") |>
-  dplyr::select(Title = movie_title, Popularity = pop) |>
+  dplyr::select(ID = movie_id, Title = movie_title, Popularity = pop) |>
   knitr::kable(format = "latex")
 
 ### Popularity by ratings ------------------------------------------------------

@@ -12,31 +12,11 @@ better understanding of how these systems favor certain kinds of content. We
 also were not able to find any published dataset that fit our experimental
 design.
 
-In order for this analysis to be more true to reality, we implemented a simple
-recommendation algorithm using TensorFlow Recommenders
-\citep{noauthor_tensorflow_nodate}, a library for machine learning developed by
-Google for use with its TensorFlow \citep{noauthor_tensorflow_nodate-1}
-framework. This means that, even though our model is deliberately bare-bones, it
-conforms to industry-standard technology and practices.
-
-The choice to use a simple recommendation algorithm instead of a more complex
-one was twofold: first, we did not want to use a model that could introduce many
-confounding parameters to the analysis (e.g. hyperparameters, hardware
-requirements, etc.), and second, we wanted to study a baseline that could, in
-the future, be used as a comparison point for more complex algorithms. Our
-algorithm is, therefore, a straightforward neural network made up of linear
-stacks of layers.
-
-The goal of this step is to gather data on how the recommendation system behaves
-over time. As will be explained in the next sections, we aim to understand what
-happens to the recommendation profile of the algorithm as it interacts with
-itself via users that follow the generated suggestions.
-
 The hypothesis is that the recommendation profile will grow even more steep,
 which is a reasonable idea; if the users reinforce the beliefs of the algorithm,
-then is stands to reason that it will recommend popular movies with more and
-more frequently, to more and more users. How much more frequently, however, is
-the true question.
+then it stands to reason that it will recommend popular items with more and more
+frequently, to more and more users. How much more frequently, however, is the
+true question.
 
 For the sake of clarity, let us imagine two users with very distinct
 preferences: Alice, who enjoys adventure movies, and Bob, who enjoys horror
@@ -108,71 +88,79 @@ be the first one listed on the \verb|Genres| column.
   (b).\label{fig:fig04_dist_both}}
 \end{figure}
 
-\section{Experiments}
-\label{sec:experiments04}
+\section{Formal Model}
 
-The dynamic experiment starts in a manner much similar to the static experiment.
-The full MovieLens dataset is fed as training data to a recommendation system in
-order to get it ready for giving suggestions to users. As explained in the
-opening section of this chapter, we chose a simple algorithm, (i.e., without
-rich features or complex layer arrangements) in order to reduce the number of
-possible interferences architecture could have on our analysis.
+The goal of the dynamic analysis is to better understand how the interaction
+between recommendation systems and their users can reinforce internal biases
+such as the ones detected in Chapter~\ref{cap:static}.
+
+In order for this analysis to be more robust, we implemented a simple
+recommendation algorithm using TensorFlow Recommenders
+\citep{noauthor_tensorflow_nodate}, a library for machine learning developed by
+Google for use with its TensorFlow \citep{noauthor_tensorflow_nodate-1}
+framework. This means that, even though our model is deliberately bare-bones, it
+conforms to industry-standard technology and practices.
+
+The choice to use a simple recommendation algorithm instead of a more complex
+one was twofold: first, we did not want to use a model that could introduce many
+confounding parameters to the analysis (e.g. hyperparameters, hardware
+requirements, etc.), and second, we wanted to study a baseline that could, in
+the future, be used as a comparison point for more complex algorithms. Our
+algorithm is, therefore, a straightforward neural network.
 
 The chosen recommendation algorithm was a basic ranking model described in
-\citet{noauthor_recommending_nodate} using TensorFlow Recommenders
-\citep{noauthor_tensorflow_nodate}. It is composed of multiple stacked dense
+\citet{noauthor_recommending_nodate}. It is composed of multiple stacked dense
 layers and uses regularized mean squared error as its loss function in order to
-avoid overfitting. The main class in the model is reproduced below, and the full
-algorithm is listed in Appendix~\ref{apx:model}.
+avoid overfitting. The main class in the model is reproduced below in
+Program~\ref{prog:prog04_tf_model}, and the full algorithm is listed in
+Appendix~\ref{apx:model}.
 
-\begin{verbatim}
+\begin{lstlisting}[language=Python,label=prog:prog04_tf_model,caption=MovielensModel,frame=tb]
 class MovielensModel(tfrs.models.Model):
 
-  def __init__(self):
-    super().__init__()
-    self.ranking_model: tf.keras.Model = RankingModel()
-    self.task: tf.keras.layers.Layer = tfrs.tasks.Ranking(
-      loss = tf.keras.losses.MeanSquaredError(),
-      metrics=[tf.keras.metrics.RootMeanSquaredError()]
-    )
+def __init__(self):
+  super().__init__()
+  self.ranking_model: tf.keras.Model = RankingModel()
+  self.task: tf.keras.layers.Layer = tfrs.tasks.Ranking(
+    loss = tf.keras.losses.MeanSquaredError(),
+    metrics=[tf.keras.metrics.RootMeanSquaredError()]
+  )
 
-  def call(self, features: Dict[str, tf.Tensor]) -> tf.Tensor:
-    return self.ranking_model(
-        (features["user_id"], features["movie_title"]))
+def call(self, features: Dict[str, tf.Tensor]) -> tf.Tensor:
+  return self.ranking_model(
+      (features["user_id"], features["movie_title"]))
 
-  def compute_loss(self, features: Dict[Text, tf.Tensor],
-                    training=False) -> tf.Tensor:
-    labels = features.pop("user_rating")
+def compute_loss(self, features: Dict[Text, tf.Tensor],
+                  training=False) -> tf.Tensor:
+  labels = features.pop("user_rating")
 
-    rating_predictions = self(features)
+  rating_predictions = self(features)
 
-    # The task computes the loss and the metrics.
-    return self.task(labels=labels, predictions=rating_predictions)
-\end{verbatim}
+  # The task computes the loss and the metrics.
+  return self.task(labels=labels, predictions=rating_predictions)
+\end{lstlisting}
 
-In the first step of the experiment, we trained the recommendation model using
-Movielens' 1M ratings dataset, which we will refer to as \verb|ratings0| from
-now on. Evaluating our model, called \verb|model0|, on test data yielded a root
-mean squared error (RMSE) of 0.92; this result is similar to TFRS' deep \& cross
-network \citep{wang_deep_2017} results when trained on the same data. Once
-\verb|model0| was ready for making recommendations, we applied it to every
-possible user-movie pairing, generating a complete matrix of predicted ratings
-called \verb|predictions0|. This process corresponds to the top half of
-Figure~\ref{fig:fig04_dynamic_diagram}.
+We then trained the recommendation model using Movielens' 1M ratings dataset,
+which we will refer to as \verb|ratings0| from now on. Evaluating our model,
+called \verb|model0|, on test data yielded a root mean squared error (RMSE) of
+0.92; this result is similar to TFRS' deep \& cross network
+\citep{wang_deep_2017} results when trained on the same data.
 
-In an environment like YouTube's recommendations sidebar, the user is presented
-with a few items that the algorithm thinks they would like, and then they can
-either ignore the sidebar or select one of the options to watch. In this work,
-we assume that the user never ignores their recommendations because it would
-increase the complexity of the simulation exponentially; we, therefore, always
-picked one movie at random from each user's 10 best-ranked entries.
+Once \verb|model0| was ready to start making recommendations, we applied it to
+every possible user-movie pairing, generating a complete matrix of predicted
+ratings called \verb|predictions0|.
 
-This set of well-ranked movies was our way of simulating thousands of users
-simultaneously approving of the algorithms recommendations and selecting one
-option from their sidebars. The last step involved removing the oldest rating of
-each each user from \verb|ratings0| and appending these these selections to the
-dataset in order to create \verb|ratings1|. The full data flow is illustrated
-in Figure~\ref{fig:fig04_dynamic_diagram}.
+A feedback loop, however, cannot be created from a single iteration. In an
+environment like YouTube's recommendations sidebar, the user is presented with a
+few items that the algorithm thinks they would like, and then they can select
+one of the options to watch. We can simulate a user going through this process
+by selecting one movie from each user's best-ranked entries in
+\verb|predictions0|.
+
+After doing this selection, we can remove the oldest rating of each each user
+from \verb|ratings0| and append these these new selections to the dataset in
+order to create \verb|ratings1| (a new simulated watch history). The full data
+flow is illustrated in Figure~\ref{fig:fig04_dynamic_diagram}.
 
 \begin{figure}
   \centering
@@ -180,28 +168,30 @@ in Figure~\ref{fig:fig04_dynamic_diagram}.
   \caption{Data flow diagram.\label{fig:fig04_dynamic_diagram}}
 \end{figure}
 
-A feedback loop, however, can't be created from a single iteration. For this
-reason, the process just described was classified as the ``zeroth'' iteration in
-the process (as it involved \verb|ratings0|). The ``Nth'' iteration began with
-\verb|ratingsN|, trained \verb|modelN|, generated \verb|predictionsN|, and ended
-with \verb|ratingsN+1|. We repeated this process until we got to
-\verb|ratings4|, totaling 5 ratings datasets (one original and 4 derived through
-ranking models).
+\section{Experiments}
+\label{sec:experiments04}
+
+The dynamic experiment starts in a manner much similar to the static experiment.
+The full MovieLens dataset is fed as training data to a recommendation system in
+order to get it ready for giving suggestions to users. As explained above, we
+chose a simple algorithm, (i.e., without rich features or complex layer
+arrangements) in order to reduce the number of possible interferences
+architecture could have on our analysis.
+
+We repeated the process of creating new watch history datasets and training new
+models with them until we got to \verb|ratings4|, totaling 5 ratings datasets
+(one original and 4 derived through ranking models). Since we were not taking
+personal taste into account, we assumed that no user ever ignores their
+recommendations and always picks one movie at random from their own 10
+best-ranked recommendations.
 
 With these new datasets we were able to analyze the differences between distinct
 generations of models and understand exactly how the positive feedback loop
 influenced the last iteration.
 
-Using these datasets as sources, we found that, with each iteration, the
-recommendation profile got steeper and steeper, that is, a few popular items got
-more recommended while the rest fell into disfavor; this was predictably more
-noticeable in movies with higher average ratings. In fact, a small set of around
-20 movies were the only ones that consistently rose in popularity with new
-iterations.
-
 Figure~\ref{fig:fig04_profile_grouped} has five subplots which represent the
 recommendation profile of each iteration of the recommendation system. For
-\verb|ratings0|, it's possible to see that a number of well-rated movies were
+\verb|ratings0|, it is possible to see that a number of well-rated movies were
 more popular, i.e., were rated by more people. Once we generate the first batch
 of recommendations, we add up the number of users each movie was recommended to;
 this is seen in the second plot, \verb|ratings1|. The outlier points to the left
@@ -228,162 +218,69 @@ accentuated with each subsequent iteration. This is in line with recommendations
 from large social networks like YouTube, which do recommend videos that were
 already watched by the user.
 
-Table~\ref{tab:tab04_top10} contains the most popular movies on each generation
-of the experiment. Just as in Chapter~\ref{cap:static}, the popularity of the
-movies in generation 0 (i.e. the original dataset) is taken to be the number of
-reviews each movie received. It is remarkable that the most recommended movies
-in generation 4 were neither the most popular nor the highest rated.
+Table~\ref{tab:tab04_top10_sum} contains the most recommended movies of every
+generation of the experiment. Just as in Chapter~\ref{cap:static}, the number of
+"recommendations" of generation 0 (i.e. the original dataset) is taken to be the
+number of reviews each movie received. It is remarkable that the most
+recommended movies in generation 4 were neither the most popular nor the highest
+rated in generation 0. The full table (with movie names) can be seen in
+Appendix~\ref{apx:pop}.
 
-\begin{longtable}{ |l|r| }
+\begin{table}
+\begin{tabular}{|r|r|r|r|r|r|}
   \hline
-
-  \multicolumn{2}{ |c| }{Original data} \\
+  & \multicolumn{5}{ c| }{Movie Recommendations} \\
   \hline
-  \multicolumn{2}{c}{} \\ [-0.9ex]
+  ID & Generation 0 & Generation 1 & Generation 2 & Generation 3 & Generation 4\\
   \hline
-  Title & Popularity\\
+  50 & 95 & 715 & 1292 & 1898 & 1888\\
   \hline
-  Sixth Sense, The (1999) & 256\\
+  260 & 160 & 140 & 772 & 750 & 738\\
   \hline
-  Who Framed Roger Rabbit? (1988) & 244\\
+  318 & 115 & 705 & 1296 & 1908 & 2468\\
   \hline
-  X-Men (2000) & 210\\
+  527 & 106 & 663 & 657 & 1256 & 1822\\
   \hline
-  Gladiator (2000) & 208\\
+  608 & 175 & 163 & 151 & 133 & 113\\
   \hline
-  Shakespeare in Love (1998) & 202\\
+  745 & 44 & 664 & 1252 & 1810 & 2436\\
   \hline
-  American Beauty (1999) & 198\\
+  858 & 103 & 669 & 1261 & 1861 & 2422\\
   \hline
-  Talented Mr. Ripley, The (1999) & 197\\
+  904 & 79 & 644 & 1252 & 1243 & 1814\\
   \hline
-  Fargo (1996) & 175\\
+  922 & 36 & 601 & 1191 & 1786 & 2385\\
   \hline
-  Men in Black (1997) & 174\\
+  1148 & 47 & 629 & 1217 & 1808 & 2432\\
   \hline
-  Star Wars: Episode I - The Phantom Menace (1999) & 165\\
+  1198 & 99 & 520 & 500 & 1119 & 1718\\
   \hline
-  \multicolumn{2}{c}{} \\ [-0.9ex]
+  1212 & 30 & 24 & 606 & 1172 & 1168\\
   \hline
-
-  \multicolumn{2}{ |c| }{Generation 1} \\
+  1580 & 174 & 156 & 134 & 113 & 98\\
   \hline
-  \multicolumn{2}{c}{} \\ [-0.9ex]
+  2019 & 37 & 652 & 1276 & 1881 & 2496\\
   \hline
-  Title & Popularity\\
+  2396 & 202 & 180 & 163 & 136 & 106\\
   \hline
-  Usual Suspects, The (1995) & 715\\
+  2628 & 165 & 149 & 135 & 115 & 97\\
   \hline
-  Shawshank Redemption, The (1994) & 705\\
+  2762 & 256 & 230 & 201 & 171 & 135\\
   \hline
-  Godfather, The (1972) & 669\\
+  2858 & 198 & 170 & 148 & 134 & 111\\
   \hline
-  Close Shave, A (1995) & 664\\
+  2987 & 244 & 229 & 218 & 205 & 185\\
   \hline
-  Schindler's List (1993) & 663\\
+  3176 & 197 & 186 & 172 & 159 & 136\\
   \hline
-  Seven Samurai (The Magnificent Seven) (Shichinin no samurai) (1954) & 652\\
+  3578 & 208 & 194 & 176 & 157 & 136\\
   \hline
-  Rear Window (1954) & 644\\
+  3793 & 210 & 204 & 189 & 179 & 158\\
   \hline
-  Wrong Trousers, The (1993) & 629\\
-  \hline
-  Sunset Blvd. (a.k.a. Sunset Boulevard) (1950) & 601\\
-  \hline
-  Raiders of the Lost Ark (1981) & 520\\
-  \hline
-  \multicolumn{2}{c}{} \\ [-0.9ex]
-  \hline
-
-  \multicolumn{2}{ |c| }{Generation 2} \\
-  \hline
-  \multicolumn{2}{c}{} \\ [-0.9ex]
-  \hline
-  Title & Popularity\\
-  \hline
-  Shawshank Redemption, The (1994) & 1296\\
-  \hline
-  Usual Suspects, The (1995) & 1292\\
-  \hline
-  Seven Samurai (The Magnificent Seven) (Shichinin no samurai) (1954) & 1276\\
-  \hline
-  Godfather, The (1972) & 1261\\
-  \hline
-  Close Shave, A (1995) & 1252\\
-  \hline
-  Rear Window (1954) & 1252\\
-  \hline
-  Wrong Trousers, The (1993) & 1217\\
-  \hline
-  Sunset Blvd. (a.k.a. Sunset Boulevard) (1950) & 1191\\
-  \hline
-  Star Wars: Episode IV - A New Hope (1977) & 772\\
-  \hline
-  Schindler's List (1993) & 657\\
-  \hline
-  \multicolumn{2}{c}{} \\ [-0.9ex]
-  \hline
-
-  \multicolumn{2}{ |c| }{Generation 3} \\
-  \hline
-  \multicolumn{2}{c}{} \\ [-0.9ex]
-  \hline
-  Title & Popularity\\
-  \hline
-  Shawshank Redemption, The (1994) & 1908\\
-  \hline
-  Usual Suspects, The (1995) & 1898\\
-  \hline
-  Seven Samurai (The Magnificent Seven) (Shichinin no samurai) (1954) & 1881\\
-  \hline
-  Godfather, The (1972) & 1861\\
-  \hline
-  Close Shave, A (1995) & 1810\\
-  \hline
-  Wrong Trousers, The (1993) & 1808\\
-  \hline
-  Sunset Blvd. (a.k.a. Sunset Boulevard) (1950) & 1786\\
-  \hline
-  Schindler's List (1993) & 1256\\
-  \hline
-  Rear Window (1954) & 1243\\
-  \hline
-  Third Man, The (1949) & 1172\\
-  \hline
-  \multicolumn{2}{c}{} \\ [-0.9ex]
-  \hline
-
-  \multicolumn{2}{ |c| }{Generation 4} \\
-  \hline
-  \multicolumn{2}{c}{} \\ [-0.9ex]
-  \hline
-  Title & Popularity\\
-  \hline
-  Seven Samurai (The Magnificent Seven) (Shichinin no samurai) (1954) & 2496\\
-  \hline
-  Shawshank Redemption, The (1994) & 2468\\
-  \hline
-  Close Shave, A (1995) & 2436\\
-  \hline
-  Wrong Trousers, The (1993) & 2432\\
-  \hline
-  Godfather, The (1972) & 2422\\
-  \hline
-  Sunset Blvd. (a.k.a. Sunset Boulevard) (1950) & 2385\\
-  \hline
-  Usual Suspects, The (1995) & 1888\\
-  \hline
-  Schindler's List (1993) & 1822\\
-  \hline
-  Rear Window (1954) & 1814\\
-  \hline
-  Raiders of the Lost Ark (1981) & 1718\\
-  \hline
-  \multicolumn{2}{c}{} \\ [-0.9ex]
-
-  \caption{Top 10 most popular movies at each generation of the algorithm.}
-  \label{tab:tab04_top10}
-\end{longtable}
+\end{tabular}
+\caption{Every movie featured in the top 10 most recommended of at least one generation.}
+\label{tab:tab04_top10_sum}
+\end{table}
 
 A good way to measure how diverse were the recommendations made by the algorithm
 is to calculate the entropy \citep{borda_fundamentals_2011} of each set. This
@@ -396,7 +293,7 @@ $$
 
 In the extreme, if the same movie is recommended to every user, than the entropy
 of the recommendations will tend to zero. In absolute terms, the entropy of
-\verb|ratings0| was 7.42, and the entropy of \verb|ratings4| was 6.08 (82\%
+\verb|ratings0| was 7.42, and the entropy of \verb|ratings4| was 6.08 (18\%
 lower). A comparison in relative terms is displayed in
 Figure~\ref{fig:fig04_entropy}.
 

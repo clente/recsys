@@ -11,7 +11,7 @@ p <- "data-raw/ratings0.csv" |>
   dplyr::mutate(n = n / sum(n)) |>
   dplyr::arrange(rating) |>
   ggplot2::ggplot() +
-  ggplot2::geom_col(ggplot2::aes(x = rating, y = n)) +
+  ggplot2::geom_col(ggplot2::aes(x = rating, y = n * 100)) +
   ggplot2::theme_minimal() +
   ggplot2::xlab("Rating") +
   ggplot2::ylab("Frequency (%)")
@@ -27,7 +27,7 @@ p <- "data-raw/movies.csv" |>
   dplyr::count(genre, sort = TRUE) |>
   dplyr::mutate(n = n / sum(n)) |>
   ggplot2::ggplot() +
-  ggplot2::geom_col(ggplot2::aes(x = n, y = genre)) +
+  ggplot2::geom_col(ggplot2::aes(x = n * 100, y = genre)) +
   ggplot2::theme_minimal() +
   ggplot2::xlab("Frequency (%)") +
   ggplot2::ylab("Genre")

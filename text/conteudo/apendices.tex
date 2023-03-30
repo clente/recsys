@@ -153,3 +153,157 @@ loaded = tf.saved_model.load(dir_model)
 
 loaded({"user_id": np.array(["42"]), "movie_title": ["Speed (1994)"]}).numpy()
 \end{verbatim}
+
+\chapter{Movie Popularity}
+\label{apx:pop}
+
+Below is the full table with the most recommended movies by each generation of
+the model described in Chapter~\ref{cap:dynamic}.
+
+\begin{longtable}{ |r|l|r| }
+  \hline
+
+  \multicolumn{3}{ |c| }{Original data} \\
+  \hline
+  \multicolumn{3}{c}{} \\ [-0.9ex]
+  \hline
+  ID & Title & Popularity\\
+  \hline
+  2762 & Sixth Sense, The (1999) & 256\\
+  \hline
+  2987 & Who Framed Roger Rabbit? (1988) & 244\\
+  \hline
+  3793 & X-Men (2000) & 210\\
+  \hline
+  3578 & Gladiator (2000) & 208\\
+  \hline
+  2396 & Shakespeare in Love (1998) & 202\\
+  \hline
+  2858 & American Beauty (1999) & 198\\
+  \hline
+  3176 & Talented Mr. Ripley, The (1999) & 197\\
+  \hline
+  608 & Fargo (1996) & 175\\
+  \hline
+  1580 & Men in Black (1997) & 174\\
+  \hline
+  2628 & Star Wars: Episode I - The Phantom Menace (1999) & 165\\
+  \hline
+  \multicolumn{3}{c}{} \\ [-0.9ex]
+  \hline
+
+  \multicolumn{3}{ |c| }{Generation 1} \\
+  \hline
+  \multicolumn{3}{c}{} \\ [-0.9ex]
+  \hline
+  ID & Title & Popularity\\
+  \hline
+  50 & Usual Suspects, The (1995) & 715\\
+  \hline
+  318 & Shawshank Redemption, The (1994) & 705\\
+  \hline
+  858 & Godfather, The (1972) & 669\\
+  \hline
+  745 & Close Shave, A (1995) & 664\\
+  \hline
+  527 & Schindler's List (1993) & 663\\
+  \hline
+  2019 & Seven Samurai (The Magnificent Seven) (Shichinin no samurai) (1954) & 652\\
+  \hline
+  904 & Rear Window (1954) & 644\\
+  \hline
+  1148 & Wrong Trousers, The (1993) & 629\\
+  \hline
+  922 & Sunset Blvd. (a.k.a. Sunset Boulevard) (1950) & 601\\
+  \hline
+  1198 & Raiders of the Lost Ark (1981) & 520\\
+  \hline
+  \multicolumn{3}{c}{} \\ [-0.9ex]
+  \hline
+
+  \multicolumn{3}{ |c| }{Generation 2} \\
+  \hline
+  \multicolumn{3}{c}{} \\ [-0.9ex]
+  \hline
+  ID & Title & Popularity\\
+  \hline
+  318 & Shawshank Redemption, The (1994) & 1296\\
+  \hline
+  50 & Usual Suspects, The (1995) & 1292\\
+  \hline
+  2019 & Seven Samurai (The Magnificent Seven) (Shichinin no samurai) (1954) & 1276\\
+  \hline
+  858 & Godfather, The (1972) & 1261\\
+  \hline
+  745 & Close Shave, A (1995) & 1252\\
+  \hline
+  904 & Rear Window (1954) & 1252\\
+  \hline
+  1148 & Wrong Trousers, The (1993) & 1217\\
+  \hline
+  922 & Sunset Blvd. (a.k.a. Sunset Boulevard) (1950) & 1191\\
+  \hline
+  260 & Star Wars: Episode IV - A New Hope (1977) & 772\\
+  \hline
+  527 & Schindler's List (1993) & 657\\
+  \hline
+  \multicolumn{3}{c}{} \\ [-0.9ex]
+  \hline
+
+  \multicolumn{3}{ |c| }{Generation 3} \\
+  \hline
+  \multicolumn{3}{c}{} \\ [-0.9ex]
+  \hline
+  ID & Title & Popularity\\
+  \hline
+  318 & Shawshank Redemption, The (1994) & 1908\\
+  \hline
+  50 & Usual Suspects, The (1995) & 1898\\
+  \hline
+  2019 & Seven Samurai (The Magnificent Seven) (Shichinin no samurai) (1954) & 1881\\
+  \hline
+  858 & Godfather, The (1972) & 1861\\
+  \hline
+  745 & Close Shave, A (1995) & 1810\\
+  \hline
+  1148 & Wrong Trousers, The (1993) & 1808\\
+  \hline
+  922 & Sunset Blvd. (a.k.a. Sunset Boulevard) (1950) & 1786\\
+  \hline
+  527 & Schindler's List (1993) & 1256\\
+  \hline
+  904 & Rear Window (1954) & 1243\\
+  \hline
+  1212 & Third Man, The (1949) & 1172\\
+  \hline
+  \multicolumn{3}{c}{} \\ [-0.9ex]
+  \hline
+
+  \multicolumn{3}{ |c| }{Generation 4} \\
+  \hline
+  \multicolumn{3}{c}{} \\ [-0.9ex]
+  \hline
+  ID & Title & Popularity\\
+  \hline
+  2019 & Seven Samurai (The Magnificent Seven) (Shichinin no samurai) (1954) & 2496\\
+  \hline
+  318 & Shawshank Redemption, The (1994) & 2468\\
+  \hline
+  745 & Close Shave, A (1995) & 2436\\
+  \hline
+  1148 & Wrong Trousers, The (1993) & 2432\\
+  \hline
+  858 & Godfather, The (1972) & 2422\\
+  \hline
+  922 & Sunset Blvd. (a.k.a. Sunset Boulevard) (1950) & 2385\\
+  \hline
+  50 & Usual Suspects, The (1995) & 1888\\
+  \hline
+  527 & Schindler's List (1993) & 1822\\
+  \hline
+  904 & Rear Window (1954) & 1814\\
+  \hline
+  1198 & Raiders of the Lost Ark (1981) & 1718\\
+  \hline
+  \multicolumn{3}{c}{} \\ [-0.9ex]
+\end{longtable}

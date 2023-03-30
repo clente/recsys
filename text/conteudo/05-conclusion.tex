@@ -55,7 +55,7 @@ a simple algorithm displays a feedback loop dynamic, then there might be some
 intrinsic property of this type of system that pushes recommendations towards
 degeneracy.
 
-We designed multiple experiments with the goal of analyzing the recommendation
+We designed our experiments with the goal of analyzing the recommendation
 profile of our algorithm of choice: a simple, content-based recommender that
 used cosine similarity as its internal metric. Recommendation profile is a
 concept we developed as a shorthand for an algorithm's characteristic tendency
@@ -91,7 +91,7 @@ side-by-side for ease of reference.
   profile.\label{fig:fig05_profile_comparison}}
 \end{figure}
 
-We experimented on many variations to the vanilla model and of the original
+We experimented on five variations to the vanilla model and of the original
 dataset, but all of them displayed exponential or super-exponential
 recommendation profiles. This led us to posit that, indeed, recommender systems
 might be prone to artificially amplifying some contents independently of the
@@ -117,7 +117,7 @@ library Google uses to build its recommendation engines was the ideal choice.
 Using the same MovieLens \citep{harper_movielens_2015} dataset, we created a
 loop where the system would recommend 10 movies to a simulated user, this user
 would then chose one movie at random to "watch", and this interaction would be
-fed back into the model as a new input. This process was repeated 5 times for
+fed back into the model as a new input. This process was repeated five times for
 each user in the original dataset.
 
 Just as with the static experiments, the recommendation profile of our algorithm
@@ -151,10 +151,10 @@ detecting.
 \end{figure}
 
 We attempted to model the pipeline with Poisson and negative binomial
-regressions, but had no success in both cases. We also tried adding
-mixed-effects to these models and were better able to capture the variance of
-the phenomenon, but a simulated envelope analysis revealed that our attempts
-were still falling short.
+regressions, but the models presented limitations in both cases. We also tried
+adding mixed-effects to these models and were better able to capture the
+variance of the phenomenon, but a simulated envelope analysis revealed that our
+attempts were still falling short.
 
 As with the numbers obtained by \citet{jiang_degenerate_2019} in a different
 scenario, the recommendation profiles of our model were tending quickly towards
@@ -168,9 +168,10 @@ to learn from itself.
 \label{sec:developments}
 
 While working on this thesis, the number of published papers regarding fairness
-in recommender systems continued to grow significantly. Before making our final
-remarks, we present some of the research relevant to the subject but that wasn't
-included in Chapter~\ref{cap:review}.
+in recommender systems continued to grow significantly. Since none of them have
+a direct impact on the results presented here and are too recent to have been
+considered during the experiment design phase, we present them here for
+completeness' sake.
 
 First and foremost, many surveys were published regarding both recommender
 systems in general and specifically fair recommendation algorithms.
