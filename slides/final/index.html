@@ -50,6 +50,27 @@ radicalization is still too recent and based in anecdotes
 about if and how much recommendation algorithms influence social media users
 
 ---
+# Methods
+
+- Recommender systems: providing users with personalized product or service
+recommendations
+
+  - Trade secrets, but known to gather enormous amounts of data about the user's
+  interaction with the website
+
+  - Algorithms might have **explicit biases**: YouTube's system, for example,
+  explicitly favors more recent videos
+
+  - Algorithm might develop **implicit biases**: Instagram's system, for
+  example, learned its user's differentiated homophily and favored male profiles
+
+- Goal: understand the mechanisms through which recommender systems can end up
+learning or developing biases (which might lead to radicalization)
+
+  - Understand how and how fast recommender systems develop biases and whether
+  this cas create **amplification pipelines**
+
+---
 # Literature review
 
 - F. Ricci, L. Rokach, and B. Shapira, "Recommender Systems Handbook"
@@ -72,156 +93,83 @@ Perspective"
 Hole of Radicalization"
 
 ---
-# Methods
-
----
 # Proposal
 
+- **Static analysis**: doesn't take into account the evolution of the system
+after multiple rounds of training and learning from new data
+
+  - Hypothesis: even a simple recommendation algorithm can demonstrate some sort
+  of bias towards a subset of of items
+
+  - Given an algorithm that is user agnostic, would the resulting recommender
+  system still favor any items?
+
+- **Dynamic analysis**: takes into account the dynamics of the system, i.e., the
+algorithm learning for the users' feedbacks to its recommendations
+
+  - Hypothesis: if the users reinforce the beliefs of the algorithm it will
+  degenerate and only recommend a subset of items
+
+  - How fast does a degenerate feedback loop develop, ignoring personal
+  preferences and distinctions between films?
+
 ---
-# Results
+# Static analysis
+
+- Excluding user information is important because they might transfer their own
+biases to the model
+
+- "Recommendation profiles": a summary of how many times an arbitrary item is
+recommended overall
+
+  - Trivial model: a simple sampler that returns n movies at random
+
+  - Vanilla model: cosine similarity applied to vector representations of the
+  items
+
+  - Cutoff models: uses cutoff points after which words would not be included in
+  the vector representations
+
+  - Similarity models: uses other distance metrics (cosine distance, Euclidean
+  distance and Manhattan distance)
+
+  - Vanilla model with synthetic metadata: the sparsity of the vector
+  representations are controlled by how many elements should be non-zero
+
+---
+# Static analysis: results
+
+---
+# Dynamic analysis
+
+- Lightweight TensorFlow model that is trained five times, always receiving
+positive feedback from the simulated users
+
+- Better understand the recommendation profiles by modeling it with standard
+statistical models
+
+  - Exploratory analysis: recommendation entropy, recommendation profile over
+  time, item log-popularity over time
+
+  - Poisson regression: uses R's `glm()`, simulated envelope uses the `hnp`
+  package
+
+  - Negative binomial regression: uses `MASS`'s `glm.nb()`, simulated envelope
+  uses the `hnp` package
+
+  - Mixed-effects Poisson regression: uses the `glmmTMB` package, simulated
+  envelope uses the `DHARMa` package
+
+  - Mixed-effects negative binomial regression: same as previous mode
+
+---
+# Dynamic analysis: results
 
 ---
 # Conclusion
 
 ---
 # Future works
-
-
-
-
-
-
-
----
-# Proposal
-
-- How social networks recommend content to users is relevant to recent waves of
-political polarization and radicalization
-
-- Most of the algorithms currently employed by social media companies are trade,
-and subject to constant experimentation and tuning
-
-  - E.g., YouTube has over 2 billion monthly logged-in users, but it makes no
-  significant effort to clarify changes made to the algorithm
-
-  - Most of the developing world still isn't impacted by policy changes
-
-- The goal is to understand how their algorithmic design might foster
-confinement dynamics in the "phase space" of recommendations
-
-  - Do recommendation algorithms always create "filter bubbles", suggesting ever
-  more engaging videos about a certain topic?
-
----
-# MovieLens
-
-- The main dataset used for experimentation was MovieLens
-
-  - F. M. Harper and J. A. Konstan, "The MovieLens Datasets: History and
-  Context"
-
-  - A well-known set of movie reviews
-
-- 25M ratings applied to 62K movies by 162K users, enriched with information
-about the movies' credits, metadata, keywords, and links
-
-  - A sample of 30,689 movies was taken in order to reduce the hardware
-  requirements of iterative experimentation
-
----
-# Book-Crossing
-
-- The dataset used to validate hypotheses was Book-Crossing
-
-  - C.-N. Ziegler, "Book-Crossing Dataset"
-
-  - A well-known set of book reviews
-
-- 1.1M ratings applied by 278K users to 271K books, and information like
-title, author, publisher, etc.
-
-  - A sample of 20,000 books was taken in order to reduce the hardware
-  requirements of iterative experimentation
-
----
-# Techniques
-
-- Excluding user information is important because they might transfer their own
-biases to the model
-
-  - Content-based recommender: able to identify similar items based on their
-  metadata and suggest the closest items
-
-  - Create a vector representation of each item and then use a similarity metric
-  to recommend the most similar items to the one in question
-
-- "Recommendation profiles": a summary of how many times an arbitrary item is
-recommended overall
-
-  - The algorithm is asked to return the top-n most similar items to the input
-  according to its internal metric, and this is repeated for every item
-
-  - The number of times each item showed up in the top-n most similar items
-
----
-# Techniques (cont.)
-
-- "Trivial model": a simple sampler that returns n movies at random when asked
-for a recommendation
-
-- "Vanilla model": generated vector representations for the MovieLens dataset,
-without any modifications
-
-  - Each position represented one of the words of the corpus, and each element
-  indicated how many times that word appeared in the metadata
-
-  - The internal metric used, by default, was cosine similarity
-
-- "Sparse model": representations were based on fictional metadata that were
-comprised of words sampled at random from the full corpus
-
-  - The sparsity of the vector could be changed by changing how many elements
-  of the vector should be non-zero
-
----
-# Preliminary Results
-
-
-
----
-# Preliminary Results (cont.)
-
-
-
----
-# Preliminary Results (cont.)
-
-
-
----
-# Discussion
-
-- More experiments are still necessary in order to identify exactly what is the
-nature of the bias detected
-
-  - What movies are the most recommended in each case and whether the subset of
-  top-recommended movies is roughly consistent
-
-- Using Google’s newly released TensorFlow Recommenders it might be possible to
-gather data about what happens as users follow suggestions
-
-  - Goal: determining if the model's dynamic increases or decreases the
-  exponential profile of recommendations
-
-- Showing that that these algorithms are suggesting a subset of items
-exponentially more than the rest could be one more piece evidence
-
-  - Are these social networks are creating filter bubbles that radicalize users?
-
----
-# Schedule
-
-
     </textarea>
 <style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
 <script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
