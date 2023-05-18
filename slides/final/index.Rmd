@@ -2,7 +2,7 @@
 title: "Amplification Pipelines"
 subtitle: "The Role of Feedback Loops in Recommender System Bias"
 author: "Candidate: Caio Truzzi Lente<br/>Advisor: Prof. Dr. Roberto Hirata Jr."
-date: "DCC-IME-USP | XXXX-YY-ZZ"
+date: "DCC-IME-USP | 2023-05-24"
 output:
   xaringan::moon_reader:
     lib_dir: libs
@@ -16,7 +16,7 @@ output:
 
 ```{r, include=FALSE, warning=FALSE, message=FALSE}
 options(htmltools.dir.version = FALSE)
-knitr::opts_chunk$set(comment = "#>", fig.align = "center")
+knitr::opts_chunk$set(comment = "#>", fig.align = "center", echo = FALSE)
 ```
 
 # Motivation
@@ -57,30 +57,29 @@ recommendations
 - Goal: understand the mechanisms through which recommender systems can end up
 learning or developing biases (which might lead to radicalization)
 
-  - Understand how and how fast recommender systems develop biases and whether
-  this cas create **amplification pipelines**
+  - Study how and how fast recommender systems develop biases and whether this
+  cas create **amplification pipelines**
 
 ---
 # Literature review
 
-- F. Ricci, L. Rokach, and B. Shapira, "Recommender Systems Handbook"
+- A.-A. Stoica et al. (2018). _Algorithmic Glass Ceiling in Social Networks: The
+effects of social recommendations on network diversity_
 
-- Z. Zhao et al., "Recommending what video to watch next: a multitask ranking
-system"
+- M. Ledwich et al. (2019). _Algorithmic Extremism: Examining YouTube's Rabbit
+Hole of Radicalization_
 
-- A.-A. Stoica, C. Riederer, and A. Chaintreau, "Algorithmic Glass Ceiling in
-Social Networks: The effects of social recommendations on network diversity"
+- R. Jiang et al. (2019). _Degenerate feedback loops in recommender systems_
 
-- M. H. Ribeiro, R. Ottoni, R. West, V. A. F. Almeida, and W. Meira, "Auditing
-radicalization pathways on YouTube"
+- Z. Zhao et al. (2019). _Recommending what video to watch next: a multitask
+ranking system_
 
-- K. Munger, and J. Phillips, "Right-Wing YouTube: A Supply and Demand
-Perspective"
+- M. H. Ribeiro et al. (2020). _Auditing radicalization pathways on YouTube_
 
-- R. Jiang et al., "Degenerate feedback loops in recommender systems"
+- S. Yao et al. (2021). _Measuring Recommender System Effects with Simulated
+Users_
 
-- M. Ledwich, and A. Zaitsev, "Algorithmic Extremism: Examining YouTube's Rabbit
-Hole of Radicalization"
+- Y. Li et al. (2022). _Fairness in Recommendation_
 
 ---
 # Proposal
@@ -102,6 +101,27 @@ algorithm learning for the users' feedbacks to its recommendations
 
   - How fast does a degenerate feedback loop develop, ignoring personal
   preferences and distinctions between films?
+
+---
+# Datasets
+
+- The main dataset used for experimentation was MovieLens (Harper et al., 2015),
+a dataset about movie ratings
+
+  - 25M ratings applied to 62K movies by 162K users, enriched with information
+  about the movies' credits, metadata, keywords, and links
+
+  - A sample of 30,689 movies was taken in order to reduce the hardware
+  requirements of iterative experimentation
+
+- The dataset used to validate hypotheses was Book-Crossing (Ziegler, 2004), a
+dataset about book reviews
+
+  - 1.1M ratings applied by 278K users to 271K books, and information like
+  title, author, publisher, etc.
+
+  - A sample of 20,000 books was taken in order to reduce the hardware
+  requirements of iterative experimentation
 
 ---
 # Static analysis
@@ -127,12 +147,111 @@ recommended overall
   representations are controlled by how many elements should be non-zero
 
 ---
-# Static analysis: results
+# Trivial model
+
+.pull-left[
+```{r}
+knitr::include_graphics("img/1a_random.png")
+```
+]
+
+.pull-right[
+```{r}
+knitr::include_graphics("img/1b_random_log.png")
+```
+]
+
+---
+# Vanilla model
+
+.pull-left[
+```{r}
+knitr::include_graphics("img/2a_vanilla.png")
+```
+]
+
+.pull-right[
+```{r}
+knitr::include_graphics("img/2b_vanilla_log.png")
+```
+]
+
+---
+# Cutoff models
+
+.pull-left[
+```{r}
+knitr::include_graphics("img/3a_cutoff_low.png")
+```
+]
+
+.pull-right[
+```{r}
+knitr::include_graphics("img/3b_cutoff_med.png")
+```
+]
+
+---
+# Cutoff model (cont.)
+
+.pull-left[
+```{r}
+knitr::include_graphics("img/3c_cutoff_high.png")
+```
+]
+
+---
+# Similarity models
+
+.pull-left[
+```{r}
+knitr::include_graphics("img/4a_cosine.png")
+```
+]
+
+.pull-right[
+```{r}
+knitr::include_graphics("img/4b_euclidean.png")
+```
+]
+
+---
+# Similarity models (cont.)
+
+.pull-left[
+```{r}
+knitr::include_graphics("img/4c_manhattan.png")
+```
+]
+
+---
+# Synthetic metadata
+
+.pull-left[
+```{r}
+knitr::include_graphics("img/5a_p.png")
+```
+]
+
+.pull-right[
+```{r}
+knitr::include_graphics("img/5b_p10.png")
+```
+]
+
+---
+# Synthetic metadata (cont.)
+
+.pull-left[
+```{r}
+knitr::include_graphics("img/5c_p100.png")
+```
+]
 
 ---
 # Dynamic analysis
 
-- Lightweight TensorFlow model that is trained five times, always receiving
+- Deep learning TensorFlow model that is trained five times, always receiving
 positive feedback from the simulated users
 
 - Better understand the recommendation profiles by modeling it with standard
@@ -153,10 +272,98 @@ statistical models
   - Mixed-effects negative binomial regression: same as previous mode
 
 ---
-# Dynamic analysis: results
+# Experiment pipeline
+
+```{r, out.width = "90%"}
+knitr::include_graphics("img/04_dynamic_diagram.png")
+```
+
+---
+# Exploratory analysis
+
+.pull-left[
+```{r}
+knitr::include_graphics("img/04_entropy.png")
+```
+]
+
+.pull-right[
+```{r}
+knitr::include_graphics("img/04_popularity_time.png")
+```
+]
+
+---
+# Poisson regression
+
+```{r, out.width = "80%"}
+knitr::include_graphics("img/04_residual_poisson.png")
+```
+
+---
+# Negative binomial regression
+
+```{r, out.width = "80%"}
+knitr::include_graphics("img/04_residual_nb.png")
+```
+
+---
+# Mixed-effects Poisson regression
+
+```{r, out.width = "80%"}
+knitr::include_graphics("img/04_residual_mmpois.png")
+```
+
+---
+# Mixed-effects negative binomial regression
+
+```{r, out.width = "80%"}
+knitr::include_graphics("img/04_residual_mmnb2.png")
+```
 
 ---
 # Conclusion
 
+- Static analysis
+
+  - Expectation: a systems's recommendation profile would be approximately the
+  same as the original dataset's item popularity distribution
+
+  - Reality: during our experiments, all of the tested models displayed
+  exponential or super-exponential recommendation profiles
+
+- Dynamic analysis
+
+  - Expectation: the systems's recommendation profile would grow steeper over
+  time following a well-behaved statistical distribution
+
+  - Reality:  the recommendation profiles of our model were tending quickly
+  towards a degenerate distribution
+
+- "Recommender systems, if left unchecked, tent towards a confinement dynamic
+where points of view [...] are amplified by a system that has to learn from
+itself."
+
 ---
 # Future works
+
+- Recent developments: new fairer recommender systems or new metrics, other
+possible mechanisms through which users can become radicalized
+
+- Further research is still needed in order to find an unambiguous causal link
+between degenerate feedback loops and user radicalization
+
+  - A possible next step would involve applying the methods discussed in this
+  work to more complex recommendation systems and to larger real-world datasets
+
+  - Another possible improvement would be to simulate users that ignore their
+  recommendations
+
+- We plan on writing and publishing a paper detailing our findings in late 2023,
+possibly adding larger-scale experiments
+
+- Thank you very much for your time.
+
+---
+class: middle, center, inverse
+# Questions?
