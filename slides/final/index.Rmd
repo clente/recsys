@@ -58,7 +58,7 @@ recommendations
 learning or developing biases (which might lead to radicalization)
 
   - Study how and how fast recommender systems develop biases and whether this
-  cas create **amplification pipelines**
+  can create **amplification pipelines**
 
 ---
 # Literature review
@@ -251,8 +251,8 @@ knitr::include_graphics("img/5c_p100.png")
 ---
 # Dynamic analysis
 
-- Deep learning TensorFlow model that is trained five times, always receiving
-positive feedback from the simulated users
+- Deep learning TensorFlow model that is trained for five interactions, always
+receiving positive feedback from the simulated users
 
 - Better understand the recommendation profiles by modeling it with standard
 statistical models
@@ -260,16 +260,30 @@ statistical models
   - Exploratory analysis: recommendation entropy, recommendation profile over
   time, item log-popularity over time
 
+  - Poisson and negative binomial distributions chosen to model number of
+  recommendations over five interactions
+
+---
+# Dynamic analysis (cont.)
+
+- $\log(\lambda_i) = \beta_0 + \beta_1 x_{i1} + \dots + \beta_k x_{ik}$, with
+popularity being modeled by the factor crossing of generation, genre and
+average rating.
+
   - Poisson regression: uses R's `glm()`, simulated envelope uses the `hnp`
   package
 
   - Negative binomial regression: uses `MASS`'s `glm.nb()`, simulated envelope
   uses the `hnp` package
 
+- $\log(\lambda_i) = \delta + \beta_0 + \beta_1 x_{i1} + \dots + \beta_k x_{ik}$,
+where $\delta \sim \mathcal{N}(0,\psi)$ allows us to better model longitudinal
+observations and serially correlated errors
+
   - Mixed-effects Poisson regression: uses the `glmmTMB` package, simulated
   envelope uses the `DHARMa` package
 
-  - Mixed-effects negative binomial regression: same as previous mode
+  - Mixed-effects negative binomial regression: same as previous model
 
 ---
 # Experiment pipeline
@@ -326,8 +340,8 @@ knitr::include_graphics("img/04_residual_mmnb2.png")
 
 - Static analysis
 
-  - Expectation: a systems's recommendation profile would be approximately the
-  same as the original dataset's item popularity distribution
+  - Expectation: a systems's recommendation profile would maintain the original
+  dataset's item popularity distribution
 
   - Reality: during our experiments, all of the tested models displayed
   exponential or super-exponential recommendation profiles
@@ -362,8 +376,6 @@ between degenerate feedback loops and user radicalization
 - We plan on writing and publishing a paper detailing our findings in late 2023,
 possibly adding larger-scale experiments
 
-- Thank you very much for your time.
-
 ---
 class: middle, center, inverse
-# Questions?
+# Thank you
