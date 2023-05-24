@@ -263,6 +263,9 @@ statistical models
   - Poisson and negative binomial distributions chosen to model number of
   recommendations over five interactions
 
+  - Simulated envelopes to assess global goodness-of-fit: fits the model to each
+  simulated response variable and obtains the same model diagnostics
+
 ---
 # Dynamic analysis (cont.)
 
@@ -373,8 +376,8 @@ between degenerate feedback loops and user radicalization
   - Another possible improvement would be to simulate users that ignore their
   recommendations
 
-- We plan on writing and publishing a paper detailing our findings in late 2023,
-possibly adding larger-scale experiments
+- We plan on writing and publishing a paper detailing our findings, possibly
+adding larger-scale experiments
 
 ---
 class: middle, center, inverse
