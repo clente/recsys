@@ -93,8 +93,8 @@ The second dataset, used for validation purposes only, was the Book-Crossing
 Dataset \citep{ziegler_book-crossing_2004}. Just like the enriched MovieLens,
 this dataset contained entries for ratings (1,149,780) applied by users
 (278,858) to items (271,379 books), and information about these items like
-title, author, publisher, etc. Since this dataset has was fewer ratings, there
-was no need to sample it before running any experiment.
+title, author, publisher, etc. Since this dataset has fewer ratings, there was
+no need to sample it before running any experiment.
 
 \section{Models}
 \label{sec:models}
@@ -143,13 +143,13 @@ of its simplicity, robustness, and ubiquity \citep{sarwar_item-based_2001}.
 The main non-trivial model used in this study was the one that simply generated
 vector representations for the full MovieLens dataset, without any modifications
 (which is why it will henceforth be referred to as the vanilla model). The
-metadata for each movie was made up of its keywords, main cast, director, and
-genres. The vector transformation was very simple, with each position
-representing one of the words of the corpus, and each element indicating how
-many times that word appeared in the metadata for that movie. When the
-recommendation for a movie was requested, the algorithm measured the cosine
-similarity between it and every other movie, returning the IDs belonging to the
-top $n$ most similar vectors.
+metadata for each movie was a bag-of-words made up of its keywords, main cast,
+director, and genres. The vector transformation was very simple, with each
+position representing one of the words of the corpus, and each element
+indicating how many times that word appeared in the metadata for that movie.
+When the recommendation for a movie was requested, the algorithm measured the
+cosine similarity between it and every other movie, returning the IDs belonging
+to the top $n$ most similar vectors.
 
 \subsection{Cutoff Models}
 \label{subsec:cutoff}
@@ -272,10 +272,10 @@ log-log plot of the recommendation profile.
 
 The recommendation profile for the vanilla model can be seen in
 Figure~\ref{fig:fig2a}. Here, the movie ranked number 1 appeared more than 2000
-times in the full list of recommendations, with an almost exponential decrease
-in the number of appearances from then on, as made evident by the log-log plot
-on Figure~\ref{fig:fig2b}. This recommendation profile is a big departure from
-the trivial model discussed above.
+times in the full list of recommendations, with a power law decay in the number
+of appearances from then on, as made evident by the log-log plot on
+Figure~\ref{fig:fig2b}. This recommendation profile is a big departure from the
+trivial model discussed above.
 
 \begin{figure}
   \centering
@@ -301,7 +301,7 @@ reside in the least used terms in the metadata and that is why we developed the
 cutoff model. The results can be seen in Figure~\ref{fig:fig3} and, aside from
 variations in the $y$-intercept, all plots are qualitatively very similar to
 Figure~\ref{fig:fig2a}, indicating that rare words probably are not to blame for
-the exponential-like decay.
+the power law decay.
 
 \begin{figure}
   \centering
@@ -370,7 +370,7 @@ equivalent to creating random metadata for the movies where the probability of
 any single word being selected was approximately $1.54 \times 10^{-4}$, $1.54
 \times 10^{-3}$, and $1.54 \times 10^{-2}$ respectively. The results do support
 the aforementioned hypothesis since less sparse vectors indeed generated less
-exponential decays.
+steep decays.
 
 \begin{figure}
   \centering
@@ -438,7 +438,7 @@ Figure~\ref{fig:fig7a} represents the same recommendation algorithm applied to
 another dataset, the Book-Crossing dataset. Figure~\ref{fig:fig7b} contains the
 results of the model applied to another set of random vector representations,
 this time with the probability of each element being non-zero respecting the
-marginal distributions of the vanilla dataset. Again, the exponential decay
+marginal distributions of the vanilla dataset. Again, the power law decay
 pattern persisted, only slightly less pronounced in the Book-Crossing case.
 
 \begin{figure}
