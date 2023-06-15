@@ -159,8 +159,10 @@ by selecting one movie from each user's best-ranked entries in
 
 After doing this selection, we can remove the oldest rating of each each user
 from \verb|ratings0| and append these these new selections to the dataset in
-order to create \verb|ratings1| (a new simulated watch history). The full data
-flow is illustrated in Figure~\ref{fig:fig04_dynamic_diagram}.
+order to create \verb|ratings1| (a new simulated watch history). Removing the
+oldest rating was necessary because the algorithm was build to receive a history
+of at most 10 items. The full data flow is illustrated in
+Figure~\ref{fig:fig04_dynamic_diagram}.
 
 \begin{figure}
   \centering
@@ -351,11 +353,11 @@ hallucination" \citep{raunak_curious_2021} has even been coined to explain the
 process by which neural networks infer missing information form incomplete data.
 
 Since we did identify a feedback loop in the recommendation system, our next
-goal was to fit a regression model on the generated data. This could help
-clarify how the algorithm had made it's recommendations; if we were able to
-create a regression model that replicated the behavior of the system, then we
-could make inferences about the algorithm based on the characteristics of said
-model.
+goal was to fit a regression model on the generated data. Interpretability via
+surrogate models could help clarify how the algorithm had made it's
+recommendations; if we were able to create a regression model that replicated
+the behavior of the system, then we could make inferences about the algorithm
+based on the characteristics of said model.
 
 As is common in computational inference \citep{robert_james_2011}, our process
 involved multiple rounds of modeling. We started with a very simple model and,

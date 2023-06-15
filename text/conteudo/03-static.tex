@@ -361,16 +361,15 @@ metric.
 At this point it is safe to say that the type of decay seen in recommendation
 frequencies up until now is not spurious and must have a clear cause. To better
 investigate whether word frequency had an impact on the recommendation profiles
-another hypothesis was taken into consideration: do sparser metadata cause the
-recommendation curves to display a steep left-hand side?
+another hypothesis was taken into consideration: do metadata with less words
+cause the recommendation curves to display a steep left-hand side?
 
 Figure~\ref{fig:fig5} displays the recommendation profiles for the vanilla model
 applied to datasets with synthetic metadata. Concretely, the figures are
 equivalent to creating random metadata for the movies where the probability of
 any single word being selected was approximately $1.54 \times 10^{-4}$, $1.54
 \times 10^{-3}$, and $1.54 \times 10^{-2}$ respectively. The results do support
-the aforementioned hypothesis since less sparse vectors indeed generated less
-steep decays.
+the aforementioned hypothesis since denser vectors indeed affected the decay.
 
 \begin{figure}
   \centering
@@ -397,14 +396,15 @@ steep decays.
 \subsection{Sanity Checks}
 \label{subsec:sanity03}
 
-After the previous experiments, sanity checks were needed in order to guarantee
-that the previous hypothesis was generalizable. The first check should verify
-whether an artificial movie created as a combination of the metadata from other
-movies favored by the recommendation algorithm would also be favored, while the
-second should check whether shorter vectors would change the decay already
-observed despite being as sparse as their longer counterparts. We repeated these
-tests thousands of times and the results presented below are typical of what we
-found.
+After the previous experiments, sanity checks were needed in order to verify
+that our previous results weren't spurious. The first check should check whether
+an artificial movie created as a combination of the metadata from other movies
+favored by the recommendation algorithm would also be favored (i.e. we are able
+to create a popular movie from other popular movies), while the second should
+check whether shorter vectors would change the decay already observed despite
+being as sparse as their longer counterparts (i.e. the intrinsic properties of
+the dataset aren't responsible for the power law decay). We repeated these tests
+thousands of times and the results presented below are typical of what we found.
 
 Figure~\ref{fig:fig6} showcases the two sanity checks. Figure~\ref{fig:fig6a}
 was a model applied to the vanilla dataset with the addition of the movie
@@ -412,8 +412,7 @@ highlighted in red. As expected, this movie also showed up in the
 top-recommended subset. Figure~\ref{fig:fig6b} comes from a model applied to
 randomly generated vector representations in a similar fashion to the ones in
 Figure~\ref{fig:fig5}, except each vector could only have 15,000 elements
-instead of 55,681 (as with the vanilla model). The pattern observed before
-persisted, meaning that the hypothesis still stood.
+instead of 55,681 (as with the vanilla model).
 
 \begin{figure}
   \centering
