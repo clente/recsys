@@ -84,10 +84,10 @@ in Table~\ref{tab:tab03_head}.
   \label{tab:tab03_head}
 \end{table}
 
-In the end, because of technical limitations, the dataset used in this chapter
-was sampled until 30,689 movies were left; this was the largest dataset that
-could be processed in a reasonable amount of time by the hardware we had access
-to.
+In the end, because of RAM limitations, the dataset used in this chapter was
+sampled until 30,689 movies were left; this was the largest dataset that could
+be processed in a reasonable amount of time by the hardware to which we had
+access.
 
 The second dataset, used for validation purposes only, was the Book-Crossing
 Dataset \citep{ziegler_book-crossing_2004}. Just like the enriched MovieLens,
@@ -162,8 +162,10 @@ representation of the items anymore. Because of this feature, we called this
 algorithm the cutoff model.
 
 Three cutoff points were tested and only words with an absolute frequency larger
-than or equal to $k$, $k = \{2, 5, 8\}$, could be included in the vector
-representations.
+than or equal to $k$, $k = \{2, 5, 8\}$, should be included in the vector
+representations. These specific values were chosen empirically, by manually
+checking every $k$ from 1 to 10 and selecting the ones where there was a
+significant difference from the previous.
 
 \subsection{Similarity Models}
 \label{subsec:similarity}
@@ -172,8 +174,8 @@ The next model we tested was intended to validate our choice of distance metric
 for the vanilla model. In what we called similarity models, we used other
 distance metrics besides cosine similarity \citep{ricci_introduction_2011}:
 cosine distance, Euclidean distance and Manhattan distance. The goal here was to
-verify whether other metrics could do a better (or worse) job at not creating a
-subset of movies that ended up more recommended than the rest.
+verify whether other metrics could have a better (or worse) performance at not
+creating a subset of movies that ended up more recommended than the rest.
 
 \subsection{Vanilla Model with Synthetic Metadata}
 \label{subsec:synthetic}
@@ -245,11 +247,11 @@ recommendations \citep{noauthor_mozilla_nodate}.
 
 Its recommendation profile can be seen in Figure~\ref{fig:fig1} and, since it is
 the sum of many uniform samples, the number of times each movie is recommended
-approaches a normal distribution and, therefore, the recommendation profile also
-approaches the cumulative distribution function (CDF) of said distribution. The
-most recommended movie appeared 25 times in the final list, while the least
-recommended movie did not appear at all. Figure~\ref{fig:fig1b} shows the
-log-log plot of the recommendation profile.
+approaches a symmetric distribution and, therefore, the recommendation profile
+also approaches a symmetric  distribution. The most recommended movie appeared 25
+times in the final list, while the least recommended movie did not appear at
+all. Figure~\ref{fig:fig1b} shows the log-log plot of the recommendation
+profile.
 
 \begin{figure}
   \centering
@@ -274,8 +276,12 @@ The recommendation profile for the vanilla model can be seen in
 Figure~\ref{fig:fig2a}. Here, the movie ranked number 1 appeared more than 2000
 times in the full list of recommendations, with a power law decay in the number
 of appearances from then on, as made evident by the log-log plot on
-Figure~\ref{fig:fig2b}. This recommendation profile is a big departure from the
-trivial model discussed above.
+Figure~\ref{fig:fig2b}.
+
+This recommendation profile is a big departure from the trivial model discussed
+above because, for the first time, the log-log plot displays an almost linear
+decay. This represents a much steeper decline in the number of recommendations
+from the movies most favored by the algorithm to the least favored.
 
 \begin{figure}
   \centering
@@ -303,6 +309,11 @@ variations in the $y$-intercept, all plots are qualitatively very similar to
 Figure~\ref{fig:fig2a}, indicating that rare words probably are not to blame for
 the power law decay.
 
+The log-log plots reveal that there is a speed up of the decay in the number of
+recommendations approximately from $log(y) = 10$ to $log(y) = 100$, which
+doesn't happen in the vanilla model. This is almost imperceptible in the regular
+plots.
+
 \begin{figure}
   \centering
   \begin{subfigure}{0.3\textwidth}
@@ -320,8 +331,23 @@ the power law decay.
     \includegraphics[width=\textwidth]{3c_cutoff_high}
     \caption{Cutoff $k = 8$.\label{fig:fig3c}}
   \end{subfigure}
-  \caption{Recommendation profile for cutoff $k = 2$ (a), $5$ (b), and $8$
-    (c).\label{fig:fig3}}
+  \begin{subfigure}{0.3\textwidth}
+    \centering
+    \includegraphics[width=\textwidth]{3a_cutoff_low_log}
+    \caption{Log-log plot for $k = 2$.\label{fig:fig3a}}
+  \end{subfigure}
+  \begin{subfigure}{0.3\textwidth}
+    \centering
+    \includegraphics[width=\textwidth]{3b_cutoff_med_log}
+    \caption{Log-log plot for $k = 5$.\label{fig:fig3b}}
+  \end{subfigure}
+  \begin{subfigure}{0.3\textwidth}
+    \centering
+    \includegraphics[width=\textwidth]{3c_cutoff_high_log}
+    \caption{Log-log plot for $k = 8$.\label{fig:fig3c}}
+  \end{subfigure}
+  \caption{Recommendation profile for cutoff $k = 2$ (a), $5$ (b), and $8$ (c)
+    with their respective log-log plots. \label{fig:fig3}}
 \end{figure}
 
 \subsection{Similarity Models}
@@ -334,12 +360,17 @@ distance, euclidean distance and manhattan distance. It is clear that there are
 no meaningful differences between the recommendation profiles generated by each
 metric.
 
+As for the log-log plots, we can clearly see that after a certain point some
+movies were simply not recommended at all, with a sharp decay in the number of
+recommendations right before that point. This behavior indicates that these
+distance metrics are even more biased than cosine similarity.
+
 \begin{figure}
   \centering
   \begin{subfigure}{0.3\textwidth}
     \centering
     \includegraphics[width=\textwidth]{4a_cosine}
-    \caption{Cosine distance (vanilla).\label{fig:fig4a}}
+    \caption{Cosine distance.\label{fig:fig4a}}
   \end{subfigure}
   \begin{subfigure}{0.3\textwidth}
     \centering
@@ -351,8 +382,23 @@ metric.
     \includegraphics[width=\textwidth]{4c_manhattan}
     \caption{Manhattan distance.\label{fig:fig4c}}
   \end{subfigure}
+  \begin{subfigure}{0.3\textwidth}
+    \centering
+    \includegraphics[width=\textwidth]{4a_cosine_log}
+    \caption{Log-log plot for Cosine.\label{fig:fig4a}}
+  \end{subfigure}
+  \begin{subfigure}{0.3\textwidth}
+    \centering
+    \includegraphics[width=\textwidth]{4b_euclidean_log}
+    \caption{Log-log plot for Euclidean.\label{fig:fig4b}}
+  \end{subfigure}
+  \begin{subfigure}{0.3\textwidth}
+    \centering
+    \includegraphics[width=\textwidth]{4c_manhattan_log}
+    \caption{Log-log plot for Manhattan.\label{fig:fig4c}}
+  \end{subfigure}
   \caption{Recommendation profile for cosine (a), euclidean (b), and manhattan
-    (c) distances.\label{fig:fig4}}
+    (c) distances with their respective log-log plots.\label{fig:fig4}}
 \end{figure}
 
 \subsection{Vanilla Model with Synthetic Metadata}
@@ -371,6 +417,11 @@ any single word being selected was approximately $1.54 \times 10^{-4}$, $1.54
 \times 10^{-3}$, and $1.54 \times 10^{-2}$ respectively. The results do support
 the aforementioned hypothesis since denser vectors indeed affected the decay.
 
+The log-log plots make it clear that these models approach the trivial model as
+the metadata become denser and denser. This suggests that the metadata of the
+movies have become too similar and, therefore, recommendations were essentially
+happening at random.
+
 \begin{figure}
   \centering
   \begin{subfigure}{0.3\textwidth}
@@ -388,9 +439,24 @@ the aforementioned hypothesis since denser vectors indeed affected the decay.
     \includegraphics[width=\textwidth]{5c_p100}
     \caption{$P(w_{i}) = 100 \times \overline{P(w)}$.\label{fig:fig5c}}
   \end{subfigure}
+  \begin{subfigure}{0.3\textwidth}
+    \centering
+    \includegraphics[width=\textwidth]{5a_p_log}
+    \caption{Log-log plot for $1 \times \overline{P(w)}$.\label{fig:fig5a}}
+  \end{subfigure}
+  \begin{subfigure}{0.3\textwidth}
+    \centering
+    \includegraphics[width=\textwidth]{5b_p10_log}
+    \caption{Log-log plot for $10 \times \overline{P(w)}$.\label{fig:fig5b}}
+  \end{subfigure}
+  \begin{subfigure}{0.3\textwidth}
+    \centering
+    \includegraphics[width=\textwidth]{5c_p100_log}
+    \caption{Log-log plot for $100 \times \overline{P(w)}$.\label{fig:fig5c}}
+  \end{subfigure}
   \caption{Recommendation profile of samples with
     $P(w_{i}) = C \times \overline{P(w)}$, $C = 1$ (a), $10$ (b), and $100$
-    (c).\label{fig:fig5}}
+    (c) with their respective log-log plots.\label{fig:fig5}}
 \end{figure}
 
 \subsection{Sanity Checks}
@@ -408,7 +474,7 @@ thousands of times and the results presented below are typical of what we found.
 
 Figure~\ref{fig:fig6} showcases the two sanity checks. Figure~\ref{fig:fig6a}
 was a model applied to the vanilla dataset with the addition of the movie
-highlighted in red. As expected, this movie also showed up in the
+highlighted as a red square. As expected, this movie also showed up in the
 top-recommended subset. Figure~\ref{fig:fig6b} comes from a model applied to
 randomly generated vector representations in a similar fashion to the ones in
 Figure~\ref{fig:fig5}, except each vector could only have 15,000 elements

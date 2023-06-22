@@ -558,8 +558,9 @@ capturing the data's variability.
 Since both previous models failed to accurately capture the algorithm's
 recommendation profile, we moved on to mixed-effects models given their
 usefulness in longitudinal studies \citep{gomes_should_2022}. With this kind of
-model we would be able to vary the coefficients from movie to movie, allowing
-some movies to have steeper recommendation profiles than others.
+model we would be able to vary the coefficients from movie to movie (since we
+applied the mixed-effect to the \verb|movie_id| variable), allowing some movies
+to have steeper recommendation profiles than others.
 
 The Poisson mixed-effects model can be generalized \citep{noauthor_applied_2023}
 from the standard model by adding normally distributed random-effects to the

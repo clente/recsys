@@ -38,21 +38,21 @@ more recent version of YouTube's recommendation algorithm, explores the
 Multi-gate Mixture-of-Experts technique to optimize recommendations for more
 than one ranking objective and the Wide \& Deep framework to mitigate selection
 biases. The authors also make it clear that YouTube's recommender system has a
-strong bias towards more recent content instead of more traditional metrics.
+strong bias towards more recent content.
 
 Many authors have also explored how biases in recommendation engines might lead
 to user radicalization. \citet{agarwal_topic-specific_2015} developed an early
-example of a technique to try and find extremist content on YouTube. Using
-advanced machine learning methods, the authors create a YouTube crawler that
-starts from a seed video and iteratively classifies featured channels and videos
-according to their potential extremism. A more recent example of this can be
-found in \citet{tangherlini_automated_2020}, where the authors propose a novel
-approach for identifying conspiracy theories online. By analyzing the narrative
-structure of a conspiracy theory (Pizzagate) and comparing it to an actual
-conspiracy (Bridgegate), they create a model that can guess whether a
-conspiratorial narrative is or not fabricated. According to their findings, a
-multi-domain nature and the presence of keystone nodes are signs that strongly
-indicate a conspiracy theory.
+example of a technique to try and find extremist content on YouTube. Using deep
+learning algorithms, the authors create a YouTube crawler that starts from a
+seed video and iteratively classifies featured channels and videos according to
+their potential extremism. A more recent example of this can be found in
+\citet{tangherlini_automated_2020}, where the authors propose a novel approach
+for identifying conspiracy theories online. By analyzing the narrative structure
+of a conspiracy theory (Pizzagate) and comparing it to an actual conspiracy
+(Bridgegate), they create a system that can guess whether a conspiratorial
+narrative is or not fabricated. According to their findings, a multi-domain
+nature and the presence of keystone nodes are signs that strongly indicate a
+conspiracy theory.
 
 Besides just finding and identifying radicalizing content on YouTube, many
 authors have been concerned with studying the radicalization dynamics directly.
@@ -69,9 +69,9 @@ cases of users being radicalized through YouTube videos, studied the efforts
 announced by the platform to curb the spread of conspiracy theories on the
 website. The paper aimed to verify this claim by developing both an emulation of
 YouTube's recommendation algorithm and a classifier that labeled whether a video
-is conspiratorial or not. The authors describe an overall decrease in the number
-of conspiracy recommendations, though not when weighing these recommendations by
-views.
+is conspiratorial or not (precision of 78\% and recall of 86\%). The authors
+describe an overall decrease in the number of conspiracy recommendations, though
+not when weighing these recommendations by views.
 
 Three papers that deserve a closer look are those that investigate how regular
 recommendation algorithms can learn covert biases in the users of a social
@@ -159,13 +159,12 @@ this phenomenon being due to recommendations. A popular article in the field, by
 \citet{ribeiro_auditing_2020}, explored the radicalization pipeline hypothesis
 of algorithmic enabled radicalization. The authors collect huge amounts of
 YouTube comment data over time, and determine a significant migration of users
-from ``lighter'' content towards more extreme videos. This does not prove that
-the pipeline exists, but is a strong argument for its existence.
+from ``lighter'' content towards more extreme videos.
 
 Twitter was also found to consistently favor right-wing content.
 \citet{huszar_algorithmic_2021} conducted a ''long-running, massive-scale
-randomized experiment`` across 7 countries in order investigate the effects of
-algorithmic personalization on users' feeds and, according to their results,
+randomized experiment`` across 7 countries in order to investigate the effects
+of algorithmic personalization on users' feeds and, according to their results,
 ``mainstream political right enjoys higher algorithmic amplification than the
 mainstream political left''.
 
